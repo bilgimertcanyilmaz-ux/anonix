@@ -151,3 +151,65 @@ export interface GolgeComment {
   created_at: string;
   profiles?: ConfessionAuthor | null;
 }
+
+/** Supabase `notifications` tablosundaki bildirim. */
+export interface Notification {
+  id: string;
+  user_id: string;
+  actor_id: string | null;
+  type: string;
+  entity_type: string | null;
+  entity_id: string | null;
+  message: string;
+  is_read: boolean;
+  created_at: string;
+}
+
+/** Supabase `daily_tasks` tablosundaki görev tanımı. */
+export interface DailyTask {
+  id: string;
+  title: string;
+  description: string | null;
+  task_type: string;
+  target_count: number;
+  reward_points: number;
+  is_active: boolean;
+  created_at: string;
+}
+
+/** Kullanıcının bir görevdeki günlük ilerlemesi. */
+export interface UserDailyTask {
+  id: string;
+  user_id: string;
+  task_id: string;
+  progress: number;
+  is_completed: boolean;
+  completed_at: string | null;
+  task_date: string;
+}
+
+/** Görev + kullanıcı ilerlemesi birleşik gösterim. */
+export interface TaskWithProgress extends DailyTask {
+  progress: number;
+  is_completed: boolean;
+}
+
+/** Supabase `badges` tablosundaki rozet. */
+export interface Badge {
+  id: string;
+  name: string;
+  description: string | null;
+  icon: string | null;
+  required_points: number;
+  badge_type: string;
+  created_at: string;
+}
+
+/** Kullanıcının kazandığı rozet kaydı. */
+export interface UserBadge {
+  id: string;
+  user_id: string;
+  badge_id: string;
+  earned_at: string;
+  badges?: Badge | null;
+}

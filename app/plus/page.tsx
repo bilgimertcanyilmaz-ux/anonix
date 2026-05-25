@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/components/ui/ToastProvider";
+import { bumpMyTask } from "@/lib/tasks";
 import { SparkIcon, ChatIcon, UserIcon, CrownIcon, MaskIcon, HeartIcon } from "@/components/ui/icons";
 
 const perks = [
@@ -24,6 +25,11 @@ export default function PlusPage() {
   const [activating, setActivating] = useState(false);
 
   const isPlus = profile?.is_plus ?? false;
+
+  // "Plus sayfasını ziyaret et" günlük görevini ilerlet
+  useEffect(() => {
+    if (user) bumpMyTask("visit_plus");
+  }, [user]);
 
   async function handleActivate() {
     if (!user) {

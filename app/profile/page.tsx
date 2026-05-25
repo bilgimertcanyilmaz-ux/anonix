@@ -1,19 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Container } from "@/components/layout/Container";
 import { Alert } from "@/components/ui/Alert";
 import { Button, LinkButton } from "@/components/ui/Button";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { supabase } from "@/lib/supabaseClient";
 import { genderFrameClass, genderLabel, initialsOf } from "@/lib/profile";
+import { rankIcon, rankTiers } from "@/lib/ranks";
+import { badgeIcon } from "@/lib/badges";
 import { CrownIcon, SparkIcon } from "@/components/ui/icons";
+import type { UserBadge } from "@/types";
 
 export default function ProfilePage() {
   const router = useRouter();
   const { user, profile, loading, signOut, updateProfile } = useAuth();
   const [toggling, setToggling] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [badges, setBadges] = useState<UserBadge[]>([]);
 
   // Giriş yapmamış kullanıcıyı login'e yönlendir.
   useEffect(() => {
@@ -21,6 +27,20 @@ export default function ProfilePage() {
       router.replace("/login");
     }
   }, [loading, user, router]);
+
+  const loadBadges = useCallback(async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from("user_badges")
+      .select("*, badges(*)")
+      .eq("user_id", user.id)
+      .order("earned_at", { ascending: false });
+    setBadges((data as UserBadge[]) ?? []);
+  }, [user]);
+
+  useEffect(() => {
+    if (user) loadBadges();
+  }, [user, loadBadges]);
 
   if (loading || !user) {
     return (
@@ -95,18 +115,76 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Puan & rütbe */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="card p-5">
-            <p className="text-xs uppercase tracking-wider text-slate-500">Puan</p>
-            <p className="mt-1 text-2xl font-extrabold text-white">{profile.points}</p>
+        {/* Puan & rütbe — dikkat çekici hero */}
+        {(() => {
+          const tiers = rankTiers;
+          const idx = tiers.findIndex((t) => t.rank === profile.rank);
+          const next = idx >= 0 && idx < tiers.length - 1 ? tiers[idx + 1] : null;
+          const curMin = idx >= 0 ? tiers[idx].min : 0;
+          const pct = next
+            ? Math.min(100, Math.round(((profile.points - curMin) / (next.min - curMin)) * 100))
+            : 100;
+          return (
+            <div className="relative overflow-hidden rounded-3xl border border-brand-500/30 bg-gradient-to-br from-brand-600 via-brand-800 to-ink-900 p-6 shadow-glow">
+              <div className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full bg-brand-400/20 blur-3xl" />
+              <div className="relative flex items-center gap-4">
+                <span className="text-5xl">{rankIcon(profile.rank)}</span>
+                <div className="flex-1">
+                  <p className="text-xs uppercase tracking-wider text-white/60">Rütbe</p>
+                  <p className="text-2xl font-extrabold text-white">{profile.rank}</p>
+                  <p className="mt-0.5 text-sm font-semibold text-amber-200">
+                    {profile.points.toLocaleString("tr-TR")} puan
+                  </p>
+                </div>
+              </div>
+              {next && (
+                <div className="relative mt-4">
+                  <div className="h-2 overflow-hidden rounded-full bg-black/30">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-amber-300 to-amber-500 transition-all duration-700"
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                  <p className="mt-1.5 text-xs text-white/60">
+                    Sonraki: {next.icon} {next.rank} ·{" "}
+                    {(next.min - profile.points).toLocaleString("tr-TR")} puan kaldı
+                  </p>
+                </div>
+              )}
+            </div>
+          );
+        })()}
+
+        {/* Rozetler */}
+        <div className="card p-5">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-sm font-bold text-white">Rozetlerim</h2>
+            <Link href="/badges" className="text-xs font-medium text-brand-300 hover:text-brand-200">
+              Tümünü gör →
+            </Link>
           </div>
-          <div className="card p-5">
-            <p className="flex items-center gap-1 text-xs uppercase tracking-wider text-slate-500">
-              <CrownIcon className="h-3.5 w-3.5" /> Rütbe
+          {badges.length === 0 ? (
+            <p className="text-xs text-slate-400">
+              Henüz rozetin yok. İtiraf paylaş, beğen, yorum yap ve rozet kazan!
             </p>
-            <p className="mt-1 text-lg font-extrabold text-gradient">{profile.rank}</p>
-          </div>
+          ) : (
+            <div className="flex flex-wrap gap-3">
+              {badges.map((ub) => (
+                <div
+                  key={ub.id}
+                  title={ub.badges?.name ?? ""}
+                  className="flex flex-col items-center gap-1"
+                >
+                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/5 text-2xl">
+                    {ub.badges ? badgeIcon(ub.badges) : "🏅"}
+                  </span>
+                  <span className="max-w-16 truncate text-[10px] text-slate-400">
+                    {ub.badges?.name}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Üyelik durumu */}

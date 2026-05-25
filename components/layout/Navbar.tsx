@@ -2,15 +2,17 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { MaskIcon, SparkIcon, ChatIcon } from "@/components/ui/icons";
+import { MaskIcon, SparkIcon, ChatIcon, BellIcon } from "@/components/ui/icons";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useUnread } from "@/components/messages/UnreadProvider";
+import { useNotif } from "@/components/notifications/NotifProvider";
 
 /** Üst navigasyon çubuğu (yapışkan, cam efektli). Oturum durumuna göre değişir. */
 export function Navbar() {
   const router = useRouter();
   const { user, loading, signOut } = useAuth();
   const { unreadCount } = useUnread();
+  const { unreadCount: notifCount } = useNotif();
 
   async function handleSignOut() {
     await signOut();
@@ -61,6 +63,18 @@ export function Navbar() {
             <span className="h-8 w-20 animate-pulse rounded-full bg-white/5" />
           ) : user ? (
             <>
+              <Link
+                href="/notifications"
+                aria-label="Bildirimler"
+                className="relative rounded-full bg-white/5 p-2 text-slate-200 transition-colors hover:bg-white/10"
+              >
+                <BellIcon className="h-5 w-5" />
+                {notifCount > 0 && (
+                  <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-pink-500 px-1 text-[10px] font-bold text-white">
+                    {notifCount > 99 ? "99+" : notifCount}
+                  </span>
+                )}
+              </Link>
               <Link
                 href="/messages"
                 aria-label="Mesajlar"

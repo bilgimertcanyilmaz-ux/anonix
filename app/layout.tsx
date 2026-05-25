@@ -4,6 +4,7 @@ import "@/styles/globals.css";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { ToastProvider } from "@/components/ui/ToastProvider";
 import { UnreadProvider } from "@/components/messages/UnreadProvider";
+import { NotifProvider } from "@/components/notifications/NotifProvider";
 import { Navbar } from "@/components/layout/Navbar";
 import { BottomNav } from "@/components/layout/BottomNav";
 
@@ -38,10 +39,12 @@ export default function RootLayout({
         <AuthProvider>
           <ToastProvider>
             <UnreadProvider>
-              <Navbar />
-              {/* Alt boşluk: mobilde bottom-nav'ın içeriği örtmemesi için */}
-              <main className="pb-24 pt-6 md:pb-12">{children}</main>
-              <BottomNav />
+              <NotifProvider>
+                <Navbar />
+                {/* Alt boşluk: mobilde bottom-nav'ın içeriği örtmemesi için */}
+                <main className="pb-24 pt-6 md:pb-12">{children}</main>
+                <BottomNav />
+              </NotifProvider>
             </UnreadProvider>
           </ToastProvider>
         </AuthProvider>

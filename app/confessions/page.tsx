@@ -4,8 +4,10 @@ import { useEffect, useState, useCallback } from "react";
 import { Container } from "@/components/layout/Container";
 import { LinkButton } from "@/components/ui/Button";
 import { FeedCard } from "@/components/confession/FeedCard";
+import { FilterTabs } from "@/components/ui/FilterTabs";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { sortByTrend, type FeedFilter } from "@/lib/trending";
 import { PlusCircleIcon } from "@/components/ui/icons";
 import type { ConfessionRecord } from "@/types";
 
@@ -13,6 +15,7 @@ export default function ConfessionsPage() {
   const { user } = useAuth();
   const [confessions, setConfessions] = useState<ConfessionRecord[]>([]);
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
+  const [filter, setFilter] = useState<FeedFilter>("new");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,18 +23,21 @@ export default function ConfessionsPage() {
     setLoading(true);
     setError(null);
 
-    const { data, error } = await supabase
-      .from("confessions")
-      .select("*, profiles(username, gender, is_anonymous)")
-      .order("created_at", { ascending: false })
-      .limit(50);
+    let query = supabase.from("confessions").select("*, profiles(username, gender, is_anonymous)");
+    if (filter === "likes") query = query.order("like_count", { ascending: false });
+    else if (filter === "comments") query = query.order("comment_count", { ascending: false });
+    else query = query.order("created_at", { ascending: false });
+
+    const { data, error } = await query.limit(50);
 
     if (error) {
       setError("İtiraflar yüklenemedi. Lütfen tekrar dene.");
       setLoading(false);
       return;
     }
-    setConfessions((data as ConfessionRecord[]) ?? []);
+    let rows = (data as ConfessionRecord[]) ?? [];
+    if (filter === "trend") rows = sortByTrend(rows);
+    setConfessions(rows);
 
     // Kullanıcının beğenilerini al (beğeni durumunu göstermek için)
     if (user) {
@@ -45,7 +51,7 @@ export default function ConfessionsPage() {
     }
 
     setLoading(false);
-  }, [user]);
+  }, [user, filter]);
 
   useEffect(() => {
     load();
@@ -61,6 +67,8 @@ export default function ConfessionsPage() {
             İtiraf Yaz
           </LinkButton>
         </div>
+
+        <FilterTabs value={filter} onChange={setFilter} />
 
         {loading ? (
           <div className="space-y-4">

@@ -4,8 +4,10 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { Container } from "@/components/layout/Container";
 import { LinkButton } from "@/components/ui/Button";
 import { GolgeCard } from "@/components/golge/GolgeCard";
+import { FilterTabs } from "@/components/ui/FilterTabs";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { sortByTrend, type FeedFilter } from "@/lib/trending";
 import { PlusCircleIcon } from "@/components/ui/icons";
 import type { GolgePost } from "@/types";
 
@@ -15,6 +17,7 @@ export default function GolgeFeedPage() {
   const { user } = useAuth();
   const [posts, setPosts] = useState<GolgePost[]>([]);
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
+  const [filter, setFilter] = useState<FeedFilter>("new");
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(true);
@@ -28,11 +31,12 @@ export default function GolgeFeedPage() {
       const from = pageIndex * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
 
-      const { data, error } = await supabase
-        .from("golge_posts")
-        .select("*, profiles(username, gender, is_anonymous)")
-        .order("created_at", { ascending: false })
-        .range(from, to);
+      let query = supabase.from("golge_posts").select("*, profiles(username, gender, is_anonymous)");
+      if (filter === "likes") query = query.order("like_count", { ascending: false });
+      else if (filter === "comments") query = query.order("comment_count", { ascending: false });
+      else query = query.order("created_at", { ascending: false });
+
+      const { data, error } = await query.range(from, to);
 
       if (error) {
         setError("Gölge akışı yüklenemedi.");
@@ -42,13 +46,14 @@ export default function GolgeFeedPage() {
       if (rows.length < PAGE_SIZE) setHasMore(false);
       return rows;
     },
-    []
+    [filter]
   );
 
-  // İlk yükleme
+  // İlk yükleme / filtre değişimi
   useEffect(() => {
     (async () => {
       setLoading(true);
+      setHasMore(true);
       const rows = await fetchPage(0);
       setPosts(rows);
       setPage(0);
@@ -63,6 +68,9 @@ export default function GolgeFeedPage() {
       }
     })();
   }, [fetchPage, user]);
+
+  // Trend filtresinde yüklenen seti istemci tarafında trend skoruna göre sırala
+  const displayPosts = filter === "trend" ? sortByTrend(posts) : posts;
 
   const loadMore = useCallback(async () => {
     if (loadingMore || !hasMore || loading) return;
@@ -105,6 +113,8 @@ export default function GolgeFeedPage() {
           </LinkButton>
         </div>
 
+        <FilterTabs value={filter} onChange={setFilter} />
+
         {loading ? (
           <div className="columns-2 gap-3 sm:columns-3">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -117,7 +127,7 @@ export default function GolgeFeedPage() {
           </div>
         ) : error ? (
           <div className="card p-6 text-center text-sm text-red-200">{error}</div>
-        ) : posts.length === 0 ? (
+        ) : displayPosts.length === 0 ? (
           <div className="card p-8 text-center">
             <p className="text-sm text-slate-400">
               Henüz hiç Gölge yok. İlk fotoğrafı sen paylaş!
@@ -129,7 +139,7 @@ export default function GolgeFeedPage() {
         ) : (
           <>
             <div className="columns-2 gap-3 sm:columns-3">
-              {posts.map((p) => (
+              {displayPosts.map((p) => (
                 <GolgeCard key={p.id} post={p} liked={likedIds.has(p.id)} />
               ))}
             </div>
