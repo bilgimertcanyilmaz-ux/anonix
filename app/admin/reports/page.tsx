@@ -94,10 +94,11 @@ export default function AdminReportsPage() {
   async function banUser(r: Report) {
     if (!r.reported_user_id) return;
     setBusyId(r.id);
-    const { error } = await supabase
-      .from("profiles")
-      .update({ is_banned: true, banned_reason: `Şikayet: ${r.reason}` })
-      .eq("id", r.reported_user_id);
+    const { error } = await supabase.rpc("admin_set_ban", {
+      target: r.reported_user_id,
+      banned: true,
+      reason: `Şikayet: ${r.reason}`,
+    });
     if (!error) {
       await logAction(r, "ban_user", r.reason);
       await supabase

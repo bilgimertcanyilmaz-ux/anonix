@@ -59,6 +59,9 @@ export interface Profile {
   role: string;
   is_banned: boolean;
   banned_reason: string | null;
+  plus_expires_at: string | null;
+  subscription_type: string | null;
+  iyzico_customer_id: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -250,5 +253,35 @@ export interface BannedWord {
   word: string;
   severity: string;
   is_active: boolean;
+  created_at: string;
+}
+
+/** Plus abonelik türü. */
+export type SubscriptionType = "monthly" | "yearly";
+
+/** Supabase `subscriptions` tablosundaki abonelik. */
+export interface Subscription {
+  id: string;
+  user_id: string;
+  provider: string;
+  provider_subscription_id: string | null;
+  subscription_type: string;
+  status: string;
+  started_at: string;
+  expires_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+/** Supabase `payment_logs` tablosundaki ödeme kaydı. */
+export interface PaymentLog {
+  id: string;
+  user_id: string | null;
+  provider: string;
+  payment_id: string | null;
+  amount: number;
+  currency: string;
+  status: string;
+  raw_response: unknown;
   created_at: string;
 }

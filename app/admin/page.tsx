@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import { timeAgo } from "@/lib/format";
+import type { PaymentLog } from "@/types";
 
 interface Stats {
   users: number;
@@ -10,6 +12,15 @@ interface Stats {
   pendingReports: number;
   bannedUsers: number;
   last24h: number;
+}
+
+interface PayStats {
+  revenue: number;
+  activeSubs: number;
+  monthly: number;
+  yearly: number;
+  failed: number;
+  recent: PaymentLog[];
 }
 
 async function countOf(table: string, build?: (q: any) => any): Promise<number> {
@@ -21,6 +32,7 @@ async function countOf(table: string, build?: (q: any) => any): Promise<number> 
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
+  const [pay, setPay] = useState<PayStats | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -35,13 +47,28 @@ export default function AdminDashboard() {
           countOf("confessions", (q) => q.gte("created_at", since)),
           countOf("golge_posts", (q) => q.gte("created_at", since)),
         ]);
-      setStats({
-        users,
-        confessions,
-        golge,
-        pendingReports,
-        bannedUsers,
-        last24h: conf24 + golge24,
+      setStats({ users, confessions, golge, pendingReports, bannedUsers, last24h: conf24 + golge24 });
+
+      // Ödeme istatistikleri
+      const [activeSubs, monthly, yearly, failed, successLogs, recent] = await Promise.all([
+        countOf("subscriptions", (q) => q.eq("status", "active")),
+        countOf("subscriptions", (q) => q.eq("status", "active").eq("subscription_type", "monthly")),
+        countOf("subscriptions", (q) => q.eq("status", "active").eq("subscription_type", "yearly")),
+        countOf("payment_logs", (q) => q.eq("status", "failed")),
+        supabase.from("payment_logs").select("amount").eq("status", "success"),
+        supabase.from("payment_logs").select("*").order("created_at", { ascending: false }).limit(5),
+      ]);
+      const revenue = ((successLogs.data as { amount: number }[]) ?? []).reduce(
+        (s, r) => s + Number(r.amount),
+        0
+      );
+      setPay({
+        revenue,
+        activeSubs,
+        monthly,
+        yearly,
+        failed,
+        recent: (recent.data as PaymentLog[]) ?? [],
       });
     })();
   }, []);
@@ -55,20 +82,73 @@ export default function AdminDashboard() {
     { label: "Son 24s içerik", value: stats?.last24h, icon: "⚡" },
   ];
 
+  const payCards = [
+    { label: "Toplam gelir", value: pay ? `₺${pay.revenue.toFixed(2)}` : "—", icon: "💰" },
+    { label: "Aktif abonelik", value: pay?.activeSubs, icon: "✅" },
+    { label: "Aylık", value: pay?.monthly, icon: "📅" },
+    { label: "Yıllık", value: pay?.yearly, icon: "🗓️" },
+    { label: "Başarısız ödeme", value: pay?.failed, icon: "❌", warn: true },
+  ];
+
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-      {cards.map((c) => (
-        <div
-          key={c.label}
-          className={`card p-5 ${c.warn && (c.value ?? 0) > 0 ? "border-amber-500/30" : ""}`}
-        >
-          <span className="text-2xl">{c.icon}</span>
-          <p className="mt-2 text-2xl font-extrabold text-white">
-            {stats ? c.value : "—"}
-          </p>
-          <p className="text-xs text-slate-400">{c.label}</p>
+    <div className="space-y-6">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        {cards.map((c) => (
+          <div key={c.label} className={`card p-5 ${c.warn && (c.value ?? 0) > 0 ? "border-amber-500/30" : ""}`}>
+            <span className="text-2xl">{c.icon}</span>
+            <p className="mt-2 text-2xl font-extrabold text-white">{stats ? c.value : "—"}</p>
+            <p className="text-xs text-slate-400">{c.label}</p>
+          </div>
+        ))}
+      </div>
+
+      <div>
+        <h2 className="mb-3 text-sm font-bold text-slate-300">Ödemeler</h2>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {payCards.map((c) => (
+            <div key={c.label} className="card p-5">
+              <span className="text-2xl">{c.icon}</span>
+              <p className="mt-2 text-2xl font-extrabold text-white">{pay ? (c.value ?? 0) : "—"}</p>
+              <p className="text-xs text-slate-400">{c.label}</p>
+            </div>
+          ))}
         </div>
-      ))}
+      </div>
+
+      <div>
+        <h2 className="mb-3 text-sm font-bold text-slate-300">Son ödemeler</h2>
+        {!pay ? (
+          <div className="card h-24 animate-pulse" />
+        ) : pay.recent.length === 0 ? (
+          <div className="card p-6 text-center text-sm text-slate-400">Henüz ödeme yok.</div>
+        ) : (
+          <div className="space-y-2">
+            {pay.recent.map((p) => (
+              <div key={p.id} className="card flex items-center justify-between gap-2 p-3">
+                <div>
+                  <p className="text-sm font-semibold text-white">
+                    ₺{Number(p.amount).toFixed(2)} {p.currency}
+                  </p>
+                  <p className="text-xs text-slate-500">
+                    {p.provider} · {timeAgo(p.created_at)}
+                  </p>
+                </div>
+                <span
+                  className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                    p.status === "success"
+                      ? "bg-emerald-500/20 text-emerald-200"
+                      : p.status === "failed"
+                        ? "bg-red-500/20 text-red-200"
+                        : "bg-amber-500/20 text-amber-200"
+                  }`}
+                >
+                  {p.status}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

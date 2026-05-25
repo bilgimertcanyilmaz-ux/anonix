@@ -41,10 +41,11 @@ export default function AdminUsersPage() {
   async function toggleBan(p: Profile) {
     setBusyId(p.id);
     const next = !p.is_banned;
-    const { error } = await supabase
-      .from("profiles")
-      .update({ is_banned: next, banned_reason: next ? "Admin tarafından banlandı" : null })
-      .eq("id", p.id);
+    const { error } = await supabase.rpc("admin_set_ban", {
+      target: p.id,
+      banned: next,
+      reason: next ? "Admin tarafından banlandı" : null,
+    });
     setBusyId(null);
     if (error) return toastError("İşlem başarısız.");
     await logAction(p, next ? "ban_user" : "unban_user");
@@ -55,7 +56,7 @@ export default function AdminUsersPage() {
   async function toggleRole(p: Profile) {
     setBusyId(p.id);
     const next = p.role === "admin" ? "user" : "admin";
-    const { error } = await supabase.from("profiles").update({ role: next }).eq("id", p.id);
+    const { error } = await supabase.rpc("admin_set_role", { target: p.id, new_role: next });
     setBusyId(null);
     if (error) return toastError("Rol değiştirilemedi.");
     await logAction(p, `role_${next}`);

@@ -11,7 +11,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { genderFrameClass, genderLabel, initialsOf } from "@/lib/profile";
 import { rankIcon, rankTiers } from "@/lib/ranks";
 import { badgeIcon } from "@/lib/badges";
-import { CrownIcon, SparkIcon } from "@/components/ui/icons";
+import { CrownIcon } from "@/components/ui/icons";
 import type { UserBadge } from "@/types";
 
 export default function ProfilePage() {
@@ -82,7 +82,7 @@ export default function ProfilePage() {
           <div className="flex items-center gap-4">
             {/* Cinsiyete göre çerçeveli avatar */}
             <div
-              className={`flex h-20 w-20 items-center justify-center rounded-full p-[3px] ${genderFrameClass[profile.gender]}`}
+              className={`flex h-20 w-20 items-center justify-center rounded-full p-[3px] ${genderFrameClass[profile.gender]} ${profile.is_plus ? "shadow-glow ring-2 ring-amber-300/70" : ""}`}
             >
               <div className="flex h-full w-full items-center justify-center rounded-full bg-ink-900 text-xl font-bold text-white">
                 {initialsOf(profile.username)}
@@ -95,8 +95,8 @@ export default function ProfilePage() {
                   @{profile.username}
                 </h1>
                 {profile.is_plus && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-brand-500/20 px-2 py-0.5 text-[10px] font-bold text-brand-200">
-                    <SparkIcon className="h-3 w-3" />
+                  <span className="inline-flex animate-float items-center gap-1 rounded-full bg-gradient-to-r from-amber-300 to-amber-500 px-2 py-0.5 text-[10px] font-bold text-ink-900 shadow-glow">
+                    <CrownIcon className="h-3 w-3" />
                     PLUS
                   </span>
                 )}
