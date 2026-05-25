@@ -144,3 +144,20 @@ export function SparkIcon(props: IconProps) {
     </svg>
   );
 }
+
+export function LogoutIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M15 4h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-2" />
+      <path d="M10 17l-5-5 5-5M5 12h11" />
+    </svg>
+  );
+}
+
+export function FireIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M12 3c1 3-1 4-2 6-1 2 0 4 2 4s3-1 3-3c2 1 3 3 3 5a6 6 0 0 1-12 0c0-3 2-5 3-7 1-2 2-3 3-5Z" />
+    </svg>
+  );
+}

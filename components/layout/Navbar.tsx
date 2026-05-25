@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { MaskIcon, SparkIcon, ChatIcon, BellIcon } from "@/components/ui/icons";
+import { MaskIcon, SparkIcon, ChatIcon, BellIcon, LogoutIcon } from "@/components/ui/icons";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useUnread } from "@/components/messages/UnreadProvider";
 import { useNotif } from "@/components/notifications/NotifProvider";
@@ -31,16 +31,16 @@ export function Navbar() {
           </span>
         </Link>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <Link
             href="/confessions"
-            className="hidden rounded-full px-3 py-1.5 text-sm font-semibold text-slate-300 transition-colors hover:text-white sm:inline-flex"
+            className="hidden whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-semibold text-slate-300 transition-colors hover:text-white lg:inline-flex"
           >
             Keşfet
           </Link>
           <Link
             href="/golge"
-            className="hidden rounded-full px-3 py-1.5 text-sm font-semibold text-slate-300 transition-colors hover:text-white sm:inline-flex"
+            className="hidden whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-semibold text-slate-300 transition-colors hover:text-white lg:inline-flex"
           >
             Gölge
           </Link>
@@ -60,13 +60,13 @@ export function Navbar() {
           )}
           <Link
             href="/confessions/new"
-            className="hidden rounded-full px-3 py-1.5 text-sm font-semibold text-slate-300 transition-colors hover:text-white sm:inline-flex"
+            className="hidden whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-semibold text-slate-300 transition-colors hover:text-white lg:inline-flex"
           >
             İtiraf Yaz
           </Link>
           <Link
             href="/plus"
-            className="hidden items-center gap-1.5 rounded-full border border-brand-500/40 bg-brand-500/10 px-3 py-1.5 text-xs font-semibold text-brand-200 transition-colors hover:bg-brand-500/20 sm:inline-flex"
+            className="hidden items-center gap-1.5 whitespace-nowrap rounded-full border border-brand-500/40 bg-brand-500/10 px-3 py-1.5 text-xs font-semibold text-brand-200 transition-colors hover:bg-brand-500/20 md:inline-flex"
           >
             <SparkIcon className="h-3.5 w-3.5" />
             Plus
@@ -104,22 +104,24 @@ export function Navbar() {
               {profile?.role === "admin" && (
                 <Link
                   href="/admin"
-                  className="hidden rounded-full bg-brand-500/15 px-3 py-1.5 text-sm font-semibold text-brand-200 transition-colors hover:bg-brand-500/25 sm:inline-flex"
+                  className="hidden whitespace-nowrap rounded-full bg-brand-500/15 px-3 py-1.5 text-sm font-semibold text-brand-200 transition-colors hover:bg-brand-500/25 md:inline-flex"
                 >
                   Admin
                 </Link>
               )}
               <Link
                 href="/profile"
-                className="rounded-full bg-white/5 px-4 py-1.5 text-sm font-semibold text-slate-200 transition-colors hover:bg-white/10"
+                className="whitespace-nowrap rounded-full bg-white/5 px-3 py-1.5 text-sm font-semibold text-slate-200 transition-colors hover:bg-white/10 hover:text-white sm:px-4"
               >
                 Profil
               </Link>
               <button
                 onClick={handleSignOut}
-                className="hidden rounded-full bg-white/5 px-4 py-1.5 text-sm font-semibold text-slate-200 transition-colors hover:bg-white/10 sm:inline-flex"
+                aria-label="Çıkış Yap"
+                className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-white/5 px-2.5 py-1.5 text-sm font-semibold text-slate-200 transition-colors hover:bg-white/10 hover:text-white sm:px-4"
               >
-                Çıkış Yap
+                <LogoutIcon className="h-4 w-4 shrink-0" />
+                <span className="hidden sm:inline">Çıkış Yap</span>
               </button>
             </>
           ) : (
