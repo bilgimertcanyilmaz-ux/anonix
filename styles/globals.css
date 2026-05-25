@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply min-h-screen bg-ink-950 text-slate-200 antialiased;
+    background-image:
+      radial-gradient(1200px 600px at 50% -10%, rgba(124, 58, 237, 0.18), transparent 60%),
+      linear-gradient(180deg, #0a0a14 0%, #06060b 100%);
+    background-attachment: fixed;
+  }
+
+  /* Mobil tıklama vurgusunu kaldır */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@layer components {
+  /* Yuvarlatılmış cam (glass) kart */
+  .card {
+    @apply rounded-2xl border border-white/5 bg-white/[0.03] shadow-card backdrop-blur-sm;
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:border-brand-500/40 hover:bg-white/[0.05] hover:shadow-glow;
+  }
+
+  /* Gradyan metin */
+  .text-gradient {
+    @apply bg-gradient-to-r from-brand-300 via-brand-400 to-accent-400 bg-clip-text text-transparent;
+  }
+
+  /* Birincil buton görünümü */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-brand-gradient px-6 py-3 text-sm font-semibold text-white shadow-glow transition-transform duration-200 active:scale-95;
+  }
+
+  /* İkincil / hayalet buton */
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 px-6 py-3 text-sm font-semibold text-slate-200 transition-colors duration-200 hover:bg-white/10;
+  }
+
+  /* Rozet / etiket */
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-slate-300;
+  }
+}
+
+/* İnce, koyu temaya uygun scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(124, 58, 237, 0.35);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(124, 58, 237, 0.55);
+}
