@@ -2,6 +2,8 @@ import { Container } from "@/components/layout/Container";
 import { Hero } from "@/components/home/Hero";
 import { RankTeaser } from "@/components/home/RankTeaser";
 import { PlusTeaser } from "@/components/home/PlusTeaser";
+import { GolgeTeaser } from "@/components/home/GolgeTeaser";
+import { SafetyTeaser } from "@/components/home/SafetyTeaser";
 import { ConfessionCard } from "@/components/confession/ConfessionCard";
 import { mockConfessions } from "@/lib/mockData";
 
@@ -22,7 +24,9 @@ export default function HomePage() {
       </section>
 
       <RankTeaser />
+      <GolgeTeaser />
       <PlusTeaser />
+      <SafetyTeaser />
     </Container>
   );
 }

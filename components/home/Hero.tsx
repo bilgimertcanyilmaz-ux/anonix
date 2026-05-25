@@ -19,12 +19,16 @@ export function Hero() {
       </p>
 
       <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-        <LinkButton href="/confessions" variant="primary" className="w-full sm:w-auto">
+        <LinkButton href="/register" variant="primary" className="w-full sm:w-auto">
+          Hemen Katıl
+        </LinkButton>
+        <LinkButton href="/confessions" variant="ghost" className="w-full sm:w-auto">
           <CompassIcon className="h-4 w-4" />
           İtirafları Keşfet
         </LinkButton>
-        <LinkButton href="/register" variant="ghost" className="w-full sm:w-auto">
-          Hemen Katıl
+        <LinkButton href="/plus" variant="ghost" className="w-full sm:w-auto">
+          <SparkIcon className="h-4 w-4" />
+          Plus'ı İncele
         </LinkButton>
       </div>
     </section>
