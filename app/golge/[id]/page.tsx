@@ -10,6 +10,7 @@ import { GolgeImage } from "@/components/golge/GolgeImage";
 import { GolgeLikeButton } from "@/components/golge/GolgeLikeButton";
 import { MessageButton } from "@/components/messages/MessageButton";
 import { ReportButton } from "@/components/moderation/ReportButton";
+import { ShareButton } from "@/components/viral/ShareButton";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/components/ui/ToastProvider";
@@ -191,7 +192,8 @@ export default function GolgeDetailPage() {
             </div>
             <MessageButton confessionId={null} authorId={post.user_id} />
           </div>
-          <div className="mt-3 flex justify-end">
+          <div className="mt-3 flex items-center justify-between">
+            <ShareButton type="golge" id={post.id} text={post.overlay_text || post.caption || "Gölge"} mood={post.mood_tag} />
             <ReportButton entityType="golge" entityId={post.id} reportedUserId={post.user_id} />
           </div>
         </div>

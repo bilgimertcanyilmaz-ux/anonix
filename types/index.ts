@@ -62,6 +62,11 @@ export interface Profile {
   plus_expires_at: string | null;
   subscription_type: string | null;
   iyzico_customer_id: string | null;
+  streak_count: number;
+  last_active_date: string | null;
+  longest_streak: number;
+  referral_code: string | null;
+  referred_by: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -73,6 +78,7 @@ export interface SignUpData {
   password: string;
   gender: Gender;
   isAnonymous: boolean;
+  referralCode?: string | null;
 }
 
 /** İtiraf/yorum kartlarında gösterilen yazar bilgisi (profiles ilişkisinden). */
@@ -271,6 +277,23 @@ export interface Subscription {
   expires_at: string | null;
   created_at: string;
   updated_at: string;
+}
+
+/** Supabase `referrals` tablosundaki davet kaydı. */
+export interface Referral {
+  id: string;
+  referrer_id: string | null;
+  referred_user_id: string | null;
+  referral_code: string;
+  created_at: string;
+}
+
+/** Supabase `push_subscriptions` tablosundaki abonelik. */
+export interface PushSubscription {
+  id: string;
+  user_id: string;
+  endpoint: string;
+  created_at: string;
 }
 
 /** Supabase `launch_checklist` tablosundaki madde. */

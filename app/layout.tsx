@@ -5,6 +5,7 @@ import { AuthProvider } from "@/components/auth/AuthProvider";
 import { ToastProvider } from "@/components/ui/ToastProvider";
 import { UnreadProvider } from "@/components/messages/UnreadProvider";
 import { NotifProvider } from "@/components/notifications/NotifProvider";
+import { StreakTracker } from "@/components/streaks/StreakTracker";
 import { Navbar } from "@/components/layout/Navbar";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { Footer } from "@/components/layout/Footer";
@@ -61,6 +62,7 @@ export default function RootLayout({
           <ToastProvider>
             <UnreadProvider>
               <NotifProvider>
+                <StreakTracker />
                 <Navbar />
                 <main className="pt-6">{children}</main>
                 <Footer />

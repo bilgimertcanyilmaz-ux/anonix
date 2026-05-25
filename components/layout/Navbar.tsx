@@ -45,6 +45,20 @@ export function Navbar() {
             Gölge
           </Link>
           <Link
+            href="/leaderboard"
+            className="hidden rounded-full px-3 py-1.5 text-sm font-semibold text-slate-300 transition-colors hover:text-white lg:inline-flex"
+          >
+            Liderlik
+          </Link>
+          {user && (
+            <Link
+              href="/for-you"
+              className="hidden rounded-full px-3 py-1.5 text-sm font-semibold text-slate-300 transition-colors hover:text-white lg:inline-flex"
+            >
+              Sana Özel
+            </Link>
+          )}
+          <Link
             href="/confessions/new"
             className="hidden rounded-full px-3 py-1.5 text-sm font-semibold text-slate-300 transition-colors hover:text-white sm:inline-flex"
           >

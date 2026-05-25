@@ -20,6 +20,7 @@ export default function ProfilePage() {
   const [toggling, setToggling] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [badges, setBadges] = useState<UserBadge[]>([]);
+  const [referralCount, setReferralCount] = useState(0);
 
   // Giriş yapmamış kullanıcıyı login'e yönlendir.
   useEffect(() => {
@@ -36,6 +37,12 @@ export default function ProfilePage() {
       .eq("user_id", user.id)
       .order("earned_at", { ascending: false });
     setBadges((data as UserBadge[]) ?? []);
+
+    const { count } = await supabase
+      .from("referrals")
+      .select("id", { count: "exact", head: true })
+      .eq("referrer_id", user.id);
+    setReferralCount(count ?? 0);
   }, [user]);
 
   useEffect(() => {
@@ -154,6 +161,22 @@ export default function ProfilePage() {
             </div>
           );
         })()}
+
+        {/* Streak + davet istatistikleri */}
+        <div className="grid grid-cols-3 gap-3">
+          <div className="card p-4 text-center">
+            <p className="text-2xl font-extrabold text-white">🔥 {profile.streak_count}</p>
+            <p className="text-[11px] text-slate-400">Günlük streak</p>
+          </div>
+          <div className="card p-4 text-center">
+            <p className="text-2xl font-extrabold text-white">{profile.longest_streak}</p>
+            <p className="text-[11px] text-slate-400">En uzun streak</p>
+          </div>
+          <Link href="/invite" className="card card-hover p-4 text-center">
+            <p className="text-2xl font-extrabold text-white">🎁 {referralCount}</p>
+            <p className="text-[11px] text-slate-400">Davet · davet et →</p>
+          </Link>
+        </div>
 
         {/* Rozetler */}
         <div className="card p-5">

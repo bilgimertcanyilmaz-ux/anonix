@@ -9,6 +9,7 @@ import { AuthorBadge } from "@/components/confession/AuthorBadge";
 import { LikeButton } from "@/components/confession/LikeButton";
 import { MessageButton } from "@/components/messages/MessageButton";
 import { ReportButton } from "@/components/moderation/ReportButton";
+import { ShareButton } from "@/components/viral/ShareButton";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/components/ui/ToastProvider";
@@ -188,7 +189,8 @@ export default function ConfessionDetailPage() {
             </div>
             <MessageButton confessionId={confession.id} authorId={confession.user_id} />
           </div>
-          <div className="mt-3 flex justify-end">
+          <div className="mt-3 flex items-center justify-between">
+            <ShareButton type="confession" id={confession.id} text={confession.content} mood={confession.mood_tag} />
             <ReportButton
               entityType="confession"
               entityId={confession.id}

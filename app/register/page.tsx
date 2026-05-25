@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AuthShell } from "@/components/auth/AuthShell";
@@ -25,6 +25,13 @@ export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [referralCode, setReferralCode] = useState<string | null>(null);
+
+  // Davet kodunu URL'den al (?ref=CODE)
+  useEffect(() => {
+    const ref = new URLSearchParams(window.location.search).get("ref");
+    if (ref) setReferralCode(ref);
+  }, []);
 
   function validate(): string | null {
     if (username.trim().length < 3)
@@ -55,6 +62,7 @@ export default function RegisterPage() {
       password,
       gender,
       isAnonymous,
+      referralCode,
     });
     setLoading(false);
 
@@ -89,6 +97,11 @@ export default function RegisterPage() {
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && <Alert tone="error">{error}</Alert>}
         {success && <Alert tone="success">{success}</Alert>}
+        {referralCode && !success && (
+          <Alert tone="info">
+            🎁 Davetle geldin! İlk itirafından sonra +100 puan kazanacaksın.
+          </Alert>
+        )}
 
         <Input
           id="username"

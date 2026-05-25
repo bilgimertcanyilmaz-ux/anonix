@@ -22,6 +22,7 @@ export default function NewConfessionPage() {
   const [content, setContent] = useState("");
   const [mood, setMood] = useState<string | null>(null);
   const [isAnonymous, setIsAnonymous] = useState(true);
+  const [isTemporary, setIsTemporary] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -69,6 +70,8 @@ export default function NewConfessionPage() {
         content: text,
         mood_tag: mood,
         is_anonymous: isAnonymous,
+        is_temporary: isTemporary,
+        expires_at: isTemporary ? new Date(Date.now() + 24 * 3600 * 1000).toISOString() : null,
       })
       .select("id")
       .single();
@@ -167,6 +170,33 @@ export default function NewConfessionPage() {
               <span
                 className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${
                   isAnonymous ? "translate-x-[22px]" : "translate-x-0.5"
+                }`}
+              />
+            </span>
+          </button>
+
+          {/* Kaybolan itiraf toggle */}
+          <button
+            type="button"
+            onClick={() => setIsTemporary((v) => !v)}
+            className="flex w-full items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left"
+          >
+            <span>
+              <span className="block text-sm font-medium text-white">⏳ 24 saatte kaybol</span>
+              <span className="block text-xs text-slate-400">
+                {isTemporary
+                  ? "İtirafın 24 saat sonra otomatik silinecek."
+                  : "Kalıcı paylaşım."}
+              </span>
+            </span>
+            <span
+              className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${
+                isTemporary ? "bg-brand-500" : "bg-white/15"
+              }`}
+            >
+              <span
+                className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${
+                  isTemporary ? "translate-x-[22px]" : "translate-x-0.5"
                 }`}
               />
             </span>

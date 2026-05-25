@@ -25,6 +25,8 @@ export const siteConfig = {
     { href: "/terms", label: "Kullanım Şartları" },
     { href: "/safety", label: "Güvenlik" },
     { href: "/contact", label: "İletişim" },
+    { href: "/leaderboard", label: "Liderlik" },
+    { href: "/invite", label: "Davet Et" },
     { href: "/plus", label: "Plus" },
   ],
 };
