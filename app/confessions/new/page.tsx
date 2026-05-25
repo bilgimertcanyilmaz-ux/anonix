@@ -9,13 +9,14 @@ import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/components/ui/ToastProvider";
 import { moodTags } from "@/lib/moods";
+import { moderateText, MODERATION_BLOCK_MESSAGE } from "@/lib/moderation";
 
 const MIN = 10;
 const MAX = 1000;
 
 export default function NewConfessionPage() {
   const router = useRouter();
-  const { user, loading: authLoading, refreshProfile } = useAuth();
+  const { user, profile, loading: authLoading, refreshProfile } = useAuth();
   const { success, error: toastError } = useToast();
 
   const [content, setContent] = useState("");
@@ -41,6 +42,11 @@ export default function NewConfessionPage() {
     e.preventDefault();
     setError(null);
 
+    if (profile?.is_banned) {
+      setError("Hesabınız topluluk kuralları nedeniyle kısıtlanmıştır.");
+      return;
+    }
+
     const text = content.trim();
     if (text.length < MIN) {
       setError(`İtiraf en az ${MIN} karakter olmalı.`);
@@ -48,6 +54,10 @@ export default function NewConfessionPage() {
     }
     if (text.length > MAX) {
       setError(`İtiraf en fazla ${MAX} karakter olabilir.`);
+      return;
+    }
+    if (!moderateText(text).allowed) {
+      setError(MODERATION_BLOCK_MESSAGE);
       return;
     }
 

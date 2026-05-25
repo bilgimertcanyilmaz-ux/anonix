@@ -9,11 +9,13 @@ import { AuthorBadge } from "@/components/confession/AuthorBadge";
 import { GolgeImage } from "@/components/golge/GolgeImage";
 import { GolgeLikeButton } from "@/components/golge/GolgeLikeButton";
 import { MessageButton } from "@/components/messages/MessageButton";
+import { ReportButton } from "@/components/moderation/ReportButton";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/components/ui/ToastProvider";
 import { moodEmoji } from "@/lib/moods";
 import { timeAgo } from "@/lib/format";
+import { moderateText, MODERATION_BLOCK_MESSAGE } from "@/lib/moderation";
 import type { GolgePost, GolgeComment } from "@/types";
 
 const MIN = 2;
@@ -24,7 +26,7 @@ export default function GolgeDetailPage() {
   const router = useRouter();
   const id = String(params.id);
 
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { success, error: toastError } = useToast();
 
   const [post, setPost] = useState<GolgePost | null>(null);
@@ -84,6 +86,10 @@ export default function GolgeDetailPage() {
       router.push("/login");
       return;
     }
+    if (profile?.is_banned) {
+      toastError("Hesabınız topluluk kuralları nedeniyle kısıtlanmıştır.");
+      return;
+    }
     const text = commentText.trim();
     if (text.length < MIN) {
       setCommentError(`Yorum en az ${MIN} karakter olmalı.`);
@@ -91,6 +97,10 @@ export default function GolgeDetailPage() {
     }
     if (text.length > MAX) {
       setCommentError(`Yorum en fazla ${MAX} karakter olabilir.`);
+      return;
+    }
+    if (!moderateText(text).allowed) {
+      setCommentError(MODERATION_BLOCK_MESSAGE);
       return;
     }
 
@@ -181,6 +191,9 @@ export default function GolgeDetailPage() {
             </div>
             <MessageButton confessionId={null} authorId={post.user_id} />
           </div>
+          <div className="mt-3 flex justify-end">
+            <ReportButton entityType="golge" entityId={post.id} reportedUserId={post.user_id} />
+          </div>
         </div>
 
         {/* Yorum ekleme */}
@@ -218,12 +231,20 @@ export default function GolgeDetailPage() {
           ) : (
             comments.map((c) => (
               <div key={c.id} className="card p-4">
-                <AuthorBadge
-                  anonymous={true}
-                  author={c.profiles}
-                  subtitle={timeAgo(c.created_at)}
-                  size="sm"
-                />
+                <div className="flex items-start justify-between gap-2">
+                  <AuthorBadge
+                    anonymous={true}
+                    author={c.profiles}
+                    subtitle={timeAgo(c.created_at)}
+                    size="sm"
+                  />
+                  <ReportButton
+                    entityType="golge_comment"
+                    entityId={c.id}
+                    reportedUserId={c.user_id}
+                    compact
+                  />
+                </div>
                 <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-slate-200">
                   {c.content}
                 </p>

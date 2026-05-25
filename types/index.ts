@@ -56,6 +56,9 @@ export interface Profile {
   is_plus: boolean;
   points: number;
   rank: string;
+  role: string;
+  is_banned: boolean;
+  banned_reason: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -212,4 +215,40 @@ export interface UserBadge {
   badge_id: string;
   earned_at: string;
   badges?: Badge | null;
+}
+
+/** Supabase `reports` tablosundaki şikayet. */
+export interface Report {
+  id: string;
+  reporter_id: string | null;
+  reported_user_id: string | null;
+  entity_type: string;
+  entity_id: string;
+  reason: string;
+  description: string | null;
+  status: string;
+  created_at: string;
+  reviewed_at: string | null;
+  reviewed_by: string | null;
+}
+
+/** Supabase `moderation_logs` tablosundaki kayıt. */
+export interface ModerationLog {
+  id: string;
+  admin_id: string | null;
+  target_user_id: string | null;
+  entity_type: string | null;
+  entity_id: string | null;
+  action: string;
+  reason: string | null;
+  created_at: string;
+}
+
+/** Supabase `banned_words` tablosundaki yasaklı kelime. */
+export interface BannedWord {
+  id: string;
+  word: string;
+  severity: string;
+  is_active: boolean;
+  created_at: string;
 }

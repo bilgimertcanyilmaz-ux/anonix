@@ -12,12 +12,13 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/components/ui/ToastProvider";
 import { moodTags } from "@/lib/moods";
 import { overlayPositions, overlayStyles, packOverlay } from "@/lib/golge";
+import { moderateText, MODERATION_BLOCK_MESSAGE } from "@/lib/moderation";
 
 const MAX_BYTES = 10 * 1024 * 1024; // 10MB
 
 export default function NewGolgePage() {
   const router = useRouter();
-  const { user, loading: authLoading, refreshProfile } = useAuth();
+  const { user, profile, loading: authLoading, refreshProfile } = useAuth();
   const { success, error: toastError } = useToast();
 
   const [file, setFile] = useState<File | null>(null);
@@ -76,6 +77,14 @@ export default function NewGolgePage() {
       return;
     }
     if (!user) return;
+    if (profile?.is_banned) {
+      setError("Hesabınız topluluk kuralları nedeniyle kısıtlanmıştır.");
+      return;
+    }
+    if (!moderateText(`${overlayText} ${caption}`).allowed) {
+      setError(MODERATION_BLOCK_MESSAGE);
+      return;
+    }
 
     setUploading(true);
 

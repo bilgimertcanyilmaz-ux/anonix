@@ -10,7 +10,7 @@ import { useNotif } from "@/components/notifications/NotifProvider";
 /** Üst navigasyon çubuğu (yapışkan, cam efektli). Oturum durumuna göre değişir. */
 export function Navbar() {
   const router = useRouter();
-  const { user, loading, signOut } = useAuth();
+  const { user, profile, loading, signOut } = useAuth();
   const { unreadCount } = useUnread();
   const { unreadCount: notifCount } = useNotif();
 
@@ -87,6 +87,14 @@ export function Navbar() {
                   </span>
                 )}
               </Link>
+              {profile?.role === "admin" && (
+                <Link
+                  href="/admin"
+                  className="hidden rounded-full bg-brand-500/15 px-3 py-1.5 text-sm font-semibold text-brand-200 transition-colors hover:bg-brand-500/25 sm:inline-flex"
+                >
+                  Admin
+                </Link>
+              )}
               <Link
                 href="/profile"
                 className="rounded-full bg-white/5 px-4 py-1.5 text-sm font-semibold text-slate-200 transition-colors hover:bg-white/10"

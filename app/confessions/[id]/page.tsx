@@ -8,11 +8,13 @@ import { Alert } from "@/components/ui/Alert";
 import { AuthorBadge } from "@/components/confession/AuthorBadge";
 import { LikeButton } from "@/components/confession/LikeButton";
 import { MessageButton } from "@/components/messages/MessageButton";
+import { ReportButton } from "@/components/moderation/ReportButton";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/components/ui/ToastProvider";
 import { moodEmoji } from "@/lib/moods";
 import { timeAgo } from "@/lib/format";
+import { moderateText, MODERATION_BLOCK_MESSAGE } from "@/lib/moderation";
 import type { ConfessionRecord, CommentRecord } from "@/types";
 
 const MIN = 2;
@@ -23,7 +25,7 @@ export default function ConfessionDetailPage() {
   const router = useRouter();
   const id = String(params.id);
 
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { success, error: toastError } = useToast();
 
   const [confession, setConfession] = useState<ConfessionRecord | null>(null);
@@ -85,6 +87,10 @@ export default function ConfessionDetailPage() {
       router.push("/login");
       return;
     }
+    if (profile?.is_banned) {
+      toastError("Hesabınız topluluk kuralları nedeniyle kısıtlanmıştır.");
+      return;
+    }
 
     const text = commentText.trim();
     if (text.length < MIN) {
@@ -93,6 +99,10 @@ export default function ConfessionDetailPage() {
     }
     if (text.length > MAX) {
       setCommentError(`Yorum en fazla ${MAX} karakter olabilir.`);
+      return;
+    }
+    if (!moderateText(text).allowed) {
+      setCommentError(MODERATION_BLOCK_MESSAGE);
       return;
     }
 
@@ -178,6 +188,13 @@ export default function ConfessionDetailPage() {
             </div>
             <MessageButton confessionId={confession.id} authorId={confession.user_id} />
           </div>
+          <div className="mt-3 flex justify-end">
+            <ReportButton
+              entityType="confession"
+              entityId={confession.id}
+              reportedUserId={confession.user_id}
+            />
+          </div>
         </article>
 
         {/* Yorum ekleme */}
@@ -217,12 +234,20 @@ export default function ConfessionDetailPage() {
           ) : (
             comments.map((c) => (
               <div key={c.id} className="card p-4">
-                <AuthorBadge
-                  anonymous={c.is_anonymous}
-                  author={c.profiles}
-                  subtitle={timeAgo(c.created_at)}
-                  size="sm"
-                />
+                <div className="flex items-start justify-between gap-2">
+                  <AuthorBadge
+                    anonymous={c.is_anonymous}
+                    author={c.profiles}
+                    subtitle={timeAgo(c.created_at)}
+                    size="sm"
+                  />
+                  <ReportButton
+                    entityType="confession_comment"
+                    entityId={c.id}
+                    reportedUserId={c.user_id}
+                    compact
+                  />
+                </div>
                 <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-slate-200">
                   {c.content}
                 </p>

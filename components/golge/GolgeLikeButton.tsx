@@ -15,7 +15,7 @@ interface GolgeLikeButtonProps {
 
 export function GolgeLikeButton({ postId, initialLiked, initialCount }: GolgeLikeButtonProps) {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { error: toastError } = useToast();
 
   const [liked, setLiked] = useState(initialLiked);
@@ -29,6 +29,10 @@ export function GolgeLikeButton({ postId, initialLiked, initialCount }: GolgeLik
     if (!user) {
       toastError("Beğenmek için giriş yapmalısın.");
       router.push("/login");
+      return;
+    }
+    if (profile?.is_banned) {
+      toastError("Hesabınız topluluk kuralları nedeniyle kısıtlanmıştır.");
       return;
     }
     if (busy) return;

@@ -129,6 +129,10 @@ export default function ConversationPage() {
       toastError(`Mesaj en fazla ${MAX} karakter olabilir.`);
       return;
     }
+    if (profile?.is_banned) {
+      toastError("Hesabınız topluluk kuralları nedeniyle kısıtlanmıştır.");
+      return;
+    }
     if (!profile?.is_plus) {
       toastError("Mesaj göndermek için Plus üye olmalısınız.");
       return;
