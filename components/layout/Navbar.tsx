@@ -29,6 +29,18 @@ export function Navbar() {
 
         <div className="flex items-center gap-2">
           <Link
+            href="/confessions"
+            className="hidden rounded-full px-3 py-1.5 text-sm font-semibold text-slate-300 transition-colors hover:text-white sm:inline-flex"
+          >
+            Keşfet
+          </Link>
+          <Link
+            href="/confessions/new"
+            className="hidden rounded-full px-3 py-1.5 text-sm font-semibold text-slate-300 transition-colors hover:text-white sm:inline-flex"
+          >
+            İtiraf Yaz
+          </Link>
+          <Link
             href="/plus"
             className="hidden items-center gap-1.5 rounded-full border border-brand-500/40 bg-brand-500/10 px-3 py-1.5 text-xs font-semibold text-brand-200 transition-colors hover:bg-brand-500/20 sm:inline-flex"
           >

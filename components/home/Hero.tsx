@@ -19,7 +19,7 @@ export function Hero() {
       </p>
 
       <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-        <LinkButton href="/explore" variant="primary" className="w-full sm:w-auto">
+        <LinkButton href="/confessions" variant="primary" className="w-full sm:w-auto">
           <CompassIcon className="h-4 w-4" />
           İtirafları Keşfet
         </LinkButton>

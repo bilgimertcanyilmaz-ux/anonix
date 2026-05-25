@@ -68,3 +68,36 @@ export interface SignUpData {
   gender: Gender;
   isAnonymous: boolean;
 }
+
+/** İtiraf/yorum kartlarında gösterilen yazar bilgisi (profiles ilişkisinden). */
+export interface ConfessionAuthor {
+  username: string;
+  gender: Gender;
+  is_anonymous: boolean;
+}
+
+/** Supabase `confessions` tablosundaki bir itiraf kaydı. */
+export interface ConfessionRecord {
+  id: string;
+  user_id: string;
+  content: string;
+  mood_tag: string | null;
+  is_anonymous: boolean;
+  like_count: number;
+  comment_count: number;
+  created_at: string;
+  updated_at: string;
+  /** Embedded yazar (profiles ilişkisi). */
+  profiles?: ConfessionAuthor | null;
+}
+
+/** Supabase `confession_comments` tablosundaki bir yorum kaydı. */
+export interface CommentRecord {
+  id: string;
+  confession_id: string;
+  user_id: string;
+  content: string;
+  is_anonymous: boolean;
+  created_at: string;
+  profiles?: ConfessionAuthor | null;
+}

@@ -9,8 +9,8 @@ import {
 
 const items = [
   { href: "/", label: "Ana Sayfa", Icon: HomeIcon },
-  { href: "/explore", label: "Keşfet", Icon: CompassIcon },
-  { href: "/new", label: "İtiraf", Icon: PlusCircleIcon, highlight: true },
+  { href: "/confessions", label: "Keşfet", Icon: CompassIcon },
+  { href: "/confessions/new", label: "İtiraf Yaz", Icon: PlusCircleIcon, highlight: true },
   { href: "/messages", label: "Mesaj", Icon: ChatIcon },
   { href: "/profile", label: "Profil", Icon: UserIcon },
 ];
