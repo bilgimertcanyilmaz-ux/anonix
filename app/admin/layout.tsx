@@ -13,6 +13,7 @@ const navItems = [
   { href: "/admin/users", label: "Kullanıcılar" },
   { href: "/admin/moderation", label: "Moderasyon" },
   { href: "/admin/banned-words", label: "Yasaklı Kelimeler" },
+  { href: "/admin/launch-checklist", label: "Canlıya Hazırlık" },
 ];
 
 export default function AdminLayout({ children }: { children: ReactNode }) {

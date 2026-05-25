@@ -273,6 +273,18 @@ export interface Subscription {
   updated_at: string;
 }
 
+/** Supabase `launch_checklist` tablosundaki madde. */
+export interface LaunchChecklistItem {
+  id: string;
+  item_key: string;
+  title: string;
+  description: string | null;
+  category: string;
+  is_completed: boolean;
+  notes: string | null;
+  updated_at: string;
+}
+
 /** Supabase `payment_logs` tablosundaki ödeme kaydı. */
 export interface PaymentLog {
   id: string;
