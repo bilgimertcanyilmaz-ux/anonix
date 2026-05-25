@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/components/ui/ToastProvider";
-import { genderLabel } from "@/lib/profile";
+import { getGenderLabel } from "@/lib/gender";
 import type { Profile } from "@/types";
 
 export default function AdminUsersPage() {
@@ -106,7 +106,7 @@ export default function AdminUsersPage() {
                     )}
                   </div>
                   <p className="mt-0.5 text-xs text-slate-400">
-                    {genderLabel[p.gender]} · {p.rank} · {p.points.toLocaleString("tr-TR")} puan
+                    {getGenderLabel(p.gender)} · {p.rank} · {p.points.toLocaleString("tr-TR")} puan
                   </p>
                 </div>
               </div>

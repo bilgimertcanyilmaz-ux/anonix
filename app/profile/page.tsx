@@ -8,7 +8,8 @@ import { Alert } from "@/components/ui/Alert";
 import { Button, LinkButton } from "@/components/ui/Button";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { supabase } from "@/lib/supabaseClient";
-import { genderFrameClass, genderLabel, initialsOf } from "@/lib/profile";
+import { initialsOf } from "@/lib/profile";
+import { getGenderFrameClass, getGenderLabel, getGenderBadgeClass } from "@/lib/gender";
 import { rankIcon, rankTiers } from "@/lib/ranks";
 import { badgeIcon } from "@/lib/badges";
 import { CrownIcon } from "@/components/ui/icons";
@@ -89,7 +90,7 @@ export default function ProfilePage() {
           <div className="flex items-center gap-4">
             {/* Cinsiyete göre çerçeveli avatar */}
             <div
-              className={`flex h-20 w-20 items-center justify-center rounded-full p-[3px] ${genderFrameClass[profile.gender]} ${profile.is_plus ? "shadow-glow ring-2 ring-amber-300/70" : ""}`}
+              className={`flex h-20 w-20 items-center justify-center rounded-full p-[3px] ${getGenderFrameClass(profile.gender)} ${profile.is_plus ? "shadow-glow ring-2 ring-amber-300/70" : ""}`}
             >
               <div className="flex h-full w-full items-center justify-center rounded-full bg-ink-900 text-xl font-bold text-white">
                 {initialsOf(profile.username)}
@@ -108,7 +109,13 @@ export default function ProfilePage() {
                   </span>
                 )}
               </div>
-              <p className="mt-1 text-sm text-slate-400">{genderLabel[profile.gender]}</p>
+              <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                <span
+                  className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${getGenderBadgeClass(profile.gender)}`}
+                >
+                  {getGenderLabel(profile.gender)}
+                </span>
+              </div>
               <span
                 className={`mt-2 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${
                   profile.is_anonymous

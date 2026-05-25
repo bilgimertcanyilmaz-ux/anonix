@@ -7,13 +7,14 @@ import { Container } from "@/components/layout/Container";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { timeAgo } from "@/lib/format";
-import { MaskIcon } from "@/components/ui/icons";
-import type { Conversation } from "@/types";
+import { UserIdentity } from "@/components/UserIdentity";
+import type { Conversation, Gender } from "@/types";
 
 export default function MessagesPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [genderMap, setGenderMap] = useState<Record<string, Gender>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,7 +28,24 @@ export default function MessagesPage() {
       .from("conversations")
       .select("*, confessions(content, is_anonymous)")
       .order("updated_at", { ascending: false });
-    setConversations((data as Conversation[]) ?? []);
+    const convos = (data as Conversation[]) ?? [];
+    setConversations(convos);
+
+    // Karşı katılımcıların cinsiyetini çek (kimlik gizli kalır, cinsiyet her zaman görünür)
+    const otherIds = Array.from(
+      new Set(convos.map((c) => (c.sender_id === user.id ? c.receiver_id : c.sender_id)))
+    );
+    if (otherIds.length > 0) {
+      const { data: profs } = await supabase
+        .from("profiles")
+        .select("id, gender")
+        .in("id", otherIds);
+      const map: Record<string, Gender> = {};
+      (profs ?? []).forEach((p) => {
+        map[p.id as string] = p.gender as Gender;
+      });
+      setGenderMap(map);
+    }
     setLoading(false);
   }, [user]);
 
@@ -66,27 +84,26 @@ export default function MessagesPage() {
               const preview = c.confessions?.content
                 ? `İtiraf: ${c.confessions.content}`
                 : "Özel sohbet";
+              const otherId = c.sender_id === user.id ? c.receiver_id : c.sender_id;
               return (
                 <Link
                   key={c.id}
                   href={`/messages/${c.id}`}
                   className="card card-hover flex items-center gap-3 p-4"
                 >
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10 text-slate-300">
-                    <MaskIcon className="h-5 w-5" />
-                  </span>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="truncate text-sm font-semibold text-white">
-                        Anonim Kullanıcı
-                      </span>
+                      <UserIdentity
+                        gender={genderMap[otherId]}
+                        isAnonymous
+                        showGender
+                        showUsername={false}
+                      />
                       <span className="shrink-0 text-xs text-slate-500">
                         {timeAgo(c.updated_at)}
                       </span>
                     </div>
-                    <p className="mt-0.5 truncate text-xs text-slate-400">
-                      İtiraf: {preview}
-                    </p>
+                    <p className="mt-1 truncate text-xs text-slate-400">{preview}</p>
                   </div>
                 </Link>
               );

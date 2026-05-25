@@ -9,8 +9,8 @@ import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/components/ui/ToastProvider";
 import { useUnread } from "@/components/messages/UnreadProvider";
-import { MaskIcon } from "@/components/ui/icons";
-import type { Message, Conversation } from "@/types";
+import { UserIdentity } from "@/components/UserIdentity";
+import type { Message, Conversation, Gender } from "@/types";
 
 const MAX = 500;
 
@@ -25,6 +25,7 @@ export default function ConversationPage() {
 
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [otherGender, setOtherGender] = useState<Gender | null>(null);
   const [loading, setLoading] = useState(true);
   const [denied, setDenied] = useState(false);
 
@@ -72,6 +73,18 @@ export default function ConversationPage() {
       return;
     }
     setConversation(conv as Conversation);
+
+    // Karşı tarafın cinsiyeti (kimlik gizli, cinsiyet her zaman görünür)
+    const other =
+      (conv as Conversation).sender_id === user.id
+        ? (conv as Conversation).receiver_id
+        : (conv as Conversation).sender_id;
+    const { data: otherProfile } = await supabase
+      .from("profiles")
+      .select("gender")
+      .eq("id", other)
+      .maybeSingle();
+    setOtherGender(((otherProfile?.gender as Gender) ?? null));
 
     const { data: msgs } = await supabase
       .from("messages")
@@ -194,13 +207,13 @@ export default function ConversationPage() {
         <Link href="/messages" className="text-slate-400 hover:text-white">
           ←
         </Link>
-        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-slate-300">
-          <MaskIcon className="h-5 w-5" />
-        </span>
-        <div>
-          <p className="text-sm font-semibold text-white">Anonim Kullanıcı</p>
-          <p className="text-xs text-slate-500">Kimlik gizli</p>
-        </div>
+        <UserIdentity
+          gender={otherGender}
+          isAnonymous
+          showGender
+          showUsername={false}
+          subtitle="Kimlik gizli"
+        />
       </div>
 
       {/* Mesajlar */}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/Button";
@@ -30,6 +30,15 @@ export default function NewConfessionPage() {
   useEffect(() => {
     if (!authLoading && !user) router.replace("/login");
   }, [authLoading, user, router]);
+
+  // Varsayılan anonimlik = profil tercihi (kullanıcı yine de bu paylaşım için değiştirebilir).
+  const defaultedAnon = useRef(false);
+  useEffect(() => {
+    if (profile && !defaultedAnon.current) {
+      setIsAnonymous(profile.is_anonymous);
+      defaultedAnon.current = true;
+    }
+  }, [profile]);
 
   if (authLoading || !user) {
     return (

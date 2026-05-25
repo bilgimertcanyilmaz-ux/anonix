@@ -39,6 +39,15 @@ export default function NewGolgePage() {
     if (!authLoading && !user) router.replace("/login");
   }, [authLoading, user, router]);
 
+  // Varsayılan anonimlik = profil tercihi (bu paylaşım için yine değiştirilebilir).
+  const defaultedAnon = useRef(false);
+  useEffect(() => {
+    if (profile && !defaultedAnon.current) {
+      setIsAnonymous(profile.is_anonymous);
+      defaultedAnon.current = true;
+    }
+  }, [profile]);
+
   // ObjectURL temizliği
   useEffect(() => {
     return () => {

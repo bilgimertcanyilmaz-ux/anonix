@@ -3,6 +3,7 @@ import type { GolgePost } from "@/types";
 import { moodEmoji } from "@/lib/moods";
 import { GolgeImage } from "@/components/golge/GolgeImage";
 import { GolgeLikeButton } from "@/components/golge/GolgeLikeButton";
+import { UserIdentity } from "@/components/UserIdentity";
 import { ChatIcon } from "@/components/ui/icons";
 
 interface GolgeCardProps {
@@ -11,11 +12,6 @@ interface GolgeCardProps {
 }
 
 export function GolgeCard({ post, liked }: GolgeCardProps) {
-  const author =
-    !post.is_anonymous && post.profiles?.username
-      ? `@${post.profiles.username}`
-      : "Anonim Kullanıcı";
-
   return (
     <div className="group mb-3 break-inside-avoid">
       <div className="card overflow-hidden p-0 transition-transform duration-300 group-hover:-translate-y-0.5">
@@ -37,8 +33,15 @@ export function GolgeCard({ post, liked }: GolgeCardProps) {
         </Link>
 
         <div className="flex items-center justify-between gap-2 px-3 py-2.5">
-          <span className="truncate text-xs font-semibold text-slate-200">{author}</span>
-          <div className="flex items-center gap-3">
+          <UserIdentity
+            username={post.profiles?.username}
+            gender={post.profiles?.gender}
+            isAnonymous={post.is_anonymous}
+            size="sm"
+            showGender
+            showUsername
+          />
+          <div className="flex shrink-0 items-center gap-3">
             <GolgeLikeButton
               postId={post.id}
               initialLiked={liked}
