@@ -101,3 +101,26 @@ export interface CommentRecord {
   created_at: string;
   profiles?: ConfessionAuthor | null;
 }
+
+/** Supabase `conversations` tablosundaki bir konuşma. */
+export interface Conversation {
+  id: string;
+  confession_id: string | null;
+  sender_id: string;
+  receiver_id: string;
+  created_at: string;
+  updated_at: string;
+  /** Embedded itiraf önizlemesi. */
+  confessions?: { content: string; is_anonymous: boolean } | null;
+}
+
+/** Supabase `messages` tablosundaki bir mesaj. */
+export interface Message {
+  id: string;
+  conversation_id: string;
+  sender_id: string;
+  receiver_id: string;
+  content: string;
+  is_read: boolean;
+  created_at: string;
+}

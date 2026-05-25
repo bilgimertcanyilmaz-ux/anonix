@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "@/styles/globals.css";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { ToastProvider } from "@/components/ui/ToastProvider";
+import { UnreadProvider } from "@/components/messages/UnreadProvider";
 import { Navbar } from "@/components/layout/Navbar";
 import { BottomNav } from "@/components/layout/BottomNav";
 
@@ -36,10 +37,12 @@ export default function RootLayout({
       <body>
         <AuthProvider>
           <ToastProvider>
-            <Navbar />
-            {/* Alt boşluk: mobilde bottom-nav'ın içeriği örtmemesi için */}
-            <main className="pb-24 pt-6 md:pb-12">{children}</main>
-            <BottomNav />
+            <UnreadProvider>
+              <Navbar />
+              {/* Alt boşluk: mobilde bottom-nav'ın içeriği örtmemesi için */}
+              <main className="pb-24 pt-6 md:pb-12">{children}</main>
+              <BottomNav />
+            </UnreadProvider>
           </ToastProvider>
         </AuthProvider>
       </body>

@@ -2,13 +2,15 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { MaskIcon, SparkIcon } from "@/components/ui/icons";
+import { MaskIcon, SparkIcon, ChatIcon } from "@/components/ui/icons";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { useUnread } from "@/components/messages/UnreadProvider";
 
 /** Üst navigasyon çubuğu (yapışkan, cam efektli). Oturum durumuna göre değişir. */
 export function Navbar() {
   const router = useRouter();
   const { user, loading, signOut } = useAuth();
+  const { unreadCount } = useUnread();
 
   async function handleSignOut() {
     await signOut();
@@ -54,6 +56,18 @@ export function Navbar() {
           ) : user ? (
             <>
               <Link
+                href="/messages"
+                aria-label="Mesajlar"
+                className="relative rounded-full bg-white/5 p-2 text-slate-200 transition-colors hover:bg-white/10"
+              >
+                <ChatIcon className="h-5 w-5" />
+                {unreadCount > 0 && (
+                  <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-500 px-1 text-[10px] font-bold text-white">
+                    {unreadCount > 99 ? "99+" : unreadCount}
+                  </span>
+                )}
+              </Link>
+              <Link
                 href="/profile"
                 className="rounded-full bg-white/5 px-4 py-1.5 text-sm font-semibold text-slate-200 transition-colors hover:bg-white/10"
               >
@@ -61,7 +75,7 @@ export function Navbar() {
               </Link>
               <button
                 onClick={handleSignOut}
-                className="rounded-full bg-white/5 px-4 py-1.5 text-sm font-semibold text-slate-200 transition-colors hover:bg-white/10"
+                className="hidden rounded-full bg-white/5 px-4 py-1.5 text-sm font-semibold text-slate-200 transition-colors hover:bg-white/10 sm:inline-flex"
               >
                 Çıkış Yap
               </button>

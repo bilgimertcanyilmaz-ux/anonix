@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
 import { AuthorBadge } from "@/components/confession/AuthorBadge";
 import { LikeButton } from "@/components/confession/LikeButton";
+import { MessageButton } from "@/components/messages/MessageButton";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/components/ui/ToastProvider";
@@ -164,15 +165,18 @@ export default function ConfessionDetailPage() {
             {confession.content}
           </p>
 
-          <div className="mt-4 flex items-center gap-5 border-t border-white/5 pt-4">
-            <LikeButton
-              confessionId={confession.id}
-              initialLiked={liked}
-              initialCount={confession.like_count}
-            />
-            <span className="text-sm text-slate-400">
-              {confession.comment_count} yorum
-            </span>
+          <div className="mt-4 flex items-center justify-between gap-3 border-t border-white/5 pt-4">
+            <div className="flex items-center gap-5">
+              <LikeButton
+                confessionId={confession.id}
+                initialLiked={liked}
+                initialCount={confession.like_count}
+              />
+              <span className="text-sm text-slate-400">
+                {confession.comment_count} yorum
+              </span>
+            </div>
+            <MessageButton confessionId={confession.id} authorId={confession.user_id} />
           </div>
         </article>
 

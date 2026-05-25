@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Container } from "@/components/layout/Container";
 import { Alert } from "@/components/ui/Alert";
-import { Button } from "@/components/ui/Button";
+import { Button, LinkButton } from "@/components/ui/Button";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { genderFrameClass, genderLabel, initialsOf } from "@/lib/profile";
 import { CrownIcon, SparkIcon } from "@/components/ui/icons";
@@ -110,22 +110,23 @@ export default function ProfilePage() {
         </div>
 
         {/* Üyelik durumu */}
-        <div className="card flex items-center justify-between p-5">
+        <div className="card flex items-center justify-between gap-3 p-5">
           <div>
             <p className="text-sm font-semibold text-white">Plus üyelik</p>
             <p className="text-xs text-slate-400">
               {profile.is_plus ? "Aktif — tüm premium özellikler açık." : "Henüz aktif değil."}
             </p>
           </div>
-          <span
-            className={`rounded-full px-3 py-1 text-xs font-bold ${
-              profile.is_plus
-                ? "bg-brand-500/20 text-brand-200"
-                : "bg-white/10 text-slate-400"
-            }`}
-          >
-            {profile.is_plus ? "Aktif" : "Pasif"}
-          </span>
+          {profile.is_plus ? (
+            <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-300/20 to-brand-500/20 px-3 py-1 text-xs font-bold text-amber-200">
+              <CrownIcon className="h-3.5 w-3.5" />
+              Plus Üye
+            </span>
+          ) : (
+            <LinkButton href="/plus" className="!px-4 !py-2 text-xs">
+              Plus'a Geç
+            </LinkButton>
+          )}
         </div>
 
         {/* Anonimlik aç/kapat */}
