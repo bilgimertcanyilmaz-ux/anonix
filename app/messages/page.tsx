@@ -63,7 +63,9 @@ export default function MessagesPage() {
         ) : (
           <div className="space-y-3">
             {conversations.map((c) => {
-              const preview = c.confessions?.content ?? "İtiraf silinmiş";
+              const preview = c.confessions?.content
+                ? `İtiraf: ${c.confessions.content}`
+                : "Özel sohbet";
               return (
                 <Link
                   key={c.id}

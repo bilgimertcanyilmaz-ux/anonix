@@ -37,6 +37,12 @@ export function Navbar() {
             Keşfet
           </Link>
           <Link
+            href="/golge"
+            className="hidden rounded-full px-3 py-1.5 text-sm font-semibold text-slate-300 transition-colors hover:text-white sm:inline-flex"
+          >
+            Gölge
+          </Link>
+          <Link
             href="/confessions/new"
             className="hidden rounded-full px-3 py-1.5 text-sm font-semibold text-slate-300 transition-colors hover:text-white sm:inline-flex"
           >

@@ -124,3 +124,30 @@ export interface Message {
   is_read: boolean;
   created_at: string;
 }
+
+/** Supabase `golge_posts` tablosundaki fotoğraflı paylaşım. */
+export interface GolgePost {
+  id: string;
+  user_id: string;
+  image_url: string;
+  caption: string | null;
+  overlay_text: string | null;
+  overlay_style: string | null;
+  mood_tag: string | null;
+  is_anonymous: boolean;
+  like_count: number;
+  comment_count: number;
+  created_at: string;
+  updated_at: string;
+  profiles?: ConfessionAuthor | null;
+}
+
+/** Supabase `golge_comments` tablosundaki yorum. */
+export interface GolgeComment {
+  id: string;
+  golge_post_id: string;
+  user_id: string;
+  content: string;
+  created_at: string;
+  profiles?: ConfessionAuthor | null;
+}

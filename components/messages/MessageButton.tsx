@@ -8,7 +8,8 @@ import { useToast } from "@/components/ui/ToastProvider";
 import { ChatIcon } from "@/components/ui/icons";
 
 interface MessageButtonProps {
-  confessionId: string;
+  /** İtiraf id'si; Gölge gibi itiraf olmayan bağlamlarda null. */
+  confessionId?: string | null;
   authorId: string;
 }
 
@@ -37,13 +38,13 @@ export function MessageButton({ confessionId, authorId }: MessageButtonProps) {
     setBusy(true);
 
     // Var olan konuşmayı bul ya da oluştur
-    const { data: existing } = await supabase
+    let q = supabase
       .from("conversations")
       .select("id")
-      .eq("confession_id", confessionId)
       .eq("sender_id", user.id)
-      .eq("receiver_id", authorId)
-      .maybeSingle();
+      .eq("receiver_id", authorId);
+    q = confessionId ? q.eq("confession_id", confessionId) : q.is("confession_id", null);
+    const { data: existing } = await q.maybeSingle();
 
     let convId = existing?.id as string | undefined;
 
@@ -51,7 +52,7 @@ export function MessageButton({ confessionId, authorId }: MessageButtonProps) {
       const { data: created, error } = await supabase
         .from("conversations")
         .insert({
-          confession_id: confessionId,
+          confession_id: confessionId ?? null,
           sender_id: user.id,
           receiver_id: authorId,
         })

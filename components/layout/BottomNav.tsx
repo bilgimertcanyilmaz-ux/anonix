@@ -7,13 +7,15 @@ import {
   PlusCircleIcon,
   ChatIcon,
   UserIcon,
+  MoonIcon,
 } from "@/components/ui/icons";
 import { useUnread } from "@/components/messages/UnreadProvider";
 
 const items = [
-  { href: "/", label: "Ana Sayfa", Icon: HomeIcon },
+  { href: "/", label: "Ana", Icon: HomeIcon },
   { href: "/confessions", label: "Keşfet", Icon: CompassIcon },
-  { href: "/confessions/new", label: "İtiraf Yaz", Icon: PlusCircleIcon, highlight: true },
+  { href: "/golge", label: "Gölge", Icon: MoonIcon },
+  { href: "/confessions/new", label: "İtiraf", Icon: PlusCircleIcon, highlight: true },
   { href: "/messages", label: "Mesaj", Icon: ChatIcon, badge: true },
   { href: "/profile", label: "Profil", Icon: UserIcon },
 ];
@@ -30,7 +32,7 @@ export function BottomNav() {
             <Link
               href={href}
               aria-label={label}
-              className="flex flex-col items-center gap-1 px-3 py-1 text-[11px] font-medium text-slate-400 transition-colors hover:text-white"
+              className="flex flex-col items-center gap-1 px-2 py-1 text-[10px] font-medium text-slate-400 transition-colors hover:text-white"
             >
               {highlight ? (
                 <span className="-mt-5 flex h-12 w-12 items-center justify-center rounded-full bg-brand-gradient shadow-glow">
