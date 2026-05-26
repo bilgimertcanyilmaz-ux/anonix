@@ -13,3 +13,14 @@ export const genderOptions: { value: Gender; label: string }[] = [
 export function initialsOf(username: string): string {
   return username.slice(0, 2).toUpperCase();
 }
+
+/**
+ * Plus özelliklerini (örn. mesajlaşma) kullanabilir mi?
+ * Plus üyeler VEYA adminler abonelik olmadan tüm Plus özelliklerini kullanır.
+ * (Sunucu tarafı RLS de aynı kuralı uygular — bu yalnızca istemci UX kontrolü.)
+ */
+export function canUsePlusFeatures(
+  profile: { is_plus?: boolean | null; role?: string | null } | null | undefined
+): boolean {
+  return !!profile && (!!profile.is_plus || profile.role === "admin");
+}

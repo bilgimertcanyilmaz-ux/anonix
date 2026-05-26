@@ -9,6 +9,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/components/ui/ToastProvider";
 import { useUnread } from "@/components/messages/UnreadProvider";
+import { canUsePlusFeatures } from "@/lib/profile";
 import { UserIdentity } from "@/components/UserIdentity";
 import type { Message, Conversation, Gender } from "@/types";
 
@@ -146,7 +147,7 @@ export default function ConversationPage() {
       toastError("Hesabınız topluluk kuralları nedeniyle kısıtlanmıştır.");
       return;
     }
-    if (!profile?.is_plus) {
+    if (!canUsePlusFeatures(profile)) {
       toastError("Mesaj göndermek için Plus üye olmalısınız.");
       return;
     }

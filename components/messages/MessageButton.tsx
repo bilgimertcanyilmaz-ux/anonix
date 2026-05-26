@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/components/ui/ToastProvider";
+import { canUsePlusFeatures } from "@/lib/profile";
 import { ChatIcon } from "@/components/ui/icons";
 
 interface MessageButtonProps {
@@ -29,7 +30,7 @@ export function MessageButton({ confessionId, authorId }: MessageButtonProps) {
       router.push("/login");
       return;
     }
-    if (!profile?.is_plus) {
+    if (!canUsePlusFeatures(profile)) {
       toastError("Mesaj göndermek için Plus üye olmalısınız.");
       router.push("/plus");
       return;
