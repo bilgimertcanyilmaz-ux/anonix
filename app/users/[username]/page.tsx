@@ -51,7 +51,7 @@ export default function PublicProfilePage() {
     if (!p.is_anonymous) {
       const { data: confs } = await supabase
         .from("confessions")
-        .select("*, profiles(username, gender, is_anonymous)")
+        .select("*, profiles(username, gender, is_anonymous, avatar_url)")
         .eq("user_id", p.id)
         .eq("is_anonymous", false)
         .or(nonExpiredFilter())

@@ -8,12 +8,14 @@ import { Alert } from "@/components/ui/Alert";
 import { Button, LinkButton } from "@/components/ui/Button";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { supabase } from "@/lib/supabaseClient";
-import { initialsOf } from "@/lib/profile";
-import { getGenderFrameClass, getGenderLabel, getGenderBadgeClass } from "@/lib/gender";
-import { rankIcon, rankTiers } from "@/lib/ranks";
+import { rankIcon, getNextRank, getRankProgress, getRemainingXP } from "@/lib/ranks";
 import { getFollowCounts, type FollowCounts } from "@/lib/follows";
 import { badgeIcon } from "@/lib/badges";
 import { CrownIcon } from "@/components/ui/icons";
+import { ProfileFrame } from "@/components/profile/ProfileFrame";
+import { GenderBadge } from "@/components/profile/GenderBadge";
+import { ProfileSetup } from "@/components/profile/ProfileSetup";
+import { AvatarPicker } from "@/components/profile/AvatarPicker";
 import type { UserBadge } from "@/types";
 
 export default function ProfilePage() {
@@ -24,6 +26,7 @@ export default function ProfilePage() {
   const [badges, setBadges] = useState<UserBadge[]>([]);
   const [referralCount, setReferralCount] = useState(0);
   const [followCounts, setFollowCounts] = useState<FollowCounts>({ followers: 0, following: 0 });
+  const [barReady, setBarReady] = useState(false);
 
   // Giriş yapmamış kullanıcıyı login'e yönlendir.
   useEffect(() => {
@@ -54,6 +57,12 @@ export default function ProfilePage() {
     if (user) loadBadges();
   }, [user, loadBadges]);
 
+  // XP barını mount sonrası 0'dan hedefe doğru animasyonla doldur
+  useEffect(() => {
+    const t = setTimeout(() => setBarReady(true), 150);
+    return () => clearTimeout(t);
+  }, []);
+
   if (loading || !user) {
     return (
       <Container>
@@ -62,12 +71,11 @@ export default function ProfilePage() {
     );
   }
 
+  // Giriş yapılmış ama profil kaydı yoksa: onboarding (profil oluşturma) ekranı.
   if (!profile) {
     return (
       <Container>
-        <div className="py-20 text-center text-sm text-slate-400">
-          Profil bilgilerin yükleniyor... Sorun sürerse çıkış yapıp tekrar giriş yap.
-        </div>
+        <ProfileSetup />
       </Container>
     );
   }
@@ -93,13 +101,13 @@ export default function ProfilePage() {
         <div className="card animate-fade-up p-6">
           <div className="flex items-center gap-4">
             {/* Cinsiyete göre çerçeveli avatar */}
-            <div
-              className={`flex h-20 w-20 items-center justify-center rounded-full p-[3px] ${getGenderFrameClass(profile.gender)} ${profile.is_plus ? "shadow-glow ring-2 ring-amber-300/70" : ""}`}
-            >
-              <div className="flex h-full w-full items-center justify-center rounded-full bg-ink-900 text-xl font-bold text-white">
-                {initialsOf(profile.username)}
-              </div>
-            </div>
+            <ProfileFrame
+              gender={profile.gender}
+              username={profile.username}
+              avatarUrl={profile.avatar_url}
+              isPlus={profile.is_plus}
+              size="lg"
+            />
 
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
@@ -114,11 +122,7 @@ export default function ProfilePage() {
                 )}
               </div>
               <div className="mt-1.5 flex flex-wrap items-center gap-2">
-                <span
-                  className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${getGenderBadgeClass(profile.gender)}`}
-                >
-                  {getGenderLabel(profile.gender)}
-                </span>
+                <GenderBadge gender={profile.gender} />
               </div>
               <div className="mt-2 flex items-center gap-4 text-xs text-slate-400">
                 <Link href="/profile/followers" className="transition-colors hover:text-white">
@@ -141,45 +145,52 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Puan & rütbe — dikkat çekici hero */}
+        {/* XP & rütbe — dikkat çekici hero */}
         {(() => {
-          const tiers = rankTiers;
-          const idx = tiers.findIndex((t) => t.rank === profile.rank);
-          const next = idx >= 0 && idx < tiers.length - 1 ? tiers[idx + 1] : null;
-          const curMin = idx >= 0 ? tiers[idx].min : 0;
-          const pct = next
-            ? Math.min(100, Math.round(((profile.points - curMin) / (next.min - curMin)) * 100))
-            : 100;
+          const next = getNextRank(profile.points);
+          const pct = getRankProgress(profile.points);
+          const remaining = getRemainingXP(profile.points);
           return (
             <div className="relative overflow-hidden rounded-3xl border border-brand-500/30 bg-gradient-to-br from-brand-600 via-brand-800 to-ink-900 p-6 shadow-glow">
               <div className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full bg-brand-400/20 blur-3xl" />
               <div className="relative flex items-center gap-4">
-                <span className="text-5xl">{rankIcon(profile.rank)}</span>
+                <span className="animate-float text-5xl">{rankIcon(profile.rank)}</span>
                 <div className="flex-1">
                   <p className="text-xs uppercase tracking-wider text-white/60">Rütbe</p>
                   <p className="text-2xl font-extrabold text-white">{profile.rank}</p>
                   <p className="mt-0.5 text-sm font-semibold text-amber-200">
-                    {profile.points.toLocaleString("tr-TR")} puan
+                    {profile.points.toLocaleString("tr-TR")} XP
                   </p>
                 </div>
               </div>
-              {next && (
-                <div className="relative mt-4">
-                  <div className="h-2 overflow-hidden rounded-full bg-black/30">
-                    <div
-                      className="h-full rounded-full bg-gradient-to-r from-amber-300 to-amber-500 transition-all duration-700"
-                      style={{ width: `${pct}%` }}
-                    />
-                  </div>
-                  <p className="mt-1.5 text-xs text-white/60">
-                    Sonraki: {next.icon} {next.rank} ·{" "}
-                    {(next.min - profile.points).toLocaleString("tr-TR")} puan kaldı
-                  </p>
+
+              <div className="relative mt-4">
+                <div className="mb-1.5 flex items-center justify-between text-xs text-white/70">
+                  <span>{rankIcon(profile.rank)} {profile.rank}</span>
+                  {next ? (
+                    <span>{next.icon} {next.rank}</span>
+                  ) : (
+                    <span>En üst rütbe 🏆</span>
+                  )}
                 </div>
-              )}
+                <div className="h-2.5 overflow-hidden rounded-full bg-black/30">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-amber-300 to-amber-500 transition-all duration-[1200ms] ease-out"
+                    style={{ width: `${barReady ? pct : 0}%` }}
+                  />
+                </div>
+                <p className="mt-1.5 text-xs text-white/60">
+                  {next
+                    ? `Sonraki rütbeye ${remaining.toLocaleString("tr-TR")} XP kaldı (%${pct})`
+                    : "Tüm rütbeleri tamamladın!"}
+                </p>
+              </div>
             </div>
           );
         })()}
+
+        {/* Avatar seçimi */}
+        <AvatarPicker />
 
         {/* Streak + davet istatistikleri */}
         <div className="grid grid-cols-3 gap-3">

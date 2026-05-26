@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "@/styles/globals.css";
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { ToastProvider } from "@/components/ui/ToastProvider";
 import { UnreadProvider } from "@/components/messages/UnreadProvider";
@@ -56,23 +57,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="tr" className={inter.variable}>
+    <html lang="tr" className={inter.variable} suppressHydrationWarning>
       <body>
-        <AuthProvider>
-          <ToastProvider>
-            <UnreadProvider>
-              <NotifProvider>
-                <StreakTracker />
-                <Navbar />
-                <main className="pt-6">{children}</main>
-                <Footer />
-                {/* Alt boşluk: mobilde bottom-nav'ın içeriği örtmemesi için */}
-                <div className="h-20 md:hidden" />
-                <BottomNav />
-              </NotifProvider>
-            </UnreadProvider>
-          </ToastProvider>
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <ToastProvider>
+              <UnreadProvider>
+                <NotifProvider>
+                  <StreakTracker />
+                  <Navbar />
+                  <main className="pt-6">{children}</main>
+                  <Footer />
+                  {/* Alt boşluk: mobilde bottom-nav'ın içeriği örtmemesi için */}
+                  <div className="h-20 md:hidden" />
+                  <BottomNav />
+                </NotifProvider>
+              </UnreadProvider>
+            </ToastProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -5,6 +5,9 @@
 :root {
   color-scheme: dark;
 }
+:root.light {
+  color-scheme: light;
+}
 
 @layer base {
   html {
@@ -57,7 +60,66 @@
   }
 }
 
-/* İnce, koyu temaya uygun scrollbar */
+/* =====================================================================
+   AYDINLIK TEMA (html.light) — koyu tema için yazılmış utility sınıflarını
+   yeniden eşleyen katman. Koyu tema varsayılan ve dokunulmamış kalır.
+   ===================================================================== */
+html.light body {
+  @apply bg-slate-50 text-slate-700;
+  background-image:
+    radial-gradient(1200px 600px at 50% -10%, rgba(124, 58, 237, 0.10), transparent 60%),
+    linear-gradient(180deg, #f4f4fb 0%, #eceaf6 100%);
+}
+
+/* Metin renkleri */
+html.light .text-white { color: #0f172a; }
+html.light .text-slate-100 { color: #1e293b; }
+html.light .text-slate-200 { color: #1e293b; }
+html.light .text-slate-300 { color: #334155; }
+html.light .text-slate-400 { color: #64748b; }
+html.light .text-slate-500 { color: #94a3b8; }
+
+/* Zemin tonları (koyu ink → açık gri) */
+html.light .bg-ink-950,
+html.light .bg-ink-900,
+html.light .bg-ink-800,
+html.light .bg-ink-700 { background-color: #ffffff; }
+html.light .bg-ink-950\/70 { background-color: rgba(255, 255, 255, 0.7); }
+html.light .bg-ink-950\/85 { background-color: rgba(255, 255, 255, 0.85); }
+
+/* Yarı saydam beyaz dolgular → açık temada nazik gri dolgular */
+html.light .bg-white\/5,
+html.light .bg-white\/10,
+html.light .bg-white\/\[0\.03\],
+html.light .bg-white\/\[0\.04\],
+html.light .bg-white\/\[0\.05\],
+html.light .bg-white\/\[0\.06\] { background-color: rgba(15, 23, 42, 0.05); }
+html.light .bg-black\/30 { background-color: rgba(15, 23, 42, 0.12); }
+html.light .hover\:bg-white\/10:hover { background-color: rgba(15, 23, 42, 0.09); }
+
+/* Kenarlıklar */
+html.light .border-white\/5 { border-color: rgba(15, 23, 42, 0.08); }
+html.light .border-white\/10 { border-color: rgba(15, 23, 42, 0.12); }
+html.light .border-white\/15 { border-color: rgba(15, 23, 42, 0.16); }
+
+/* Kart / chip / hayalet buton */
+html.light .card {
+  @apply border-slate-200 bg-white shadow-sm;
+}
+html.light .card-hover:hover {
+  @apply border-brand-400/50 bg-white;
+}
+html.light .chip {
+  @apply border-slate-200 bg-slate-100 text-slate-600;
+}
+html.light .btn-ghost {
+  @apply border-slate-200 bg-slate-100 text-slate-700 hover:bg-slate-200;
+}
+
+/* Form alanları placeholder okunabilirliği */
+html.light .placeholder\:text-slate-500::placeholder { color: #94a3b8; }
+
+/* İnce scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;

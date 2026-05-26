@@ -36,6 +36,7 @@ export function GolgeCard({ post, liked }: GolgeCardProps) {
           <UserIdentity
             username={post.profiles?.username}
             gender={post.profiles?.gender}
+            avatarUrl={post.profiles?.avatar_url}
             isAnonymous={post.is_anonymous}
             size="sm"
             showGender

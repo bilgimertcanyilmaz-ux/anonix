@@ -67,6 +67,7 @@ export interface Profile {
   longest_streak: number;
   referral_code: string | null;
   referred_by: string | null;
+  theme_preference: string;
   created_at: string;
   updated_at: string;
 }
@@ -86,6 +87,7 @@ export interface ConfessionAuthor {
   username: string;
   gender: Gender;
   is_anonymous: boolean;
+  avatar_url?: string | null;
 }
 
 /** Supabase `confessions` tablosundaki bir itiraf kaydı. */

@@ -4,8 +4,8 @@ import { nonExpiredFilter } from "@/lib/feeds";
 import { mergeTasks } from "@/lib/tasks";
 import type { ConfessionRecord, GolgePost, DailyTask, UserDailyTask } from "@/types";
 
-const CONF_SELECT = "*, profiles(username, gender, is_anonymous)";
-const GOLGE_SELECT = "*, profiles(username, gender, is_anonymous)";
+const CONF_SELECT = "*, profiles(username, gender, is_anonymous, avatar_url)";
+const GOLGE_SELECT = "*, profiles(username, gender, is_anonymous, avatar_url)";
 
 /** Trend itiraflar — son içerikleri çekip trend skoruna göre sıralar. */
 export async function fetchTrendingConfessions(limit = 5): Promise<ConfessionRecord[]> {

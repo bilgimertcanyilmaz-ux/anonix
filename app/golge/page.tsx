@@ -31,7 +31,7 @@ export default function GolgeFeedPage() {
       const from = pageIndex * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
 
-      let query = supabase.from("golge_posts").select("*, profiles(username, gender, is_anonymous)");
+      let query = supabase.from("golge_posts").select("*, profiles(username, gender, is_anonymous, avatar_url)");
       if (filter === "likes") query = query.order("like_count", { ascending: false });
       else if (filter === "comments") query = query.order("comment_count", { ascending: false });
       else query = query.order("created_at", { ascending: false });

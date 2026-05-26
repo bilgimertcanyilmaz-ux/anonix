@@ -34,7 +34,7 @@ export default function ConfessionsPage() {
 
     let query = supabase
       .from("confessions")
-      .select("*, profiles(username, gender, is_anonymous)")
+      .select("*, profiles(username, gender, is_anonymous, avatar_url)")
       .or(nonExpiredFilter()); // kaybolan (süresi dolmuş) itirafları gizle
 
     if (filter === "likes") query = query.order("like_count", { ascending: false });

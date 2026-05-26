@@ -1,18 +1,30 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { MaskIcon, SparkIcon, ChatIcon, BellIcon, LogoutIcon } from "@/components/ui/icons";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useUnread } from "@/components/messages/UnreadProvider";
 import { useNotif } from "@/components/notifications/NotifProvider";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
+
+/** Bulunulan sayfanın ilgili nav öğesini aktif sayar (alt rotalar dahil). */
+function matchActive(pathname: string, href: string): boolean {
+  if (pathname === href) return true;
+  if (href === "/confessions/new") return false;
+  if (href === "/confessions")
+    return pathname.startsWith("/confessions/") && pathname !== "/confessions/new";
+  return pathname.startsWith(href + "/");
+}
 
 /** Üst navigasyon çubuğu (yapışkan, cam efektli). Oturum durumuna göre değişir. */
 export function Navbar() {
   const router = useRouter();
+  const pathname = usePathname() ?? "/";
   const { user, profile, loading, signOut } = useAuth();
   const { unreadCount } = useUnread();
   const { unreadCount: notifCount } = useNotif();
+  const activeText = (href: string) => (matchActive(pathname, href) ? "text-white" : "text-slate-300");
 
   async function handleSignOut() {
     await signOut();
@@ -34,33 +46,33 @@ export function Navbar() {
         <div className="flex items-center gap-1.5 sm:gap-2">
           <Link
             href="/confessions"
-            className="hidden whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-semibold text-slate-300 transition-colors hover:text-white lg:inline-flex"
+            className={`hidden whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-semibold transition-colors hover:text-white lg:inline-flex ${activeText("/confessions")}`}
           >
             Keşfet
           </Link>
           <Link
             href="/golge"
-            className="hidden whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-semibold text-slate-300 transition-colors hover:text-white lg:inline-flex"
+            className={`hidden whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-semibold transition-colors hover:text-white lg:inline-flex ${activeText("/golge")}`}
           >
             Gölge
           </Link>
           <Link
             href="/leaderboard"
-            className="hidden rounded-full px-3 py-1.5 text-sm font-semibold text-slate-300 transition-colors hover:text-white lg:inline-flex"
+            className={`hidden rounded-full px-3 py-1.5 text-sm font-semibold transition-colors hover:text-white lg:inline-flex ${activeText("/leaderboard")}`}
           >
             Liderlik
           </Link>
           {user && (
             <Link
               href="/for-you"
-              className="hidden rounded-full px-3 py-1.5 text-sm font-semibold text-slate-300 transition-colors hover:text-white lg:inline-flex"
+              className={`hidden rounded-full px-3 py-1.5 text-sm font-semibold transition-colors hover:text-white lg:inline-flex ${activeText("/for-you")}`}
             >
               Sana Özel
             </Link>
           )}
           <Link
             href="/confessions/new"
-            className="hidden whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-semibold text-slate-300 transition-colors hover:text-white lg:inline-flex"
+            className={`hidden whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-semibold transition-colors hover:text-white lg:inline-flex ${activeText("/confessions/new")}`}
           >
             İtiraf Yaz
           </Link>
@@ -71,6 +83,8 @@ export function Navbar() {
             <SparkIcon className="h-3.5 w-3.5" />
             Plus
           </Link>
+
+          <ThemeToggle />
 
           {loading ? (
             // Oturum durumu yüklenirken yer tutucu
