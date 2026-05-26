@@ -9,6 +9,7 @@ import { AuthorBadge } from "@/components/confession/AuthorBadge";
 import { LikeButton } from "@/components/confession/LikeButton";
 import { MessageButton } from "@/components/messages/MessageButton";
 import { FollowButton } from "@/components/profile/FollowButton";
+import { BlockButton } from "@/components/profile/BlockButton";
 import { ReportButton } from "@/components/moderation/ReportButton";
 import { ShareButton } from "@/components/viral/ShareButton";
 import { supabase } from "@/lib/supabaseClient";
@@ -190,7 +191,10 @@ export default function ConfessionDetailPage() {
             />
             <div className="flex shrink-0 items-center gap-2">
               {!confession.is_anonymous && (
-                <FollowButton targetUserId={confession.user_id} size="sm" />
+                <>
+                  <FollowButton targetUserId={confession.user_id} size="sm" />
+                  <BlockButton targetUserId={confession.user_id} size="sm" />
+                </>
               )}
               {confession.mood_tag && (
                 <span className="chip">

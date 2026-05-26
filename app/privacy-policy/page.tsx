@@ -55,12 +55,30 @@ export default function PrivacyPolicyPage() {
         korunur.
       </p>
 
-      <h2>Veri silme talebi</h2>
+      <h2>Hesap ve veri silme</h2>
       <p>
-        Hesabının ve verilerinin silinmesini istersen İletişim sayfasından “Hesap”
-        konusuyla bize ulaşabilirsin. Talebin yasal saklama yükümlülükleri çerçevesinde
-        işleme alınır.
+        Hesabını dilediğin an <strong>uygulama içinden</strong> kalıcı olarak silebilirsin:{" "}
+        <strong>Profil → Hesap Ayarları → Hesabımı Sil</strong>. Silme işlemi geri alınamaz;
+        itirafların, Gölge paylaşımların, mesajların, takip ve rozet verilerin kalıcı olarak
+        silinir. Yalnızca anonim bir silme kaydı (hukuki/operasyonel zorunluluk) tutulur.
       </p>
+
+      <h2>Veri saklama süresi</h2>
+      <p>
+        Verilerin, hesabın aktif olduğu sürece saklanır. Hesabını sildiğinde içeriklerin derhal
+        kaldırılır. Şikayet ve moderasyon kayıtları, platform güvenliği ve yasal yükümlülükler
+        gereği makul bir süre tutulabilir.
+      </p>
+
+      <h2>Toplanan veri kategorileri</h2>
+      <ul>
+        <li>E-posta (kimlik doğrulama)</li>
+        <li>Kullanıcı içerikleri (itiraf, Gölge, yorum)</li>
+        <li>Mesajlaşma verisi (Plus)</li>
+        <li>Kullanım/etkileşim verisi (kişiselleştirme)</li>
+        <li>Şikayet ve moderasyon kayıtları</li>
+      </ul>
+      <p>Tüm bu veriler için silme hakkına sahipsin (yukarıdaki hesap silme).</p>
 
       <h2>Güvenlik önlemleri</h2>
       <p>

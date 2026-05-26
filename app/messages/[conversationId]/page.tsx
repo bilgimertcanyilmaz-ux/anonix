@@ -11,6 +11,7 @@ import { useToast } from "@/components/ui/ToastProvider";
 import { useUnread } from "@/components/messages/UnreadProvider";
 import { canUsePlusFeatures } from "@/lib/profile";
 import { UserIdentity } from "@/components/UserIdentity";
+import { BlockButton } from "@/components/profile/BlockButton";
 import type { Message, Conversation, Gender } from "@/types";
 
 const MAX = 500;
@@ -215,6 +216,11 @@ export default function ConversationPage() {
           showUsername={false}
           subtitle="Kimlik gizli"
         />
+        {otherId && (
+          <div className="ml-auto">
+            <BlockButton targetUserId={otherId} size="sm" />
+          </div>
+        )}
       </div>
 
       {/* Mesajlar */}

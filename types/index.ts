@@ -81,6 +81,7 @@ export interface SignUpData {
   password: string;
   gender: Gender;
   isAnonymous: boolean;
+  ageConfirmed: boolean;
   referralCode?: string | null;
 }
 
@@ -101,6 +102,7 @@ export interface ConfessionRecord {
   is_anonymous: boolean;
   like_count: number;
   comment_count: number;
+  moderation_status?: string;
   created_at: string;
   updated_at: string;
   /** Embedded yazar (profiles ilişkisi). */
@@ -153,6 +155,7 @@ export interface GolgePost {
   is_anonymous: boolean;
   like_count: number;
   comment_count: number;
+  moderation_status?: string;
   created_at: string;
   updated_at: string;
   profiles?: ConfessionAuthor | null;

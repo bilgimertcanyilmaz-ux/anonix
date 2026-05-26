@@ -22,8 +22,18 @@ export default function CommunityRulesPage() {
         <li><strong>Çocuk güvenliği:</strong> Çocuk güvenliğini ihlal eden hiçbir içerik kabul edilmez; bu tür içerikler derhal kaldırılır ve gerektiğinde yetkililere bildirilir.</li>
         <li><strong>Yasa dışı eylem çağrısı:</strong> Suç teşkil eden eylemleri teşvik etmek veya organize etmek yasaktır.</li>
         <li><strong>İfşa ve hedef gösterme:</strong> Bir kişiyi ifşa etmek, hedef göstermek veya linç kampanyası başlatmak yasaktır.</li>
+        <li><strong>Rızasız fotoğraf:</strong> Gerçek kişilerin izinsiz fotoğraflarını paylaşmak kesinlikle yasaktır.</li>
+        <li><strong>Cinsel aşağılama:</strong> Cinsel içerikli aşağılama, müstehcen hakaret ve taciz yasaktır.</li>
         <li><strong>Spam ve sahte yönlendirme:</strong> Spam içerik, aldatıcı bağlantı veya sahte yönlendirme yasaktır.</li>
       </ul>
+
+      <h2>Şikayet ve geçici gizleme</h2>
+      <p>
+        Şikayet edilen içerikler incelenmek üzere <strong>geçici olarak gizlenebilir</strong>.
+        Kısa sürede birden fazla kullanıcı tarafından şikayet edilen içerikler otomatik incelemeye
+        alınır ve herkese açık akıştan kaldırılır. Engellediğin kullanıcıların içerikleri sana
+        gösterilmez ve birbirinize mesaj gönderemezsiniz.
+      </p>
 
       <h2>Anonimlik ve sorumluluk</h2>
       <p>

@@ -6,6 +6,8 @@ import { LinkButton } from "@/components/ui/Button";
 import { GolgeExploreTile } from "@/components/golge/GolgeExploreTile";
 import { FilterTabs } from "@/components/ui/FilterTabs";
 import { supabase } from "@/lib/supabaseClient";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { getBlockedIds } from "@/lib/blocks";
 import { sortByTrend, type FeedFilter } from "@/lib/trending";
 import { PlusCircleIcon } from "@/components/ui/icons";
 import type { GolgePost } from "@/types";
@@ -18,7 +20,9 @@ function isLarge(index: number): boolean {
 }
 
 export default function GolgeFeedPage() {
+  const { user } = useAuth();
   const [posts, setPosts] = useState<GolgePost[]>([]);
+  const [blockedIds, setBlockedIds] = useState<Set<string>>(new Set());
   const [filter, setFilter] = useState<FeedFilter>("new");
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -35,7 +39,8 @@ export default function GolgeFeedPage() {
 
       let query = supabase
         .from("golge_posts")
-        .select("*, profiles(username, gender, is_anonymous, avatar_url)");
+        .select("*, profiles(username, gender, is_anonymous, avatar_url)")
+        .eq("moderation_status", "approved");
       if (filter === "likes") query = query.order("like_count", { ascending: false });
       else if (filter === "comments") query = query.order("comment_count", { ascending: false });
       else query = query.order("created_at", { ascending: false });
@@ -64,7 +69,13 @@ export default function GolgeFeedPage() {
     })();
   }, [fetchPage]);
 
-  const displayPosts = filter === "trend" ? sortByTrend(posts) : posts;
+  useEffect(() => {
+    if (user) getBlockedIds(user.id).then(setBlockedIds);
+    else setBlockedIds(new Set());
+  }, [user]);
+
+  const visible = posts.filter((p) => !blockedIds.has(p.user_id));
+  const displayPosts = filter === "trend" ? sortByTrend(visible) : visible;
 
   const loadMore = useCallback(async () => {
     if (loadingMore || !hasMore || loading) return;

@@ -17,6 +17,7 @@ import {
   nonExpiredFilter,
 } from "@/lib/feeds";
 import { getExploreFeed } from "@/lib/recommendations";
+import { getBlockedIds } from "@/lib/blocks";
 import { PlusCircleIcon, TrophyIcon } from "@/components/ui/icons";
 import type { ConfessionRecord } from "@/types";
 
@@ -50,6 +51,8 @@ export default function ConfessionsPage() {
     setError(null);
     setNotFollowingAnyone(false);
 
+    const blocked = user ? await getBlockedIds(user.id) : new Set<string>();
+
     // --- Takip Ettiklerim: yalnızca takip edilenlerin AÇIK paylaşımları ---
     if (filter === "following") {
       if (!user) {
@@ -74,6 +77,7 @@ export default function ConfessionsPage() {
         .select(CONF_SELECT)
         .in("user_id", ids)
         .eq("is_anonymous", false)
+        .eq("moderation_status", "approved")
         .or(nonExpiredFilter())
         .order("created_at", { ascending: false })
         .limit(60);
@@ -82,7 +86,7 @@ export default function ConfessionsPage() {
         setLoading(false);
         return;
       }
-      setConfessions((data as ConfessionRecord[]) ?? []);
+      setConfessions(((data as ConfessionRecord[]) ?? []).filter((r) => !blocked.has(r.user_id)));
       await loadLikes();
       setLoading(false);
       return;
@@ -101,6 +105,11 @@ export default function ConfessionsPage() {
       return;
     }
     let rows = (data as ConfessionRecord[]) ?? [];
+
+    // Yalnızca onaylı içerik + engellenenleri gizle
+    rows = rows.filter(
+      (r) => (r.moderation_status ?? "approved") === "approved" && !blocked.has(r.user_id)
+    );
 
     if (filter === "trend") rows = sortByTrend(rows);
     else if (filter === "hot") rows = sortByHot(rows);

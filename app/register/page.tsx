@@ -21,6 +21,7 @@ export default function RegisterPage() {
   const [confirm, setConfirm] = useState("");
   const [gender, setGender] = useState<Gender>("other");
   const [isAnonymous, setIsAnonymous] = useState(true);
+  const [ageConfirmed, setAgeConfirmed] = useState(false);
 
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -41,6 +42,7 @@ export default function RegisterPage() {
     if (!email.includes("@")) return "Geçerli bir e-posta adresi gir.";
     if (password.length < 6) return "Şifre en az 6 karakter olmalı.";
     if (password !== confirm) return "Şifreler eşleşmiyor.";
+    if (!ageConfirmed) return "Devam etmek için 17 yaşından büyük olduğunu onaylamalısın.";
     return null;
   }
 
@@ -62,6 +64,7 @@ export default function RegisterPage() {
       password,
       gender,
       isAnonymous,
+      ageConfirmed,
       referralCode,
     });
     setLoading(false);
@@ -189,7 +192,21 @@ export default function RegisterPage() {
           </span>
         </button>
 
-        <Button type="submit" disabled={loading} className="w-full">
+        {/* Yaş onayı (mağaza uyumluluğu — 17+) */}
+        <label className="flex cursor-pointer items-start gap-3">
+          <input
+            type="checkbox"
+            checked={ageConfirmed}
+            onChange={(e) => setAgeConfirmed(e.target.checked)}
+            className="mt-0.5 h-4 w-4 shrink-0 accent-brand-500"
+          />
+          <span className="text-xs leading-relaxed text-slate-400">
+            17 yaşından büyük olduğumu, Kullanım Şartları ve Topluluk Kuralları&apos;nı kabul
+            ettiğimi onaylıyorum.
+          </span>
+        </label>
+
+        <Button type="submit" disabled={loading || !ageConfirmed} className="w-full">
           {loading ? "Oluşturuluyor..." : "Hesap oluştur"}
         </Button>
       </form>

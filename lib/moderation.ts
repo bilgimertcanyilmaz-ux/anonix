@@ -54,6 +54,35 @@ const ADDRESS_KEYWORDS = [
 
 const SPAM_DOMAINS = ["bit.ly", "t.me", "wa.me", "tinyurl", "telegram.me"];
 
+// Cinsel aşağılama / müstehcen hakaret
+const SEXUAL_INSULT_WORDS = [
+  "siki",
+  "sikini",
+  "yarrak",
+  "yarak",
+  "amcık",
+  "amcik",
+  "götveren",
+  "ibne",
+  "pezevenk",
+  "gavat",
+  "kaltak",
+  "sürtük",
+  "orospu çocuğu",
+];
+
+// Kişisel ifşa / rıza dışı görsel ima eden ifadeler
+const EXPOSURE_KEYWORDS = [
+  "ifşa",
+  "ifsa",
+  "çıplak fotoğraf",
+  "çıplak foto",
+  "çıplak resim",
+  "gizli çekim",
+  "intikam pornosu",
+  "frikik",
+];
+
 function normalize(text: string): string {
   return text.toLocaleLowerCase("tr-TR");
 }
@@ -102,6 +131,21 @@ export function detectSpamLinks(text: string): boolean {
   return false;
 }
 
+/** Cinsel aşağılama / müstehcen hakaret. */
+export function detectSexualInsult(text: string): boolean {
+  const t = normalize(text);
+  return SEXUAL_INSULT_WORDS.some((w) => {
+    const re = new RegExp(`(^|[^a-zçğıöşü])${w}([^a-zçğıöşü]|$)`, "i");
+    return re.test(t);
+  });
+}
+
+/** Kişisel ifşa / rıza dışı görsel ima. */
+export function detectExposure(text: string): boolean {
+  const t = normalize(text);
+  return EXPOSURE_KEYWORDS.some((k) => t.includes(k));
+}
+
 /** Tüm kontrolleri birleştirir. */
 export function moderateText(text: string): ModerationResult {
   const reasons: string[] = [];
@@ -109,6 +153,14 @@ export function moderateText(text: string): ModerationResult {
 
   if (checkBannedWords(text).length > 0) {
     reasons.push("Hakaret / küfür");
+    severity = "high";
+  }
+  if (detectSexualInsult(text)) {
+    reasons.push("Cinsel aşağılama");
+    severity = "high";
+  }
+  if (detectExposure(text)) {
+    reasons.push("Kişisel ifşa / rıza dışı içerik");
     severity = "high";
   }
   if (detectThreatText(text)) {

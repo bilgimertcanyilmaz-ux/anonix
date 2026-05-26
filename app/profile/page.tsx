@@ -344,6 +344,17 @@ export default function ProfilePage() {
           })}
         </div>
 
+        <Link
+          href="/settings/account"
+          className="card card-hover flex items-center justify-between p-5"
+        >
+          <div>
+            <p className="text-sm font-semibold text-white">Hesap Ayarları</p>
+            <p className="text-xs text-slate-400">Engellenenler ve hesap silme.</p>
+          </div>
+          <span className="text-brand-300">→</span>
+        </Link>
+
         <Button variant="ghost" onClick={handleSignOut} className="w-full">
           Çıkış yap
         </Button>

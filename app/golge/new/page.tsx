@@ -29,6 +29,7 @@ export default function NewGolgePage() {
   const [caption, setCaption] = useState("");
   const [mood, setMood] = useState<string | null>(null);
   const [isAnonymous, setIsAnonymous] = useState(true);
+  const [consent, setConsent] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -83,6 +84,10 @@ export default function NewGolgePage() {
 
     if (!file) {
       setError("Lütfen bir görsel seç.");
+      return;
+    }
+    if (!consent) {
+      setError("Devam etmek için içerik kuralları onay kutusunu işaretlemelisin.");
       return;
     }
     if (!user) return;
@@ -315,7 +320,21 @@ export default function NewGolgePage() {
             </span>
           </button>
 
-          <Button type="submit" disabled={uploading} className="w-full">
+          {/* Zorunlu içerik onayı (mağaza/UGC uyumluluğu) */}
+          <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3">
+            <input
+              type="checkbox"
+              checked={consent}
+              onChange={(e) => setConsent(e.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 accent-brand-500"
+            />
+            <span className="text-xs leading-relaxed text-slate-300">
+              Rızası olmayan kişilerin fotoğrafını, kişisel bilgilerini ve aşağılayıcı/cinsel/taciz
+              içeren içerikleri paylaşmayacağımı kabul ediyorum.
+            </span>
+          </label>
+
+          <Button type="submit" disabled={uploading || !consent} className="w-full">
             {uploading ? "Paylaşılıyor..." : "Paylaş"}
           </Button>
         </form>

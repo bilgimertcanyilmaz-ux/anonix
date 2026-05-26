@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { Container } from "@/components/layout/Container";
 import { FeedCard } from "@/components/confession/FeedCard";
 import { FollowButton } from "@/components/profile/FollowButton";
+import { BlockButton } from "@/components/profile/BlockButton";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { getGenderFrameClass, getGenderLabel, getGenderBadgeClass } from "@/lib/gender";
@@ -147,8 +148,9 @@ export default function PublicProfilePage() {
               </div>
             </div>
 
-            <div className="shrink-0">
+            <div className="flex shrink-0 flex-col items-end gap-2">
               <FollowButton targetUserId={profile.id} />
+              <BlockButton targetUserId={profile.id} size="sm" />
             </div>
           </div>
         </div>

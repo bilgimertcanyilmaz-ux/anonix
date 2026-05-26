@@ -93,7 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [fetchProfile]);
 
   const signUp = useCallback(
-    async ({ username, email, password, gender, isAnonymous, referralCode }: SignUpData): Promise<AuthResult> => {
+    async ({ username, email, password, gender, isAnonymous, ageConfirmed, referralCode }: SignUpData): Promise<AuthResult> => {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -103,6 +103,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             username,
             gender,
             is_anonymous: isAnonymous,
+            age_confirmed: ageConfirmed,
             ...(referralCode ? { referred_by_code: referralCode } : {}),
           },
         },

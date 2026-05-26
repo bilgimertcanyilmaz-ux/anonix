@@ -25,7 +25,19 @@ export default function TermsPage() {
       <ul>
         <li>Hesap oluşturmak için geçerli bir e-posta adresi gerekir.</li>
         <li>Hesabının güvenliğinden ve şifrenden sen sorumlusun.</li>
-        <li>13 yaşından küçükler platformu kullanamaz.</li>
+        <li><strong>17 yaşından küçükler platformu kullanamaz.</strong> Kayıt sırasında yaş onayı zorunludur.</li>
+        <li>Hesabını dilediğin an uygulama içinden (Profil → Hesap Ayarları → Hesabımı Sil) kalıcı silebilirsin.</li>
+        <li>Rahatsız edici kullanıcıları engelleyebilir, içerikleri şikayet edebilirsin.</li>
+      </ul>
+
+      <h2>2.1. Yasak içerik</h2>
+      <ul>
+        <li><strong>Rızası olmayan kişilerin fotoğrafını</strong> paylaşmak kesinlikle yasaktır.</li>
+        <li>Taciz, zorbalık ve hedef gösterme yasaktır.</li>
+        <li>Cinsel içerikli aşağılama ve müstehcen hakaret yasaktır.</li>
+        <li>Telefon, adres, TC kimlik gibi kişisel veri paylaşımı yasaktır.</li>
+        <li>Çocuk güvenliğini ihlal eden içerik kesinlikle yasaktır; tespitinde yetkililere bildirilir.</li>
+        <li>Anonim olmak, paylaştığın içeriğin hukuki sorumluluğunu ortadan kaldırmaz.</li>
       </ul>
 
       <h2>3. Plus üyelik</h2>

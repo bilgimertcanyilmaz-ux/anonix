@@ -10,6 +10,7 @@ import { GolgeImage } from "@/components/golge/GolgeImage";
 import { GolgeLikeButton } from "@/components/golge/GolgeLikeButton";
 import { MessageButton } from "@/components/messages/MessageButton";
 import { FollowButton } from "@/components/profile/FollowButton";
+import { BlockButton } from "@/components/profile/BlockButton";
 import { ReportButton } from "@/components/moderation/ReportButton";
 import { ShareButton } from "@/components/viral/ShareButton";
 import { supabase } from "@/lib/supabaseClient";
@@ -170,7 +171,10 @@ export default function GolgeDetailPage() {
             />
             <div className="flex shrink-0 items-center gap-2">
               {!post.is_anonymous && (
-                <FollowButton targetUserId={post.user_id} size="sm" />
+                <>
+                  <FollowButton targetUserId={post.user_id} size="sm" />
+                  <BlockButton targetUserId={post.user_id} size="sm" />
+                </>
               )}
               {post.mood_tag && (
                 <span className="chip">
