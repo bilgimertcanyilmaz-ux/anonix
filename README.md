@@ -66,6 +66,9 @@ Supabase Dashboard → SQL Editor'de **sırayla** çalıştır (`supabase/` klas
 6. `admin.sql` — admin/şikayet/moderasyon (Aşama 7)
 7. `payments.sql` — abonelik + güvenlik sertleştirme (Aşama 9)
 8. `launch.sql` — canlıya hazırlık checklist (Aşama 11)
+9. `viral.sql` — streak/referral/kaybolan itiraf + rozetler (Aşama 12)
+10. `follows.sql` — takip sistemi tablosu + RLS
+11. `maintenance.sql` — eksik indeksler (A) + opsiyonel recount (B)
 
 Hepsi idempotent'tir; tekrar çalıştırmak güvenlidir.
 
@@ -141,6 +144,30 @@ Navbar'da **Admin** linki belirir → `/admin`.
 - Mesaj/bildirim **realtime** ile çekilir, gereksiz polling yok.
 - Statik sayfalar (landing, yasal) prerender edilir; SEO metadata + sitemap/robots mevcut.
 - Öneri: yoğun trafikte feed'lere keyset pagination ve görseller için CDN/Image optimizasyonu eklenebilir.
+
+## Bug Fix & QA
+Production öncesi kararlılık aşaması. Detaylı senaryolar: [`docs/TEST_PLAN.md`](docs/TEST_PLAN.md).
+
+**Doğrulanan kritik kontroller:**
+- **Build:** `npm run build` temiz, TypeScript hatası yok.
+- **Anonimlik tutarlılığı:** Kartlar paylaşımın kendi `is_anonymous` değerini kullanır
+  (`confessions` / `golge_posts`), profilin anlık değerini değil. Geçmiş paylaşımlar,
+  kullanıcı anonimliği kapatsa bile anonim kalır.
+- **Cinsiyet görünürlüğü:** Anonimlikten bağımsız her yüzeyde görünür
+  (tek `components/UserIdentity.tsx` bileşeni; cinsiyet çerçevesi her zaman).
+- **Güvenlik:** `is_plus` / `role` / `is_banned` istemciden değiştirilemez
+  (kolon `revoke` + admin RPC); `service_role` yalnızca sunucuda; XSS için
+  `dangerouslySetInnerHTML` kullanılmaz; PII (telefon/TC/adres) filtresi aktif.
+- **İndeksler:** Eksik olanlar eklendi — `confessions.user_id`, `golge_posts.user_id`,
+  `messages.receiver_id` (bkz. `supabase/maintenance.sql`).
+
+**Veri tutarlılığı bakımı (`supabase/maintenance.sql`):**
+- `like_count` / `comment_count` sapma olursa recount sorguları.
+- Takipçi/takip sayıları canlı hesaplanır (recount gerekmez).
+- `points` çok kaynaklı; otomatik toplu recount önerilmez (açıklama dosyada).
+
+**Bilinen sınırlar (gelecek iş):** itiraf/yorum/mesaj için özel rate-limit trigger'ları
+(opsiyonel olarak `maintenance.sql`'de hazır), başka kullanıcıların herkese açık profil sayfası.
 
 ---
 
