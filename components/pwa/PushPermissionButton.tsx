@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/components/ui/ToastProvider";
 import { isPushSupported, subscribeToPush } from "@/lib/push";
+import { trackEvent } from "@/lib/analytics";
 
 /**
  * Push bildirim izni butonu (Web Push altyapısına hazırlık).
@@ -34,6 +35,7 @@ export function PushPermissionButton() {
       const res = await subscribeToPush(user.id);
       if (res.ok) {
         setDone(true);
+        void trackEvent("push_permission_granted", {}, user.id);
         success("Push bildirimleri etkinleştirildi 🔔");
       } else {
         toastError("Abonelik kaydedilemedi.");

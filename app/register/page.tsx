@@ -81,8 +81,8 @@ export default function RegisterPage() {
       return;
     }
 
-    // Kayıt + profil hazır → kişisel ana sayfaya (AuthHome) yönlendir.
-    router.push("/");
+    // Kayıt + profil hazır → ilk girişte onboarding göster.
+    router.push("/onboarding");
   }
 
   return (

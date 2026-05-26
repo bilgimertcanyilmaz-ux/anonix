@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
+import { trackEvent } from "@/lib/analytics";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -43,9 +45,19 @@ export function PwaManager() {
       e.preventDefault();
       setDeferred(e as BeforeInstallPromptEvent);
       setVisible(true);
+      void trackEvent("install_prompt_opened");
+    };
+    // PWA yüklenince: olay + kurulum ödülü (rozet + XP)
+    const onInstalled = () => {
+      void trackEvent("install_completed");
+      supabase.rpc("claim_install_reward").then(() => {}, () => {});
     };
     window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
+    window.addEventListener("appinstalled", onInstalled);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler);
+      window.removeEventListener("appinstalled", onInstalled);
+    };
   }, []);
 
   async function install() {

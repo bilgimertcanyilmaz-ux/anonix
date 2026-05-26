@@ -14,6 +14,8 @@ const navItems = [
   { href: "/admin/users", label: "Kullanıcılar" },
   { href: "/admin/moderation", label: "Moderasyon" },
   { href: "/admin/banned-words", label: "Yasaklı Kelimeler" },
+  { href: "/admin/analytics", label: "Analitik" },
+  { href: "/admin/launch-center", label: "Launch" },
   { href: "/admin/launch-checklist", label: "Canlıya Hazırlık" },
 ];
 
