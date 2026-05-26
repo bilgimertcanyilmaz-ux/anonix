@@ -18,7 +18,7 @@ export interface RateRule {
 export const RATE_RULES = {
   confession: { table: "confessions", column: "user_id", max: 10, windowMs: 3_600_000 },
   comment: { table: "confession_comments", column: "user_id", max: 30, windowMs: 600_000 },
-  message: { table: "messages", column: "sender_id", max: 20, windowMs: 600_000 },
+  message: { table: "messages", column: "sender_id", max: 10, windowMs: 60_000 },
   golge: { table: "golge_posts", column: "user_id", max: 10, windowMs: 3_600_000 },
   report: { table: "reports", column: "reporter_id", max: 5, windowMs: 3_600_000 },
 } satisfies Record<string, RateRule>;

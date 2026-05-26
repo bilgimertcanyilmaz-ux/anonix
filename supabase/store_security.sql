@@ -179,12 +179,12 @@ drop trigger if exists trg_comment_rate on public.confession_comments;
 create trigger trg_comment_rate before insert on public.confession_comments
   for each row execute function public.comment_rate_limit();
 
--- Mesaj: 10 dakikada 20
+-- Mesaj: dakikada 10
 create or replace function public.message_rate_limit()
 returns trigger language plpgsql security definer set search_path = public as $$
 begin
   if (select count(*) from public.messages
-      where sender_id = new.sender_id and created_at > now() - interval '10 minutes') >= 20 then
+      where sender_id = new.sender_id and created_at > now() - interval '1 minute') >= 10 then
     raise exception 'Çok hızlı mesaj gönderiyorsun. Lütfen biraz bekle.' using errcode = 'P0001';
   end if;
   return new;
