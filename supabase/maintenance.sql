@@ -22,6 +22,17 @@ create index if not exists golge_posts_user_idx on public.golge_posts (user_id);
 create index if not exists messages_receiver_idx on public.messages (receiver_id);
 
 -- ---------------------------------------------------------------------
+-- A2) GÜVENLİK: profiles INSERT kolon sertleştirme
+-- ---------------------------------------------------------------------
+-- Eksik profil onboarding'inde kullanıcı kendi profilini oluşturabilir
+-- (RLS: auth.uid() = id). Ancak is_plus/role/is_banned/points gibi hassas
+-- kolonları INSERT ile set edememeli. UPDATE zaten sertleştirilmişti (payments.sql);
+-- INSERT'i de güvenli kolonlarla sınırlıyoruz. handle_new_user trigger'ı
+-- security definer olduğundan bu grant'tan etkilenmez.
+revoke insert on public.profiles from authenticated;
+grant insert (id, username, gender, avatar_url, is_anonymous) on public.profiles to authenticated;
+
+-- ---------------------------------------------------------------------
 -- B) RECOUNT — yalnızca sayaçlar sapmışsa çalıştırın (idempotent, güvenli)
 -- ---------------------------------------------------------------------
 

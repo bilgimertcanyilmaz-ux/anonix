@@ -78,7 +78,8 @@ export default function RegisterPage() {
       return;
     }
 
-    router.push("/profile");
+    // Kayıt + profil hazır → kişisel ana sayfaya (AuthHome) yönlendir.
+    router.push("/");
   }
 
   return (
