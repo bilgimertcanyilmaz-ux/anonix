@@ -43,7 +43,7 @@ export function BottomNav() {
   const pathname = usePathname() ?? "/";
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-white/5 bg-ink-950/85 backdrop-blur-md md:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-white/5 bg-ink-950/85 backdrop-blur-md [padding-bottom:env(safe-area-inset-bottom)] md:hidden">
       <ul className="mx-auto flex max-w-2xl items-end px-1 py-2">
         {items.map(({ href, label, Icon, highlight, badge }) => {
           const active = matchActive(pathname, href);

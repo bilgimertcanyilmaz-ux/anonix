@@ -10,6 +10,7 @@ import { StreakTracker } from "@/components/streaks/StreakTracker";
 import { SoundManager } from "@/components/sound/SoundManager";
 import { Navbar } from "@/components/layout/Navbar";
 import { BottomNav } from "@/components/layout/BottomNav";
+import { PwaManager } from "@/components/pwa/PwaManager";
 import { siteConfig } from "@/lib/site";
 
 const inter = Inter({
@@ -27,6 +28,13 @@ export const metadata: Metadata = {
   description: siteConfig.description,
   keywords: siteConfig.keywords,
   applicationName: siteConfig.name,
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: siteConfig.name,
+  },
+  other: { "mobile-web-app-capable": "yes" },
   alternates: { canonical: "/" },
   robots: { index: true, follow: true },
   openGraph: {
@@ -49,6 +57,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -72,6 +81,7 @@ export default function RootLayout({
                   {/* Alt boşluk: mobilde bottom-nav'ın içeriği örtmemesi için */}
                   <div className="h-20 md:hidden" />
                   <BottomNav />
+                  <PwaManager />
                 </NotifProvider>
               </UnreadProvider>
             </ToastProvider>

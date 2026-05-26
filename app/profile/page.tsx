@@ -17,6 +17,7 @@ import { GenderBadge } from "@/components/profile/GenderBadge";
 import { ProfileSetup } from "@/components/profile/ProfileSetup";
 import { AvatarPicker } from "@/components/profile/AvatarPicker";
 import { Footer } from "@/components/layout/Footer";
+import { PushPermissionButton } from "@/components/pwa/PushPermissionButton";
 import type { UserBadge } from "@/types";
 
 export default function ProfilePage() {
@@ -342,6 +343,7 @@ export default function ProfilePage() {
               </button>
             );
           })}
+          <PushPermissionButton />
         </div>
 
         <Link
