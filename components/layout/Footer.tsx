@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MaskIcon } from "@/components/ui/icons";
+import Image from "next/image";
 import { siteConfig } from "@/lib/site";
 
 export function Footer() {
@@ -8,9 +8,7 @@ export function Footer() {
     <footer className="mt-12 border-t border-white/5 bg-ink-950/40">
       <div className="mx-auto w-full max-w-2xl px-4 py-8 sm:px-6">
         <div className="flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-gradient">
-            <MaskIcon className="h-4 w-4 text-white" />
-          </span>
+          <Image src="/logo.png" alt="Anonix" width={32} height={32} className="rounded-lg" />
           <span className="text-base font-extrabold text-white">
             Anon<span className="text-gradient">ix</span>
           </span>

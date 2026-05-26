@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
-import { MaskIcon, SparkIcon, BellIcon, LogoutIcon } from "@/components/ui/icons";
+import { SparkIcon, BellIcon, LogoutIcon } from "@/components/ui/icons";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useNotif } from "@/components/notifications/NotifProvider";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
@@ -33,9 +34,14 @@ export function Navbar() {
     <header className="sticky top-0 z-40 border-b border-white/5 bg-ink-950/70 backdrop-blur-md">
       <div className="mx-auto flex h-16 w-full max-w-2xl items-center justify-between px-4 sm:px-6">
         <Link href="/" className="flex items-center gap-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-gradient shadow-glow">
-            <MaskIcon className="h-5 w-5 text-white" />
-          </span>
+          <Image
+            src="/logo.png"
+            alt="Anonix"
+            width={36}
+            height={36}
+            priority
+            className="rounded-xl shadow-glow"
+          />
           <span className="text-lg font-extrabold tracking-tight text-white">
             Anon<span className="text-gradient">ix</span>
           </span>
