@@ -43,7 +43,7 @@ export function GolgeImage({
           className={`pointer-events-none absolute inset-0 flex justify-center p-4 ${overlayPositionClass(position)}`}
         >
           <p
-            className={`max-w-full break-words text-center leading-snug ${textSize} ${overlayStyleClass(style)} ${overlayBoxClass(style)} line-clamp-6`}
+            className={`gi-overlay max-w-full break-words text-center leading-snug ${textSize} ${overlayStyleClass(style)} ${overlayBoxClass(style)} line-clamp-6`}
           >
             {overlayText}
           </p>

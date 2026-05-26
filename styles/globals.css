@@ -119,6 +119,32 @@ html.light .btn-ghost {
 /* Form alanları placeholder okunabilirliği */
 html.light .placeholder\:text-slate-500::placeholder { color: #94a3b8; }
 
+/* ---------------------------------------------------------------------
+   KOYU YÜZEY İSTİSNALARI: Açık temada da koyu kalan yüzeyler (marka
+   gradyan buton/kartlar, fotoğraf üzeri siyah çipler, Gölge overlay).
+   Bu yüzeylerdeki metin beyaz kalmalı — aksi halde okunmaz.
+   --------------------------------------------------------------------- */
+html.light .btn-primary { color: #fff !important; }
+html.light .bg-brand-gradient,
+html.light .bg-brand-gradient .text-white,
+html.light .bg-brand-gradient.text-white,
+html.light [class*="from-brand-"] .text-white,
+html.light [class*="from-brand-"].text-white,
+html.light [class*="to-brand-"] .text-white,
+html.light [class*="to-brand-"].text-white,
+html.light [class*="bg-black/"] .text-white,
+html.light [class*="bg-black/"].text-white,
+html.light .gi-overlay.text-white,
+html.light .gi-overlay .text-white { color: #fff !important; }
+
+/* Marka tonlu açık metinler (aktif sekme, Plus rozeti vb.) açık temada koyulaşsın */
+html.light .text-brand-100,
+html.light .text-brand-200 { color: #5b21b6; }
+
+/* Gradyan kartlardaki ikincil slate metinler açık temada açık tonda kalsın */
+html.light [class*="from-brand-"] .text-slate-300,
+html.light [class*="from-brand-"] .text-slate-400 { color: #e2e8f0; }
+
 /* İnce scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
