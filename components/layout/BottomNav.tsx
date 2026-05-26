@@ -6,12 +6,11 @@ import { usePathname } from "next/navigation";
 import {
   CompassIcon,
   PlusCircleIcon,
-  BellIcon,
+  ChatIcon,
   UserIcon,
   MoonIcon,
-  TrophyIcon,
 } from "@/components/ui/icons";
-import { useNotif } from "@/components/notifications/NotifProvider";
+import { useUnread } from "@/components/messages/UnreadProvider";
 
 /** Bulunulan sayfanın ilgili nav öğesini aktif sayar (alt rotalar dahil). */
 function matchActive(pathname: string, href: string): boolean {
@@ -28,27 +27,25 @@ type NavItem = {
   Icon: ComponentType<SVGProps<SVGSVGElement>>;
   highlight?: boolean;
   badge?: boolean;
-  trophy?: boolean;
 };
 
 const items: NavItem[] = [
   { href: "/confessions", label: "Keşfet", Icon: CompassIcon },
   { href: "/golge", label: "Gölge", Icon: MoonIcon },
-  { href: "/leaderboard", label: "Liderlik", Icon: TrophyIcon, trophy: true },
   { href: "/confessions/new", label: "İtiraf", Icon: PlusCircleIcon, highlight: true },
-  { href: "/notifications", label: "Bildirim", Icon: BellIcon, badge: true },
+  { href: "/messages", label: "Mesajlar", Icon: ChatIcon, badge: true },
   { href: "/profile", label: "Profil", Icon: UserIcon },
 ];
 
 /** Mobil alt navigasyon çubuğu (yalnızca küçük ekranlarda görünür). */
 export function BottomNav() {
-  const { unreadCount: notifCount } = useNotif();
+  const { unreadCount } = useUnread();
   const pathname = usePathname() ?? "/";
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-white/5 bg-ink-950/85 backdrop-blur-md md:hidden">
       <ul className="mx-auto flex max-w-2xl items-end px-1 py-2">
-        {items.map(({ href, label, Icon, highlight, badge, trophy }) => {
+        {items.map(({ href, label, Icon, highlight, badge }) => {
           const active = matchActive(pathname, href);
           return (
             <li key={href} className="flex flex-1 justify-center">
@@ -57,7 +54,7 @@ export function BottomNav() {
                 aria-label={label}
                 aria-current={active ? "page" : undefined}
                 className={`flex flex-col items-center gap-1 text-[10px] font-medium transition-colors ${
-                  active && !highlight && !trophy ? "text-white" : "text-slate-400 hover:text-white"
+                  active && !highlight ? "text-white" : "text-slate-400 hover:text-white"
                 }`}
               >
                 {highlight ? (
@@ -68,27 +65,17 @@ export function BottomNav() {
                   >
                     <Icon className="h-6 w-6 text-white" />
                   </span>
-                ) : trophy ? (
-                  // Liderlik: yazısız, altın-mor gradient kupa; aktifse parlar
-                  <span
-                    className={`flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-amber-300 via-amber-500 to-brand-600 text-white transition-shadow ${
-                      active ? "shadow-glow ring-2 ring-amber-300/70" : "opacity-90"
-                    }`}
-                  >
-                    <Icon className="h-5 w-5 text-white" />
-                  </span>
                 ) : (
                   <span className="relative">
                     <Icon className="h-6 w-6" />
-                    {badge && notifCount > 0 && (
-                      <span className="absolute -right-2 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-pink-500 px-1 text-[9px] font-bold text-white">
-                        {notifCount > 99 ? "99+" : notifCount}
+                    {badge && unreadCount > 0 && (
+                      <span className="absolute -right-2 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-500 px-1 text-[9px] font-bold text-white">
+                        {unreadCount > 99 ? "99+" : unreadCount}
                       </span>
                     )}
                   </span>
                 )}
-                {/* Kupa yazısız; diğerlerinde etiket görünür */}
-                {!trophy && <span className={highlight ? "text-brand-200" : ""}>{label}</span>}
+                <span className={highlight ? "text-brand-200" : ""}>{label}</span>
               </Link>
             </li>
           );

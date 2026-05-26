@@ -34,10 +34,18 @@ export function isFromToday(createdAt: string): boolean {
 }
 
 /** Genişletilmiş feed sekmeleri. */
-export type ExtendedFilter = "new" | "hot" | "today" | "trend" | "likes" | "comments";
+export type ExtendedFilter =
+  | "new"
+  | "following"
+  | "hot"
+  | "today"
+  | "trend"
+  | "likes"
+  | "comments";
 
 export const extendedFilters: { value: ExtendedFilter; label: string }[] = [
   { value: "new", label: "Yeni" },
+  { value: "following", label: "Takip Ettiklerim" },
   { value: "hot", label: "🔥 Alev Alanlar" },
   { value: "today", label: "Bugün Popüler" },
   { value: "trend", label: "Trend" },

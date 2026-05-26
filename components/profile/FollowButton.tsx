@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/components/ui/ToastProvider";
 import { isFollowing, followUser, unfollowUser } from "@/lib/follows";
+import { trackInteraction } from "@/lib/recommendations";
 
 interface FollowButtonProps {
   /** Takip edilecek kullanıcının id'si. */
@@ -68,6 +69,12 @@ export function FollowButton({ targetUserId, size = "md", onChange }: FollowButt
         setFollowing(true);
         onChange?.(true);
         success("Takip etmeye başladın 🎉");
+        void trackInteraction({
+          userId: user.id,
+          entityType: "profile",
+          entityId: targetUserId,
+          type: "follow",
+        });
       }
     }
     setBusy(false);

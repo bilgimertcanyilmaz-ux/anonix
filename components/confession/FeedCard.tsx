@@ -50,6 +50,7 @@ export function FeedCard({ confession, liked }: FeedCardProps) {
           confessionId={id}
           initialLiked={liked}
           initialCount={like_count}
+          moodTag={mood_tag}
         />
         <Link
           href={`/confessions/${id}`}

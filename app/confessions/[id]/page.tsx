@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, type FormEvent } from "react";
+import { useEffect, useRef, useState, useCallback, type FormEvent } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/Button";
@@ -17,6 +17,7 @@ import { useToast } from "@/components/ui/ToastProvider";
 import { moodEmoji } from "@/lib/moods";
 import { timeAgo } from "@/lib/format";
 import { moderateText, MODERATION_BLOCK_MESSAGE } from "@/lib/moderation";
+import { trackInteraction } from "@/lib/recommendations";
 import type { ConfessionRecord, CommentRecord } from "@/types";
 
 const MIN = 2;
@@ -80,6 +81,21 @@ export default function ConfessionDetailPage() {
     load();
   }, [load]);
 
+  // Kişiselleştirme: itiraf görüntüleme (ziyaret başına bir kez)
+  const viewTracked = useRef(false);
+  useEffect(() => {
+    if (confession && user && !viewTracked.current) {
+      viewTracked.current = true;
+      void trackInteraction({
+        userId: user.id,
+        entityType: "confession",
+        entityId: confession.id,
+        type: "view",
+        moodTag: confession.mood_tag,
+      });
+    }
+  }, [confession, user]);
+
   async function handleComment(e: FormEvent) {
     e.preventDefault();
     setCommentError(null);
@@ -124,6 +140,13 @@ export default function ConfessionDetailPage() {
 
     setCommentText("");
     success("Yorumun eklendi 💬");
+    void trackInteraction({
+      userId: user.id,
+      entityType: "confession",
+      entityId: id,
+      type: "comment",
+      moodTag: confession?.mood_tag,
+    });
     // Yorumları ve sayaçları tazele
     await load();
   }
@@ -188,6 +211,7 @@ export default function ConfessionDetailPage() {
                 confessionId={confession.id}
                 initialLiked={liked}
                 initialCount={confession.like_count}
+                moodTag={confession.mood_tag}
               />
               <span className="text-sm text-slate-400">
                 {confession.comment_count} yorum

@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { MaskIcon, SparkIcon, ChatIcon, BellIcon, LogoutIcon } from "@/components/ui/icons";
+import { MaskIcon, SparkIcon, BellIcon, LogoutIcon } from "@/components/ui/icons";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { useUnread } from "@/components/messages/UnreadProvider";
 import { useNotif } from "@/components/notifications/NotifProvider";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
@@ -22,7 +21,6 @@ export function Navbar() {
   const router = useRouter();
   const pathname = usePathname() ?? "/";
   const { user, profile, loading, signOut } = useAuth();
-  const { unreadCount } = useUnread();
   const { unreadCount: notifCount } = useNotif();
   const activeText = (href: string) => (matchActive(pathname, href) ? "text-white" : "text-slate-300");
 
@@ -100,18 +98,6 @@ export function Navbar() {
                 {notifCount > 0 && (
                   <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-pink-500 px-1 text-[10px] font-bold text-white">
                     {notifCount > 99 ? "99+" : notifCount}
-                  </span>
-                )}
-              </Link>
-              <Link
-                href="/messages"
-                aria-label="Mesajlar"
-                className="relative rounded-full bg-white/5 p-2 text-slate-200 transition-colors hover:bg-white/10"
-              >
-                <ChatIcon className="h-5 w-5" />
-                {unreadCount > 0 && (
-                  <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-500 px-1 text-[10px] font-bold text-white">
-                    {unreadCount > 99 ? "99+" : unreadCount}
                   </span>
                 )}
               </Link>

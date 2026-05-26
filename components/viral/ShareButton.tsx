@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { contentShareUrl, ogImageUrl, viralHeadline } from "@/lib/viral";
 import { shareTargets } from "@/lib/referrals";
 import { useToast } from "@/components/ui/ToastProvider";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { trackInteraction } from "@/lib/recommendations";
 
 interface ShareButtonProps {
   type: "confession" | "golge";
@@ -15,6 +17,7 @@ interface ShareButtonProps {
 
 export function ShareButton({ type, id, text, mood }: ShareButtonProps) {
   const { success } = useToast();
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
 
   const url = contentShareUrl(type, id);
@@ -38,6 +41,13 @@ export function ShareButton({ type, id, text, mood }: ShareButtonProps) {
           e.preventDefault();
           e.stopPropagation();
           setOpen(true);
+          void trackInteraction({
+            userId: user?.id,
+            entityType: type,
+            entityId: id,
+            type: "share",
+            moodTag: mood,
+          });
         }}
         className="inline-flex items-center gap-1.5 text-sm text-slate-400 transition-colors hover:text-brand-300"
         aria-label="Paylaş"

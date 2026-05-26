@@ -5,15 +5,18 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/components/ui/ToastProvider";
+import { trackInteraction } from "@/lib/recommendations";
 import { HeartIcon } from "@/components/ui/icons";
 
 interface LikeButtonProps {
   confessionId: string;
   initialLiked: boolean;
   initialCount: number;
+  /** Kişiselleştirme için itirafın mood etiketi. */
+  moodTag?: string | null;
 }
 
-export function LikeButton({ confessionId, initialLiked, initialCount }: LikeButtonProps) {
+export function LikeButton({ confessionId, initialLiked, initialCount, moodTag }: LikeButtonProps) {
   const router = useRouter();
   const { user, profile } = useAuth();
   const { error: toastError } = useToast();
@@ -60,6 +63,15 @@ export function LikeButton({ confessionId, initialLiked, initialCount }: LikeBut
       setLiked(!next);
       setCount((c) => Math.max(0, c + (next ? -1 : 1)));
       toastError("Beğeni işlemi başarısız oldu. Tekrar dene.");
+    } else if (next) {
+      // Kişiselleştirme: beğeni etkileşimi
+      void trackInteraction({
+        userId: user.id,
+        entityType: "confession",
+        entityId: confessionId,
+        type: "like",
+        moodTag,
+      });
     }
   }
 
