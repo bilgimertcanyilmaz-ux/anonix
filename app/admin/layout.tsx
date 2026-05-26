@@ -9,6 +9,7 @@ import { ShieldIcon } from "@/components/ui/icons";
 
 const navItems = [
   { href: "/admin", label: "Panel" },
+  { href: "/admin/pending", label: "Acil İnceleme" },
   { href: "/admin/reports", label: "Şikayetler" },
   { href: "/admin/users", label: "Kullanıcılar" },
   { href: "/admin/moderation", label: "Moderasyon" },
