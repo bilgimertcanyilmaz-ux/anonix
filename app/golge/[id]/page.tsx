@@ -9,6 +9,7 @@ import { AuthorBadge } from "@/components/confession/AuthorBadge";
 import { GolgeImage } from "@/components/golge/GolgeImage";
 import { GolgeLikeButton } from "@/components/golge/GolgeLikeButton";
 import { MessageButton } from "@/components/messages/MessageButton";
+import { FollowButton } from "@/components/profile/FollowButton";
 import { ReportButton } from "@/components/moderation/ReportButton";
 import { ShareButton } from "@/components/viral/ShareButton";
 import { supabase } from "@/lib/supabaseClient";
@@ -167,12 +168,17 @@ export default function GolgeDetailPage() {
               author={post.profiles}
               subtitle={timeAgo(post.created_at)}
             />
-            {post.mood_tag && (
-              <span className="chip shrink-0">
-                <span>{moodEmoji(post.mood_tag)}</span>
-                {post.mood_tag}
-              </span>
-            )}
+            <div className="flex shrink-0 items-center gap-2">
+              {!post.is_anonymous && (
+                <FollowButton targetUserId={post.user_id} size="sm" />
+              )}
+              {post.mood_tag && (
+                <span className="chip">
+                  <span>{moodEmoji(post.mood_tag)}</span>
+                  {post.mood_tag}
+                </span>
+              )}
+            </div>
           </div>
 
           {post.caption && (

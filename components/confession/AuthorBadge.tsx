@@ -8,13 +8,18 @@ interface AuthorBadgeProps {
   /** Avatar altındaki ikincil metin (örn. tarih). */
   subtitle?: string;
   size?: "sm" | "md" | "lg";
+  /** Açık yazarı /users/[username] profiline bağla (varsayılan açık). */
+  linkProfile?: boolean;
 }
 
 /**
  * İtiraf/yorum/Gölge kartlarında yazar kimliğini gösterir.
  * Anonimse kullanıcı adı gizlenir; cinsiyet her zaman (çerçeve + rozet) görünür.
+ * Anonim olmayan yazar varsayılan olarak açık profiline linklenir.
  */
-export function AuthorBadge({ anonymous, author, subtitle, size = "md" }: AuthorBadgeProps) {
+export function AuthorBadge({ anonymous, author, subtitle, size = "md", linkProfile = true }: AuthorBadgeProps) {
+  const profileHref =
+    linkProfile && !anonymous && author?.username ? `/users/${author.username}` : undefined;
   return (
     <UserIdentity
       username={author?.username}
@@ -24,6 +29,7 @@ export function AuthorBadge({ anonymous, author, subtitle, size = "md" }: Author
       size={size}
       showGender
       showUsername
+      profileHref={profileHref}
     />
   );
 }

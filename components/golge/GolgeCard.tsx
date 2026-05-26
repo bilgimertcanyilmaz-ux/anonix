@@ -40,6 +40,11 @@ export function GolgeCard({ post, liked }: GolgeCardProps) {
             size="sm"
             showGender
             showUsername
+            profileHref={
+              !post.is_anonymous && post.profiles?.username
+                ? `/users/${post.profiles.username}`
+                : undefined
+            }
           />
           <div className="flex shrink-0 items-center gap-3">
             <GolgeLikeButton

@@ -38,3 +38,20 @@ drop policy if exists "Kullanıcı kendi takibini siler" on public.follows;
 create policy "Kullanıcı kendi takibini siler"
   on public.follows for delete
   using (auth.uid() = follower_id);
+
+-- ---------------------------------------------------------------------
+-- Bildirim: biri seni takip edince (security definer)
+-- Kimlik gizli tutulur; mesaj geneldir (anonimlik korunur).
+-- ---------------------------------------------------------------------
+create or replace function public.s_follow_notify()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  insert into public.notifications (user_id, actor_id, type, entity_type, entity_id, message)
+  values (new.following_id, new.follower_id, 'follow', 'profile', new.follower_id,
+    'Yeni bir takipçin var 👤');
+  return new;
+end;
+$$;
+drop trigger if exists trg_follow_notify on public.follows;
+create trigger trg_follow_notify after insert on public.follows
+  for each row execute function public.s_follow_notify();

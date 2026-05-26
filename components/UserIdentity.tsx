@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Gender } from "@/types";
 import { getGenderLabel, getGenderFrameClass, getGenderBadgeClass } from "@/lib/gender";
 import { MaskIcon } from "@/components/ui/icons";
@@ -17,6 +18,12 @@ interface UserIdentityProps {
   showUsername?: boolean;
   /** Avatar yanındaki ikincil metin (örn. tarih). */
   subtitle?: string;
+  /**
+   * Verilirse VE kullanıcı anonim değilse, kimlik bu adrese link olur.
+   * Anonim kullanıcılar tıklanamaz (kimlik gizli kalır).
+   * Dış sarmalayıcı zaten bir <a>/Link ise (örn. mesaj listesi) bu propu GEÇMEYİN.
+   */
+  profileHref?: string;
 }
 
 const AVATAR: Record<Size, string> = {
@@ -50,13 +57,16 @@ export function UserIdentity({
   showGender = true,
   showUsername = true,
   subtitle,
+  profileHref,
 }: UserIdentityProps) {
   const revealName = !isAnonymous && showUsername && !!username;
   const displayName = revealName ? `@${username}` : "Anonim Kullanıcı";
   const frame = getGenderFrameClass(gender);
+  // Yalnızca kimlik açıkken link olur; anonim kullanıcı tıklanamaz.
+  const linkable = !!profileHref && revealName;
 
-  return (
-    <div className="flex items-center gap-3">
+  const inner = (
+    <>
       {/* Cinsiyet çerçeveli avatar (her zaman çerçeveli) */}
       <div className={`flex shrink-0 items-center justify-center rounded-full p-[2px] ${frame}`}>
         <div
@@ -86,6 +96,15 @@ export function UserIdentity({
         </div>
         {subtitle && <p className="text-xs text-slate-400">{subtitle}</p>}
       </div>
-    </div>
+    </>
   );
+
+  if (linkable) {
+    return (
+      <Link href={profileHref!} className="flex items-center gap-3 transition-opacity hover:opacity-80">
+        {inner}
+      </Link>
+    );
+  }
+  return <div className="flex items-center gap-3">{inner}</div>;
 }

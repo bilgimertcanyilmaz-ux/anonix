@@ -8,6 +8,7 @@ import { Alert } from "@/components/ui/Alert";
 import { AuthorBadge } from "@/components/confession/AuthorBadge";
 import { LikeButton } from "@/components/confession/LikeButton";
 import { MessageButton } from "@/components/messages/MessageButton";
+import { FollowButton } from "@/components/profile/FollowButton";
 import { ReportButton } from "@/components/moderation/ReportButton";
 import { ShareButton } from "@/components/viral/ShareButton";
 import { supabase } from "@/lib/supabaseClient";
@@ -164,12 +165,17 @@ export default function ConfessionDetailPage() {
               author={confession.profiles}
               subtitle={timeAgo(confession.created_at)}
             />
-            {confession.mood_tag && (
-              <span className="chip shrink-0">
-                <span>{moodEmoji(confession.mood_tag)}</span>
-                {confession.mood_tag}
-              </span>
-            )}
+            <div className="flex shrink-0 items-center gap-2">
+              {!confession.is_anonymous && (
+                <FollowButton targetUserId={confession.user_id} size="sm" />
+              )}
+              {confession.mood_tag && (
+                <span className="chip">
+                  <span>{moodEmoji(confession.mood_tag)}</span>
+                  {confession.mood_tag}
+                </span>
+              )}
+            </div>
           </div>
 
           <p className="whitespace-pre-wrap text-[15px] leading-relaxed text-slate-200">

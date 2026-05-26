@@ -7,9 +7,17 @@ import type { Gender } from "@/types";
  * cinsiyet etiketi/çerçevesi her zaman görünür; yalnızca kullanıcı adı/kimliği gizlenir.
  */
 
-/** Gelen değeri güvenli bir Gender'a indirger (null/bilinmeyen → "other"). */
+/**
+ * Gelen değeri güvenli bir Gender'a indirger.
+ * Hem kanonik (male/female/other) hem Türkçe/lowercase varyantları kabul eder;
+ * null/bilinmeyen → "other".
+ */
 export function normalizeGender(gender: Gender | string | null | undefined): Gender {
-  return gender === "male" || gender === "female" ? gender : "other";
+  if (!gender) return "other";
+  const g = String(gender).trim().toLocaleLowerCase("tr");
+  if (g === "male" || g === "erkek" || g === "e" || g === "bay") return "male";
+  if (g === "female" || g === "kadın" || g === "kadin" || g === "k" || g === "bayan") return "female";
+  return "other"; // other, diğer, belirtmek istemiyorum, vb.
 }
 
 /** Cinsiyetin kısa ekran metni (rozet/etiket için). */

@@ -11,6 +11,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { initialsOf } from "@/lib/profile";
 import { getGenderFrameClass, getGenderLabel, getGenderBadgeClass } from "@/lib/gender";
 import { rankIcon, rankTiers } from "@/lib/ranks";
+import { getFollowCounts, type FollowCounts } from "@/lib/follows";
 import { badgeIcon } from "@/lib/badges";
 import { CrownIcon } from "@/components/ui/icons";
 import type { UserBadge } from "@/types";
@@ -22,6 +23,7 @@ export default function ProfilePage() {
   const [error, setError] = useState<string | null>(null);
   const [badges, setBadges] = useState<UserBadge[]>([]);
   const [referralCount, setReferralCount] = useState(0);
+  const [followCounts, setFollowCounts] = useState<FollowCounts>({ followers: 0, following: 0 });
 
   // Giriş yapmamış kullanıcıyı login'e yönlendir.
   useEffect(() => {
@@ -44,6 +46,8 @@ export default function ProfilePage() {
       .select("id", { count: "exact", head: true })
       .eq("referrer_id", user.id);
     setReferralCount(count ?? 0);
+
+    setFollowCounts(await getFollowCounts(user.id));
   }, [user]);
 
   useEffect(() => {
@@ -115,6 +119,14 @@ export default function ProfilePage() {
                 >
                   {getGenderLabel(profile.gender)}
                 </span>
+              </div>
+              <div className="mt-2 flex items-center gap-4 text-xs text-slate-400">
+                <Link href="/profile/followers" className="transition-colors hover:text-white">
+                  <span className="font-bold text-white">{followCounts.followers}</span> Takipçi
+                </Link>
+                <Link href="/profile/following" className="transition-colors hover:text-white">
+                  <span className="font-bold text-white">{followCounts.following}</span> Takip
+                </Link>
               </div>
               <span
                 className={`mt-2 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${

@@ -11,6 +11,8 @@ export function notificationIcon(type: string): string {
       return "💬";
     case "message":
       return "📩";
+    case "follow":
+      return "👤";
     case "badge":
       return "🏅";
     case "task_completed":
@@ -33,6 +35,8 @@ export function notificationHref(n: Notification): string {
       return "/badges";
     case "task":
       return "/tasks";
+    case "profile":
+      return "/profile/followers";
     default:
       return "/notifications";
   }
