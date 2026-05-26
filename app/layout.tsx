@@ -7,9 +7,9 @@ import { ToastProvider } from "@/components/ui/ToastProvider";
 import { UnreadProvider } from "@/components/messages/UnreadProvider";
 import { NotifProvider } from "@/components/notifications/NotifProvider";
 import { StreakTracker } from "@/components/streaks/StreakTracker";
+import { SoundManager } from "@/components/sound/SoundManager";
 import { Navbar } from "@/components/layout/Navbar";
 import { BottomNav } from "@/components/layout/BottomNav";
-import { Footer } from "@/components/layout/Footer";
 import { siteConfig } from "@/lib/site";
 
 const inter = Inter({
@@ -65,9 +65,10 @@ export default function RootLayout({
               <UnreadProvider>
                 <NotifProvider>
                   <StreakTracker />
+                  <SoundManager />
                   <Navbar />
                   <main className="pt-6">{children}</main>
-                  <Footer />
+                  {/* Footer global değil — yalnızca /profile sayfasında gösterilir. */}
                   {/* Alt boşluk: mobilde bottom-nav'ın içeriği örtmemesi için */}
                   <div className="h-20 md:hidden" />
                   <BottomNav />

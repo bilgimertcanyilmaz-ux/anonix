@@ -16,6 +16,7 @@ import { ProfileFrame } from "@/components/profile/ProfileFrame";
 import { GenderBadge } from "@/components/profile/GenderBadge";
 import { ProfileSetup } from "@/components/profile/ProfileSetup";
 import { AvatarPicker } from "@/components/profile/AvatarPicker";
+import { Footer } from "@/components/layout/Footer";
 import type { UserBadge } from "@/types";
 
 export default function ProfilePage() {
@@ -95,7 +96,8 @@ export default function ProfilePage() {
   }
 
   return (
-    <Container>
+    <>
+      <Container>
       <div className="space-y-5 py-4">
         {/* Profil başlık kartı */}
         <div className="card animate-fade-up p-6">
@@ -297,10 +299,57 @@ export default function ProfilePage() {
           </button>
         </div>
 
+        {/* Ses ayarları */}
+        <div className="card space-y-4 p-5">
+          <p className="text-sm font-bold text-white">Ses ayarları</p>
+          {(
+            [
+              {
+                key: "notification_sound_enabled" as const,
+                title: "Bildirim sesi",
+                desc: "Yeni bildirim geldiğinde kısa bir ses çalar.",
+              },
+              {
+                key: "message_sound_enabled" as const,
+                title: "Mesaj sesi",
+                desc: "Yeni özel mesaj geldiğinde kısa bir ses çalar.",
+              },
+            ]
+          ).map((row) => {
+            const on = profile[row.key];
+            return (
+              <button
+                key={row.key}
+                type="button"
+                onClick={() => updateProfile({ [row.key]: !on })}
+                className="flex w-full items-center justify-between text-left"
+              >
+                <span>
+                  <span className="block text-sm font-semibold text-white">{row.title}</span>
+                  <span className="block text-xs text-slate-400">{row.desc}</span>
+                </span>
+                <span
+                  className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${
+                    on ? "bg-brand-500" : "bg-white/15"
+                  }`}
+                >
+                  <span
+                    className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${
+                      on ? "translate-x-[22px]" : "translate-x-0.5"
+                    }`}
+                  />
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
         <Button variant="ghost" onClick={handleSignOut} className="w-full">
           Çıkış yap
         </Button>
       </div>
-    </Container>
+      </Container>
+      <Footer />
+    </>
   );
 }

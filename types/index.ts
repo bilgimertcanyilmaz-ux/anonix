@@ -68,6 +68,8 @@ export interface Profile {
   referral_code: string | null;
   referred_by: string | null;
   theme_preference: string;
+  notification_sound_enabled: boolean;
+  message_sound_enabled: boolean;
   created_at: string;
   updated_at: string;
 }
