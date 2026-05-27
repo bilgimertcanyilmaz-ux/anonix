@@ -9,6 +9,8 @@ import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/components/ui/ToastProvider";
 import { CATEGORIES } from "@/lib/categories";
+import { canUseFeature } from "@/lib/subscription";
+import { LOUNGE_ROOMS } from "@/lib/lounge";
 import { moderateText, MODERATION_BLOCK_MESSAGE } from "@/lib/moderation";
 
 const MIN = 10;
@@ -23,6 +25,8 @@ export default function NewConfessionPage() {
   const [category, setCategory] = useState<string | null>(null);
   const [isAnonymous, setIsAnonymous] = useState(true);
   const [isTemporary, setIsTemporary] = useState(false);
+  const [plusRoom, setPlusRoom] = useState<string | null>(null);
+  const canLounge = canUseFeature(profile, "plus_lounge");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -72,18 +76,22 @@ export default function NewConfessionPage() {
     }
 
     setSubmitting(true);
+    const payload: Record<string, unknown> = {
+      user_id: user!.id,
+      content: text,
+      // Kategori = mood_tag (geriye dönük uyumluluk için ikisi de yazılır)
+      category: category,
+      mood_tag: category,
+      is_anonymous: isAnonymous,
+      is_temporary: isTemporary,
+      expires_at: isTemporary ? new Date(Date.now() + 24 * 3600 * 1000).toISOString() : null,
+    };
+    // Ultra Plus özel oda — yalnızca seçiliyse ekle (kolon yoksa normal akış bozulmasın)
+    if (canLounge && plusRoom) payload.plus_room_type = plusRoom;
+
     const { data, error: insertError } = await supabase
       .from("confessions")
-      .insert({
-        user_id: user!.id,
-        content: text,
-        // Kategori = mood_tag (geriye dönük uyumluluk için ikisi de yazılır)
-        category: category,
-        mood_tag: category,
-        is_anonymous: isAnonymous,
-        is_temporary: isTemporary,
-        expires_at: isTemporary ? new Date(Date.now() + 24 * 3600 * 1000).toISOString() : null,
-      })
+      .insert(payload)
       .select("id")
       .single();
     setSubmitting(false);
@@ -158,6 +166,49 @@ export default function NewConfessionPage() {
               })}
             </div>
           </div>
+
+          {/* Ultra Plus: özel odada paylaş */}
+          {canLounge && (
+            <div className="rounded-xl border border-amber-400/30 bg-amber-400/[0.06] p-3">
+              <button
+                type="button"
+                onClick={() => setPlusRoom((v) => (v ? null : LOUNGE_ROOMS[0]))}
+                className="flex w-full items-center justify-between text-left"
+              >
+                <span>
+                  <span className="block text-sm font-semibold text-amber-100">
+                    ⚡ Ultra Plus özel odada paylaş
+                  </span>
+                  <span className="block text-xs text-amber-100/60">
+                    Yalnızca Ultra Plus üyeler görür.
+                  </span>
+                </span>
+                <span
+                  className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${plusRoom ? "bg-amber-500" : "bg-white/15"}`}
+                >
+                  <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${plusRoom ? "translate-x-[22px]" : "translate-x-0.5"}`} />
+                </span>
+              </button>
+              {plusRoom && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {LOUNGE_ROOMS.map((r) => (
+                    <button
+                      key={r}
+                      type="button"
+                      onClick={() => setPlusRoom(r)}
+                      className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
+                        plusRoom === r
+                          ? "border-amber-400/60 bg-amber-400/15 text-amber-100"
+                          : "border-white/10 bg-white/[0.03] text-slate-300"
+                      }`}
+                    >
+                      {r}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Anonim paylaş toggle */}
           <button

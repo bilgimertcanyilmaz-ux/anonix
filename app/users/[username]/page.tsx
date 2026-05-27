@@ -14,6 +14,9 @@ import { fetchLikedConfessionIds } from "@/lib/home";
 import { nonExpiredFilter } from "@/lib/feeds";
 import { initialsOf } from "@/lib/profile";
 import { rankIcon } from "@/lib/ranks";
+import { recordProfileView } from "@/lib/profileViews";
+import { getSubscriptionTier } from "@/lib/subscription";
+import { premiumThemeRing } from "@/lib/themes";
 import { CrownIcon, MaskIcon } from "@/components/ui/icons";
 import type { Profile, ConfessionRecord } from "@/types";
 
@@ -69,6 +72,13 @@ export default function PublicProfilePage() {
     load();
   }, [load]);
 
+  // Profil görüntüleme kaydı (RPC kendi profilini/ghost/spam durumlarını eler)
+  useEffect(() => {
+    if (profile && user && profile.id !== user.id) {
+      void recordProfileView(profile.id);
+    }
+  }, [profile, user]);
+
   if (loading) {
     return (
       <Container>
@@ -118,7 +128,7 @@ export default function PublicProfilePage() {
         {/* Başlık kartı */}
         <div className="card p-6">
           <div className="flex items-center gap-4">
-            <div className={`flex h-20 w-20 items-center justify-center rounded-full p-[3px] ${getGenderFrameClass(profile.gender)} ${profile.is_plus ? "shadow-glow ring-2 ring-amber-300/70" : ""}`}>
+            <div className={`flex h-20 w-20 items-center justify-center rounded-full p-[3px] ${premiumThemeRing(profile.premium_theme) || getGenderFrameClass(profile.gender)} ${profile.is_plus ? "shadow-glow ring-2 ring-amber-300/70" : ""}`}>
               <div className="flex h-full w-full items-center justify-center rounded-full bg-ink-900 text-xl font-bold text-white">
                 {initialsOf(profile.username)}
               </div>
@@ -127,12 +137,17 @@ export default function PublicProfilePage() {
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="truncate text-xl font-extrabold text-white">@{profile.username}</h1>
-                {profile.is_plus && (
+                {getSubscriptionTier(profile) === "ultra_plus" ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-200 via-amber-400 to-brand-500 px-2.5 py-0.5 text-[10px] font-extrabold text-ink-900 shadow-glow ring-1 ring-amber-200/60">
+                    <CrownIcon className="h-3 w-3" />
+                    ULTRA PLUS
+                  </span>
+                ) : getSubscriptionTier(profile) === "plus" ? (
                   <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-300 to-amber-500 px-2 py-0.5 text-[10px] font-bold text-ink-900 shadow-glow">
                     <CrownIcon className="h-3 w-3" />
                     PLUS
                   </span>
-                )}
+                ) : null}
               </div>
               <div className="mt-1.5 flex flex-wrap items-center gap-2">
                 <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${getGenderBadgeClass(profile.gender)}`}>

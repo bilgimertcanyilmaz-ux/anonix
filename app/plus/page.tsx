@@ -134,10 +134,13 @@ export default function PlusPage() {
             </button>
           </div>
 
-          {/* ULTRA PLUS — premium görünüm */}
-          <div className="relative flex flex-col overflow-hidden rounded-2xl border-2 border-amber-400/50 bg-gradient-to-br from-amber-500/15 via-brand-700/40 to-ink-900 p-6 shadow-glow">
-            <span className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-amber-300/25 blur-3xl" />
-            <span className="absolute -top-3 left-1/2 -translate-x-1/2 animate-float whitespace-nowrap rounded-full bg-gradient-to-r from-amber-300 to-amber-500 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-ink-900 shadow-glow">
+          {/* ULTRA PLUS — premium görünüm (overflow-hidden YOK ki rozet kırpılmasın) */}
+          <div className="relative mt-3 flex flex-col rounded-2xl border-2 border-amber-400/50 bg-gradient-to-br from-amber-500/15 via-brand-700/40 to-ink-900 p-6 shadow-glow">
+            {/* Glow yalnızca iç katmanda kırpılır; rozet dışarıda kalır */}
+            <span className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl">
+              <span className="absolute -right-10 -top-10 block h-32 w-32 rounded-full bg-amber-300/25 blur-3xl" />
+            </span>
+            <span className="absolute -top-3 left-1/2 z-10 -translate-x-1/2 animate-float whitespace-nowrap rounded-full bg-gradient-to-r from-amber-300 to-amber-500 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-ink-900 shadow-glow">
               ⚡ {ultra.highlight ?? "En Güçlü"}
             </span>
             <div className="relative flex items-center gap-2">

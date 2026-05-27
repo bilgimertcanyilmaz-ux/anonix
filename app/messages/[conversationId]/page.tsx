@@ -10,6 +10,7 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/components/ui/ToastProvider";
 import { useUnread } from "@/components/messages/UnreadProvider";
 import { canUsePlusFeatures } from "@/lib/profile";
+import { canUseFeature } from "@/lib/subscription";
 import { UserIdentity } from "@/components/UserIdentity";
 import { BlockButton } from "@/components/profile/BlockButton";
 import type { Message, Conversation, Gender } from "@/types";
@@ -33,8 +34,13 @@ export default function ConversationPage() {
 
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
+  const [disappearing, setDisappearing] = useState(false);
+  const canDisappear = canUseFeature(profile, "disappearing_messages");
 
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  /** Süresi dolan kaybolan mesajları gizle. */
+  const notExpired = (m: Message) => !m.expires_at || new Date(m.expires_at) > new Date();
 
   useEffect(() => {
     if (!authLoading && !user) router.replace("/login");
@@ -155,14 +161,21 @@ export default function ConversationPage() {
     if (!user || !otherId) return;
 
     setSending(true);
+    const useDisappear = disappearing && canDisappear;
+    const msgPayload: Record<string, unknown> = {
+      conversation_id: convId,
+      sender_id: user.id,
+      receiver_id: otherId,
+      content,
+    };
+    // Kaybolan mesaj alanları yalnızca kullanıldığında eklenir (kolon yoksa normal mesaj bozulmasın)
+    if (useDisappear) {
+      msgPayload.is_disappearing = true;
+      msgPayload.expires_at = new Date(Date.now() + 24 * 3600 * 1000).toISOString();
+    }
     const { data, error } = await supabase
       .from("messages")
-      .insert({
-        conversation_id: convId,
-        sender_id: user.id,
-        receiver_id: otherId,
-        content,
-      })
+      .insert(msgPayload)
       .select("*")
       .single();
     setSending(false);
@@ -230,7 +243,7 @@ export default function ConversationPage() {
             Henüz mesaj yok. İlk mesajı sen gönder.
           </p>
         ) : (
-          messages.map((m) => {
+          messages.filter(notExpired).map((m) => {
             const mine = m.sender_id === user.id;
             return (
               <div
@@ -246,6 +259,11 @@ export default function ConversationPage() {
                 >
                   {/* React metni varsayılan olarak escape eder → XSS güvenli */}
                   <p className="whitespace-pre-wrap break-words">{m.content}</p>
+                  {m.is_disappearing && (
+                    <p className={`mt-1 text-[10px] ${mine ? "text-white/70" : "text-slate-400"}`}>
+                      ⏳ 24 saatte kaybolur
+                    </p>
+                  )}
                 </div>
               </div>
             );
@@ -254,8 +272,22 @@ export default function ConversationPage() {
         <div ref={bottomRef} />
       </div>
 
+      {/* Ultra Plus: kaybolan mesaj toggle */}
+      {canDisappear && (
+        <button
+          type="button"
+          onClick={() => setDisappearing((v) => !v)}
+          className="flex items-center justify-between gap-2 border-t border-white/5 px-1 pt-2 text-left"
+        >
+          <span className="text-xs text-slate-400">⏳ 24 saatte kaybolan mesaj</span>
+          <span className={`relative h-5 w-9 shrink-0 rounded-full transition-colors ${disappearing ? "bg-amber-500" : "bg-white/15"}`}>
+            <span className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${disappearing ? "translate-x-[18px]" : "translate-x-0.5"}`} />
+          </span>
+        </button>
+      )}
+
       {/* Yazma alanı */}
-      <form onSubmit={handleSend} className="flex items-end gap-2 border-t border-white/5 py-3">
+      <form onSubmit={handleSend} className={`flex items-end gap-2 py-3 ${canDisappear ? "" : "border-t border-white/5"}`}>
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}

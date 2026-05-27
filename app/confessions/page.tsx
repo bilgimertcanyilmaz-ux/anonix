@@ -19,6 +19,7 @@ import {
 import { getExploreFeed } from "@/lib/recommendations";
 import { getBlockedIds } from "@/lib/blocks";
 import { CATEGORY_FILTERS } from "@/lib/categories";
+import { AdSlot } from "@/components/premium/AdSlot";
 import { PlusCircleIcon, TrophyIcon } from "@/components/ui/icons";
 import type { ConfessionRecord } from "@/types";
 
@@ -90,7 +91,9 @@ export default function ConfessionsPage() {
         setLoading(false);
         return;
       }
-      setConfessions(((data as ConfessionRecord[]) ?? []).filter((r) => !blocked.has(r.user_id)));
+      setConfessions(
+        ((data as ConfessionRecord[]) ?? []).filter((r) => !blocked.has(r.user_id) && !r.plus_room_type)
+      );
       await loadLikes();
       setLoading(false);
       return;
@@ -111,9 +114,12 @@ export default function ConfessionsPage() {
     }
     let rows = (data as ConfessionRecord[]) ?? [];
 
-    // Yalnızca onaylı içerik + engellenenleri gizle
+    // Yalnızca onaylı içerik + engellenenleri gizle + Plus Lounge içeriğini Keşfet'te gösterme
     rows = rows.filter(
-      (r) => (r.moderation_status ?? "approved") === "approved" && !blocked.has(r.user_id)
+      (r) =>
+        (r.moderation_status ?? "approved") === "approved" &&
+        !blocked.has(r.user_id) &&
+        !r.plus_room_type
     );
 
     if (filter === "trend") rows = sortByTrend(rows);
@@ -241,8 +247,12 @@ export default function ConfessionsPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {confessions.map((c) => (
-              <FeedCard key={c.id} confession={c} liked={likedIds.has(c.id)} />
+            {confessions.map((c, i) => (
+              <div key={c.id} className="space-y-4">
+                <FeedCard confession={c} liked={likedIds.has(c.id)} />
+                {/* Free kullanıcıya her 6 kartta bir reklam yer tutucu */}
+                {i > 0 && (i + 1) % 6 === 0 && <AdSlot />}
+              </div>
             ))}
           </div>
         )}

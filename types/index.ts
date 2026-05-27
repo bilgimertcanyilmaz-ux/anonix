@@ -79,6 +79,12 @@ export interface Profile {
   /** Yaş onayı (17+). OAuth ile gelen kullanıcılarda başlangıçta false olur. */
   age_confirmed: boolean;
   age_confirmed_at: string | null;
+  /** Premium tema (yalnızca Ultra Plus seçebilir). Stage 17. */
+  premium_theme: string | null;
+  /** Hayalet mod (Ultra Plus) — profil görüntülemelerinde görünmez. */
+  ghost_mode: boolean;
+  /** Çevrimiçi durumunu gizle (Ultra Plus). */
+  hide_online: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -115,6 +121,11 @@ export interface ConfessionRecord {
   like_count: number;
   comment_count: number;
   moderation_status?: string;
+  /** Boost (Stage 17): boosted_until > now ise trend bonusu alır. */
+  boosted_until?: string | null;
+  boost_score?: number;
+  /** Plus özel oda türü (Ultra Plus lounge). */
+  plus_room_type?: string | null;
   created_at: string;
   updated_at: string;
   /** Embedded yazar (profiles ilişkisi). */
@@ -152,7 +163,34 @@ export interface Message {
   receiver_id: string;
   content: string;
   is_read: boolean;
+  /** Kaybolan mesaj (Ultra Plus). expires_at geçince UI'da gizlenir. */
+  is_disappearing?: boolean;
+  expires_at?: string | null;
   created_at: string;
+}
+
+/** Supabase `profile_views` tablosundaki profil görüntüleme. */
+export interface ProfileView {
+  id: string;
+  profile_id: string;
+  viewer_id: string | null;
+  created_at: string;
+  profiles?: ConfessionAuthor | null; // görüntüleyen (viewer) profili
+}
+
+/** Supabase `boost_logs` tablosundaki boost kaydı. */
+export interface BoostLog {
+  id: string;
+  user_id: string;
+  confession_id: string | null;
+  created_at: string;
+}
+
+/** Boost durumu (kota/kullanım). */
+export interface BoostStatus {
+  quota: number;
+  used: number;
+  remaining: number;
 }
 
 /** Supabase `golge_posts` tablosundaki fotoğraflı paylaşım. */

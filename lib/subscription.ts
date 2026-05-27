@@ -10,17 +10,16 @@ import type { SubscriptionTier } from "@/types";
 
 export type FeatureKey =
   | "messaging"
-  | "no_ads"
   | "see_likers"
-  | "boost"
   | "basic_analytics"
+  | "boost"
+  | "no_ads"
   | "profile_views"
   | "ghost_mode"
-  | "plus_lounge"
   | "advanced_analytics"
   | "premium_themes"
-  | "profile_themes"
   | "disappearing_messages"
+  | "plus_lounge"
   | "night_area";
 
 /** Plus paketinin erişebildiği özellikler. */
@@ -30,7 +29,6 @@ export const PLUS_FEATURES: FeatureKey[] = [
   "see_likers",
   "boost",
   "basic_analytics",
-  "profile_themes",
 ];
 
 /** Ultra Plus paketinin erişebildiği özellikler (Plus dahil). */
@@ -38,10 +36,10 @@ export const ULTRA_FEATURES: FeatureKey[] = [
   ...PLUS_FEATURES,
   "profile_views",
   "ghost_mode",
-  "plus_lounge",
   "advanced_analytics",
   "premium_themes",
   "disappearing_messages",
+  "plus_lounge",
   "night_area",
 ];
 
@@ -62,11 +60,14 @@ type ProfileLike = {
  * - subscription_tier doluysa onu kullan
  * - değilse is_plus'tan türet (geriye dönük uyumluluk)
  */
-export function getEffectiveTier(profile: ProfileLike): SubscriptionTier {
+/**
+ * Gerçek (satın alınmış) paket — admin bypass YOK.
+ * Faturalama / paket gösterimi (profil rozeti, /plus "sahip" durumu) için kullanılır.
+ * Böylece satın almamış bir admin "Ultra Plus üyesi" gibi GÖZÜKMEZ.
+ */
+export function getSubscriptionTier(profile: ProfileLike): SubscriptionTier {
   if (!profile) return "free";
-  if (profile.role === "admin") return "ultra_plus";
-  // is_plus açıkça false ise (süresi dolmuş / hiç alınmamış) paket free'dir —
-  // subscription_tier alanı eski/stale kalmış olsa bile premium gösterilmez.
+  // is_plus açıkça false ise (süresi dolmuş / hiç alınmamış) paket free'dir.
   if (profile.is_plus === false) return "free";
   const tier = profile.subscription_tier;
   if (tier === "ultra_plus") return "ultra_plus";
@@ -74,23 +75,43 @@ export function getEffectiveTier(profile: ProfileLike): SubscriptionTier {
   return profile.is_plus ? "plus" : "free";
 }
 
-/** Plus veya üzeri mi? (mesajlaşma vb. için) */
-export function isPlusOrAbove(profile: ProfileLike): boolean {
-  const t = getEffectiveTier(profile);
+/** Geriye dönük ad — gerçek paketi döndürür. */
+export const getEffectiveTier = getSubscriptionTier;
+
+/** Plus veya üzeri mi? (gerçek paket — gösterim/faturalama) */
+export function isPlus(profile: ProfileLike): boolean {
+  const t = getSubscriptionTier(profile);
   return t === "plus" || t === "ultra_plus";
 }
+/** Geriye dönük ad. */
+export const isPlusOrAbove = isPlus;
 
-/** Ultra Plus mı? */
+/** Ultra Plus mı? (gerçek paket) */
 export function isUltraPlus(profile: ProfileLike): boolean {
-  return getEffectiveTier(profile) === "ultra_plus";
+  return getSubscriptionTier(profile) === "ultra_plus";
 }
 
-/** Bir özelliğe erişebilir mi? */
+/** Admin tüm özellikleri kullanır (yetki); satın alma gerektirmez. */
+function hasAdminBypass(profile: ProfileLike): boolean {
+  return !!profile && profile.role === "admin";
+}
+
+/** Bir özelliğe erişebilir mi? (admin her zaman erişir) */
 export function canUseFeature(profile: ProfileLike, feature: FeatureKey): boolean {
-  const tier = getEffectiveTier(profile);
+  if (hasAdminBypass(profile)) return true;
+  const tier = getSubscriptionTier(profile);
   if (tier === "ultra_plus") return ULTRA_FEATURES.includes(feature);
   if (tier === "plus") return PLUS_FEATURES.includes(feature);
   return false;
+}
+
+/** Erişim + uygun kilit mesajı (UI guard'ları için). */
+export function requireFeature(
+  profile: ProfileLike,
+  feature: FeatureKey
+): { allowed: boolean; message?: string } {
+  if (canUseFeature(profile, feature)) return { allowed: true };
+  return { allowed: false, message: featureLockMessage(feature) };
 }
 
 /** Bir özelliğin gerektirdiği minimum paket. */
@@ -107,7 +128,7 @@ export async function getUserTier(userId: string): Promise<SubscriptionTier> {
     .select("subscription_tier, is_plus, role")
     .eq("id", userId)
     .maybeSingle();
-  return getEffectiveTier(data as ProfileLike);
+  return getSubscriptionTier(data as ProfileLike);
 }
 
 /** Günlük boost hakkı (UI gösterimi). */

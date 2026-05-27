@@ -7,8 +7,9 @@ import type { SubscriptionType } from "@/types";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+// Ödeme sonrası kullanıcı profiline döner (özellik kartları aktif görünür).
 const redirect = (status: string) =>
-  NextResponse.redirect(`${siteConfig.url}/plus?status=${status}`, { status: 303 });
+  NextResponse.redirect(`${siteConfig.url}/profile?status=${status}`, { status: 303 });
 
 export async function POST(req: NextRequest) {
   try {

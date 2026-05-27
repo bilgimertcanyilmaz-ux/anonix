@@ -7,6 +7,7 @@ import { Container } from "@/components/layout/Container";
 import { Alert } from "@/components/ui/Alert";
 import { Button, LinkButton } from "@/components/ui/Button";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { useToast } from "@/components/ui/ToastProvider";
 import { supabase } from "@/lib/supabaseClient";
 import { rankIcon, getNextRank, getRankProgress, getRemainingXP } from "@/lib/ranks";
 import { getFollowCounts, type FollowCounts } from "@/lib/follows";
@@ -16,6 +17,7 @@ import { ProfileFrame } from "@/components/profile/ProfileFrame";
 import { GenderBadge } from "@/components/profile/GenderBadge";
 import { ProfileSetup } from "@/components/profile/ProfileSetup";
 import { AvatarPicker } from "@/components/profile/AvatarPicker";
+import { SubscriptionFeatures } from "@/components/premium/SubscriptionFeatures";
 import { getEffectiveTier, TIER_LABELS } from "@/lib/subscription";
 import { Footer } from "@/components/layout/Footer";
 import { PushPermissionButton } from "@/components/pwa/PushPermissionButton";
@@ -23,7 +25,7 @@ import type { UserBadge } from "@/types";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { user, profile, loading, signOut, updateProfile } = useAuth();
+  const { user, profile, loading, signOut, updateProfile, refreshProfile } = useAuth();
   const [toggling, setToggling] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [badges, setBadges] = useState<UserBadge[]>([]);
@@ -37,6 +39,21 @@ export default function ProfilePage() {
       router.replace("/login");
     }
   }, [loading, user, router]);
+
+  // Ödeme dönüşü (?status=success|failed) — abonelik aktivasyonu bildirimi
+  const { success: toastSuccess, error: toastErr } = useToast();
+  useEffect(() => {
+    const status = new URLSearchParams(window.location.search).get("status");
+    if (status === "success") {
+      toastSuccess("Aboneliğin aktif edildi! 👑");
+      refreshProfile();
+      window.history.replaceState({}, "", "/profile");
+    } else if (status === "failed") {
+      toastErr("Ödeme tamamlanamadı. Tekrar deneyebilirsin.");
+      window.history.replaceState({}, "", "/profile");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const loadBadges = useCallback(async () => {
     if (!user) return;
@@ -208,6 +225,9 @@ export default function ProfilePage() {
             </div>
           );
         })()}
+
+        {/* Abonelik özellikleri (pakete göre kartlar) */}
+        <SubscriptionFeatures />
 
         {/* Avatar seçimi */}
         <AvatarPicker />

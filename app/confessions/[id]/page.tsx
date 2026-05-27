@@ -19,6 +19,9 @@ import { moodEmoji } from "@/lib/moods";
 import { timeAgo } from "@/lib/format";
 import { moderateText, MODERATION_BLOCK_MESSAGE } from "@/lib/moderation";
 import { trackInteraction } from "@/lib/recommendations";
+import { LikersModal } from "@/components/premium/LikersModal";
+import { boostConfession, isBoosted } from "@/lib/boost";
+import { canUseFeature, getSubscriptionTier } from "@/lib/subscription";
 import type { ConfessionRecord, CommentRecord } from "@/types";
 
 const MIN = 2;
@@ -41,6 +44,21 @@ export default function ConfessionDetailPage() {
   const [commentText, setCommentText] = useState("");
   const [commentError, setCommentError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [likersOpen, setLikersOpen] = useState(false);
+  const [boosting, setBoosting] = useState(false);
+
+  async function handleBoost() {
+    if (!confession) return;
+    setBoosting(true);
+    const res = await boostConfession(confession.id);
+    setBoosting(false);
+    if (!res.ok) {
+      toastError(res.error || "Boost yapılamadı.");
+      return;
+    }
+    success(`🚀 Paylaşımın boostlandı! Kalan hak: ${res.remaining ?? 0}`);
+    await load();
+  }
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -60,7 +78,7 @@ export default function ConfessionDetailPage() {
 
     const { data: cmts } = await supabase
       .from("confession_comments")
-      .select("*, profiles(username, gender, is_anonymous, avatar_url)")
+      .select("*, profiles(username, gender, is_anonymous, avatar_url, subscription_tier, is_plus)")
       .eq("confession_id", id)
       .order("created_at", { ascending: true });
     setComments((cmts as CommentRecord[]) ?? []);
@@ -217,12 +235,39 @@ export default function ConfessionDetailPage() {
                 initialCount={confession.like_count}
                 moodTag={confession.mood_tag}
               />
+              <button
+                type="button"
+                onClick={() => setLikersOpen(true)}
+                className="text-sm text-slate-400 transition-colors hover:text-brand-300"
+              >
+                Beğenenler
+              </button>
               <span className="text-sm text-slate-400">
                 {confession.comment_count} yorum
               </span>
             </div>
             <MessageButton confessionId={confession.id} authorId={confession.user_id} />
           </div>
+
+          {/* Boost (yalnızca kendi paylaşımında) */}
+          {user && confession.user_id === user.id && (
+            <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-2.5">
+              <span className="text-xs text-slate-400">
+                {isBoosted(confession.boosted_until)
+                  ? "🚀 Paylaşımın şu an öne çıkıyor"
+                  : "Paylaşımını öne çıkar"}
+              </span>
+              <button
+                type="button"
+                onClick={handleBoost}
+                disabled={boosting || !canUseFeature(profile, "boost")}
+                className="shrink-0 rounded-full bg-gradient-to-r from-amber-300 to-amber-500 px-4 py-1.5 text-xs font-bold text-ink-900 shadow-glow transition-transform active:scale-95 disabled:opacity-50"
+                title={canUseFeature(profile, "boost") ? "" : "Boost için Plus gerekir"}
+              >
+                {boosting ? "..." : canUseFeature(profile, "boost") ? "🚀 Boostla" : "🔒 Boost (Plus)"}
+              </button>
+            </div>
+          )}
           <div className="mt-3 flex items-center justify-between">
             <ShareButton type="confession" id={confession.id} text={confession.content} mood={confession.mood_tag} />
             <ReportButton
@@ -268,15 +313,32 @@ export default function ConfessionDetailPage() {
               Henüz yorum yok. İlk yorumu sen yap.
             </p>
           ) : (
-            comments.map((c) => (
-              <div key={c.id} className="card p-4">
+            comments.map((c) => {
+              const ctier = getSubscriptionTier(
+                c.profiles as { subscription_tier?: string | null; is_plus?: boolean | null } | null
+              );
+              const glow =
+                ctier === "ultra_plus"
+                  ? "ring-2 ring-amber-300/50 shadow-glow"
+                  : ctier === "plus"
+                    ? "ring-1 ring-brand-400/40"
+                    : "";
+              return (
+              <div key={c.id} className={`card p-4 ${glow}`}>
                 <div className="flex items-start justify-between gap-2">
-                  <AuthorBadge
-                    anonymous={c.is_anonymous}
-                    author={c.profiles}
-                    subtitle={timeAgo(c.created_at)}
-                    size="sm"
-                  />
+                  <div className="flex items-center gap-1.5">
+                    <AuthorBadge
+                      anonymous={c.is_anonymous}
+                      author={c.profiles}
+                      subtitle={timeAgo(c.created_at)}
+                      size="sm"
+                    />
+                    {ctier === "ultra_plus" && (
+                      <span className="rounded-full bg-gradient-to-r from-amber-300 to-amber-500 px-1.5 py-0.5 text-[9px] font-bold text-ink-900">
+                        ULTRA
+                      </span>
+                    )}
+                  </div>
                   <ReportButton
                     entityType="confession_comment"
                     entityId={c.id}
@@ -288,10 +350,18 @@ export default function ConfessionDetailPage() {
                   {c.content}
                 </p>
               </div>
-            ))
+              );
+            })
           )}
         </div>
       </div>
+
+      <LikersModal
+        entityType="confession"
+        id={confession.id}
+        open={likersOpen}
+        onClose={() => setLikersOpen(false)}
+      />
     </Container>
   );
 }
