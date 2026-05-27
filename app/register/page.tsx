@@ -8,7 +8,10 @@ import { Input } from "@/components/ui/Input";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { OAuthButtons } from "@/components/auth/OAuthButtons";
 import { genderOptions } from "@/lib/profile";
+import { isFeatureEnabled } from "@/lib/features";
+import { checkInviteCode } from "@/lib/invites";
 import type { Gender } from "@/types";
 
 export default function RegisterPage() {
@@ -28,10 +31,19 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [referralCode, setReferralCode] = useState<string | null>(null);
 
-  // Davet kodunu URL'den al (?ref=CODE)
+  // Soft launch: davet kodu (beta_mode açıkken zorunlu)
+  const [betaMode, setBetaMode] = useState(false);
+  const [inviteCode, setInviteCode] = useState("");
+
+  // Davet/referral kodunu URL'den al (?ref=CODE veya ?invite=CODE)
   useEffect(() => {
-    const ref = new URLSearchParams(window.location.search).get("ref");
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get("ref");
     if (ref) setReferralCode(ref);
+    const inv = params.get("invite");
+    if (inv) setInviteCode(inv);
+    // beta_mode bayrağını kontrol et
+    isFeatureEnabled("beta_mode").then(setBetaMode).catch(() => {});
   }, []);
 
   function validate(): string | null {
@@ -42,6 +54,8 @@ export default function RegisterPage() {
     if (!email.includes("@")) return "Geçerli bir e-posta adresi gir.";
     if (password.length < 6) return "Şifre en az 6 karakter olmalı.";
     if (password !== confirm) return "Şifreler eşleşmiyor.";
+    if (betaMode && inviteCode.trim().length < 3)
+      return "Şu an yalnızca davetle katılım açık. Geçerli bir davet kodu gir.";
     if (!ageConfirmed) return "Devam etmek için 17 yaşından büyük olduğunu onaylamalısın.";
     return null;
   }
@@ -58,6 +72,17 @@ export default function RegisterPage() {
     }
 
     setLoading(true);
+
+    // Beta modda davet kodunu sunucuda doğrula
+    if (betaMode) {
+      const valid = await checkInviteCode(inviteCode);
+      if (!valid) {
+        setLoading(false);
+        setError("Davet kodu geçersiz, süresi dolmuş veya kullanım hakkı bitmiş.");
+        return;
+      }
+    }
+
     const result = await signUp({
       username: username.trim(),
       email: email.trim(),
@@ -66,6 +91,7 @@ export default function RegisterPage() {
       isAnonymous,
       ageConfirmed,
       referralCode,
+      inviteCode: betaMode ? inviteCode.trim() : null,
     });
     setLoading(false);
 
@@ -98,6 +124,8 @@ export default function RegisterPage() {
         </>
       }
     >
+      <OAuthButtons />
+
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && <Alert tone="error">{error}</Alert>}
         {success && <Alert tone="success">{success}</Alert>}
@@ -105,6 +133,22 @@ export default function RegisterPage() {
           <Alert tone="info">
             🎁 Davetle geldin! İlk itirafından sonra +100 puan kazanacaksın.
           </Alert>
+        )}
+        {betaMode && !success && (
+          <Alert tone="info">
+            🔒 Anonix şu an kapalı beta&apos;da. Katılmak için bir davet kodu gerekiyor.
+          </Alert>
+        )}
+
+        {betaMode && (
+          <Input
+            id="inviteCode"
+            label="Davet kodu"
+            placeholder="ör. ANONIX-BETA"
+            autoComplete="off"
+            value={inviteCode}
+            onChange={(e) => setInviteCode(e.target.value)}
+          />
         )}
 
         <Input

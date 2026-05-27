@@ -32,8 +32,8 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-white/5 bg-ink-950/70 backdrop-blur-md [padding-top:env(safe-area-inset-top)]">
-      <div className="mx-auto flex h-16 w-full max-w-2xl items-center justify-between px-4 sm:px-6">
-        <Link href="/" className="flex items-center gap-2">
+      <div className="mx-auto flex h-16 w-full max-w-2xl items-center justify-between gap-4 px-4 sm:px-6 lg:max-w-6xl">
+        <Link href="/" className="flex shrink-0 items-center gap-2">
           <Image
             src="/logo.png"
             alt="Anonix"
@@ -47,7 +47,9 @@ export function Navbar() {
           </span>
         </Link>
 
-        <div className="flex items-center gap-1.5 sm:gap-2">
+        {/* Sağ küme: nav linkleri (lg) + aksiyonlar. Logoyla çakışmaması için
+            min-w-0 + flex-wrap-none, linkler arası nefes payı. */}
+        <div className="flex min-w-0 items-center gap-1.5 sm:gap-2 lg:gap-2.5">
           <Link
             href="/confessions"
             className={`hidden whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-semibold transition-colors hover:text-white lg:inline-flex ${activeText("/confessions")}`}

@@ -36,11 +36,14 @@ export async function activateSubscription(params: {
   const admin = getSupabaseAdmin();
   const expiresAt = computeExpiry(params.type);
 
-  // Profili Plus yap (s6_profile_badges trigger'ı 'Plus Üye' rozeti + bildirim üretir)
+  // Profili Plus/Ultra Plus yap (s6_profile_badges trigger'ı rozet + bildirim üretir)
+  // subscription_tier + plus_boosts pakete göre ayarlanır.
   await admin
     .from("profiles")
     .update({
       is_plus: true,
+      subscription_tier: plan.tier,
+      plus_boosts: plan.boosts,
       plus_expires_at: expiresAt.toISOString(),
       subscription_type: params.type,
       updated_at: new Date().toISOString(),
@@ -63,7 +66,7 @@ export async function activateSubscription(params: {
     actor_id: params.userId,
     type: "plus",
     entity_type: "plus",
-    message: `Anonix Plus (${plan.name}) aktif! 👑`,
+    message: `Anonix ${plan.name} aktif! 👑`,
   });
 
   return { expiresAt };
@@ -95,7 +98,12 @@ export async function checkSubscriptionStatus(userId: string): Promise<boolean> 
   if (data.is_plus && expired) {
     await admin
       .from("profiles")
-      .update({ is_plus: false, subscription_type: null })
+      .update({
+        is_plus: false,
+        subscription_tier: "free",
+        plus_boosts: 0,
+        subscription_type: null,
+      })
       .eq("id", userId);
     await admin
       .from("subscriptions")

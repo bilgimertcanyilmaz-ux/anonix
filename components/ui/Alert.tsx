@@ -3,9 +3,9 @@ import type { ReactNode } from "react";
 type Tone = "error" | "success" | "info";
 
 const tones: Record<Tone, string> = {
-  error: "border-red-500/30 bg-red-500/10 text-red-200",
-  success: "border-emerald-500/30 bg-emerald-500/10 text-emerald-200",
-  info: "border-brand-500/30 bg-brand-500/10 text-brand-200",
+  error: "alert-error",
+  success: "alert-success",
+  info: "alert-info",
 };
 
 /** Form geri bildirimleri için küçük uyarı kutusu. */

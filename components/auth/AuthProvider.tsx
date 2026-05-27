@@ -26,6 +26,7 @@ interface AuthContextValue {
   loading: boolean;
   signUp: (data: SignUpData) => Promise<AuthResult>;
   signIn: (email: string, password: string) => Promise<AuthResult>;
+  signInWithOAuth: (provider: "google" | "apple") => Promise<AuthResult>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<AuthResult>;
   updateProfile: (patch: Partial<Profile>) => Promise<AuthResult>;
@@ -93,7 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [fetchProfile]);
 
   const signUp = useCallback(
-    async ({ username, email, password, gender, isAnonymous, ageConfirmed, referralCode }: SignUpData): Promise<AuthResult> => {
+    async ({ username, email, password, gender, isAnonymous, ageConfirmed, referralCode, inviteCode }: SignUpData): Promise<AuthResult> => {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -105,6 +106,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             is_anonymous: isAnonymous,
             age_confirmed: ageConfirmed,
             ...(referralCode ? { referred_by_code: referralCode } : {}),
+            ...(inviteCode ? { invite_code: inviteCode } : {}),
           },
         },
       });
@@ -122,6 +124,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async (email: string, password: string): Promise<AuthResult> => {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) return { error: authErrorToTr(error.message) };
+      return {};
+    },
+    []
+  );
+
+  const signInWithOAuth = useCallback(
+    async (provider: "google" | "apple"): Promise<AuthResult> => {
+      const redirectTo =
+        typeof window !== "undefined" ? `${window.location.origin}/auth/callback` : undefined;
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: { redirectTo },
+      });
+      if (error) return { error: authErrorToTr(error.message) };
+      // Başarılıysa tarayıcı sağlayıcıya yönlenir; dönüş /auth/callback'te ele alınır.
       return {};
     },
     []
@@ -170,6 +187,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loading,
         signUp,
         signIn,
+        signInWithOAuth,
         signOut,
         resetPassword,
         updateProfile,

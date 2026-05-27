@@ -15,13 +15,14 @@ export function FeedCard({ confession, liked }: FeedCardProps) {
   const {
     id,
     content,
-    mood_tag,
     is_anonymous,
     like_count,
     comment_count,
     created_at,
     profiles,
   } = confession;
+  // Kategori = mood_tag ile uyumlu; eski kayıtlarda mood_tag, yenilerde ikisi de dolu.
+  const mood_tag = confession.mood_tag ?? confession.category ?? null;
 
   return (
     <article className="card card-hover p-5">

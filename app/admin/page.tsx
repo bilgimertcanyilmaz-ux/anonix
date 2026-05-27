@@ -16,12 +16,18 @@ interface Stats {
 
 interface PayStats {
   revenue: number;
-  activeSubs: number;
-  monthly: number;
-  yearly: number;
+  plusSubs: number;
+  ultraSubs: number;
+  mrr: number;
+  plusRevenue: number;
+  ultraRevenue: number;
   failed: number;
   recent: PaymentLog[];
 }
+
+// Aylık fiyatlar (server-side sabit ile uyumlu)
+const PLUS_PRICE = 49.99;
+const ULTRA_PRICE = 99.99;
 
 async function countOf(table: string, build?: (q: any) => any): Promise<number> {
   let q = supabase.from(table).select("id", { count: "exact", head: true });
@@ -49,11 +55,10 @@ export default function AdminDashboard() {
         ]);
       setStats({ users, confessions, golge, pendingReports, bannedUsers, last24h: conf24 + golge24 });
 
-      // Ödeme istatistikleri
-      const [activeSubs, monthly, yearly, failed, successLogs, recent] = await Promise.all([
-        countOf("subscriptions", (q) => q.eq("status", "active")),
-        countOf("subscriptions", (q) => q.eq("status", "active").eq("subscription_type", "monthly")),
-        countOf("subscriptions", (q) => q.eq("status", "active").eq("subscription_type", "yearly")),
+      // Ödeme istatistikleri — paket bazlı (profiles.subscription_tier)
+      const [plusSubs, ultraSubs, failed, successLogs, recent] = await Promise.all([
+        countOf("profiles", (q) => q.eq("subscription_tier", "plus")),
+        countOf("profiles", (q) => q.eq("subscription_tier", "ultra_plus")),
         countOf("payment_logs", (q) => q.eq("status", "failed")),
         supabase.from("payment_logs").select("amount").eq("status", "success"),
         supabase.from("payment_logs").select("*").order("created_at", { ascending: false }).limit(5),
@@ -62,11 +67,15 @@ export default function AdminDashboard() {
         (s, r) => s + Number(r.amount),
         0
       );
+      const plusRevenue = plusSubs * PLUS_PRICE;
+      const ultraRevenue = ultraSubs * ULTRA_PRICE;
       setPay({
         revenue,
-        activeSubs,
-        monthly,
-        yearly,
+        plusSubs,
+        ultraSubs,
+        mrr: plusRevenue + ultraRevenue,
+        plusRevenue,
+        ultraRevenue,
         failed,
         recent: (recent.data as PaymentLog[]) ?? [],
       });
@@ -83,10 +92,12 @@ export default function AdminDashboard() {
   ];
 
   const payCards = [
+    { label: "Aylık MRR", value: pay ? `₺${pay.mrr.toFixed(2)}` : "—", icon: "📈" },
+    { label: "Plus aboneler", value: pay?.plusSubs, icon: "⭐" },
+    { label: "Ultra Plus aboneler", value: pay?.ultraSubs, icon: "👑" },
+    { label: "Plus geliri", value: pay ? `₺${pay.plusRevenue.toFixed(2)}` : "—", icon: "💜" },
+    { label: "Ultra Plus geliri", value: pay ? `₺${pay.ultraRevenue.toFixed(2)}` : "—", icon: "🟡" },
     { label: "Toplam gelir", value: pay ? `₺${pay.revenue.toFixed(2)}` : "—", icon: "💰" },
-    { label: "Aktif abonelik", value: pay?.activeSubs, icon: "✅" },
-    { label: "Aylık", value: pay?.monthly, icon: "📅" },
-    { label: "Yıllık", value: pay?.yearly, icon: "🗓️" },
     { label: "Başarısız ödeme", value: pay?.failed, icon: "❌", warn: true },
   ];
 

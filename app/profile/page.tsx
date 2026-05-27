@@ -16,6 +16,7 @@ import { ProfileFrame } from "@/components/profile/ProfileFrame";
 import { GenderBadge } from "@/components/profile/GenderBadge";
 import { ProfileSetup } from "@/components/profile/ProfileSetup";
 import { AvatarPicker } from "@/components/profile/AvatarPicker";
+import { getEffectiveTier, TIER_LABELS } from "@/lib/subscription";
 import { Footer } from "@/components/layout/Footer";
 import { PushPermissionButton } from "@/components/pwa/PushPermissionButton";
 import type { UserBadge } from "@/types";
@@ -117,12 +118,28 @@ export default function ProfilePage() {
                 <h1 className="truncate text-xl font-extrabold text-white">
                   @{profile.username}
                 </h1>
-                {profile.is_plus && (
-                  <span className="inline-flex animate-float items-center gap-1 rounded-full bg-gradient-to-r from-amber-300 to-amber-500 px-2 py-0.5 text-[10px] font-bold text-ink-900 shadow-glow">
-                    <CrownIcon className="h-3 w-3" />
-                    PLUS
-                  </span>
-                )}
+                {(() => {
+                  const t = getEffectiveTier(profile);
+                  if (t === "ultra_plus")
+                    return (
+                      <span className="inline-flex animate-float items-center gap-1 rounded-full bg-gradient-to-r from-amber-200 via-amber-400 to-brand-500 px-2.5 py-0.5 text-[10px] font-extrabold text-ink-900 shadow-glow ring-1 ring-amber-200/60">
+                        <CrownIcon className="h-3 w-3" />
+                        ULTRA PLUS
+                      </span>
+                    );
+                  if (t === "plus")
+                    return (
+                      <span className="inline-flex animate-float items-center gap-1 rounded-full bg-gradient-to-r from-amber-300 to-amber-500 px-2 py-0.5 text-[10px] font-bold text-ink-900 shadow-glow">
+                        <CrownIcon className="h-3 w-3" />
+                        PLUS
+                      </span>
+                    );
+                  return (
+                    <span className="inline-flex items-center rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-bold text-slate-300">
+                      Free
+                    </span>
+                  );
+                })()}
               </div>
               <div className="mt-1.5 flex flex-wrap items-center gap-2">
                 <GenderBadge gender={profile.gender} />
@@ -244,24 +261,38 @@ export default function ProfilePage() {
         </div>
 
         {/* Üyelik durumu */}
-        <div className="card flex items-center justify-between gap-3 p-5">
-          <div>
-            <p className="text-sm font-semibold text-white">Plus üyelik</p>
-            <p className="text-xs text-slate-400">
-              {profile.is_plus ? "Aktif — tüm premium özellikler açık." : "Henüz aktif değil."}
-            </p>
-          </div>
-          {profile.is_plus ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-300/20 to-brand-500/20 px-3 py-1 text-xs font-bold text-amber-200">
-              <CrownIcon className="h-3.5 w-3.5" />
-              Plus Üye
-            </span>
-          ) : (
-            <LinkButton href="/plus" className="!px-4 !py-2 text-xs">
-              Plus'a Geç
-            </LinkButton>
-          )}
-        </div>
+        {(() => {
+          const t = getEffectiveTier(profile);
+          const expiryText =
+            profile.plus_expires_at && t !== "free"
+              ? `${new Date(profile.plus_expires_at).toLocaleDateString("tr-TR")} tarihine kadar`
+              : null;
+          return (
+            <div className="card flex items-center justify-between gap-3 p-5">
+              <div>
+                <p className="text-sm font-semibold text-white">Üyelik · {TIER_LABELS[t]}</p>
+                <p className="text-xs text-slate-400">
+                  {t === "ultra_plus"
+                    ? "Tüm Ultra Plus özellikleri açık."
+                    : t === "plus"
+                      ? "Plus özellikleri açık."
+                      : "Premium özellikler kapalı."}
+                  {expiryText ? ` · ${expiryText}` : ""}
+                </p>
+              </div>
+              {t === "ultra_plus" ? (
+                <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-300/25 to-brand-500/25 px-3 py-1 text-xs font-bold text-amber-200">
+                  <CrownIcon className="h-3.5 w-3.5" />
+                  Ultra Plus
+                </span>
+              ) : (
+                <LinkButton href="/plus" className="!px-4 !py-2 text-xs">
+                  {t === "plus" ? "Ultra Plus’a Geç" : "Plus’a Geç"}
+                </LinkButton>
+              )}
+            </div>
+          );
+        })()}
 
         {/* Anonimlik aç/kapat */}
         <div className="card p-5">

@@ -108,7 +108,9 @@ export function scoreConfession(
     comment_count: c.comment_count,
     created_at: c.created_at,
   });
-  if (topMood && c.mood_tag === topMood) score += 50;
+  // Kullanıcının en çok etkileşim verdiği kategori/mood ise öne çıkar (+50).
+  // Kategori değeri mood_tag ile uyumludur; ikisinden biri eşleşirse yeterli.
+  if (topMood && (c.mood_tag === topMood || c.category === topMood)) score += 50;
   if (!c.is_anonymous && followingIds.has(c.user_id)) score += 30;
   score += recencyBonus(c.created_at);
   return score;

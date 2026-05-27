@@ -8,7 +8,7 @@ import { Alert } from "@/components/ui/Alert";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/components/ui/ToastProvider";
-import { moodTags } from "@/lib/moods";
+import { CATEGORIES } from "@/lib/categories";
 import { moderateText, MODERATION_BLOCK_MESSAGE } from "@/lib/moderation";
 
 const MIN = 10;
@@ -20,7 +20,7 @@ export default function NewConfessionPage() {
   const { success, error: toastError } = useToast();
 
   const [content, setContent] = useState("");
-  const [mood, setMood] = useState<string | null>(null);
+  const [category, setCategory] = useState<string | null>(null);
   const [isAnonymous, setIsAnonymous] = useState(true);
   const [isTemporary, setIsTemporary] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -77,7 +77,9 @@ export default function NewConfessionPage() {
       .insert({
         user_id: user!.id,
         content: text,
-        mood_tag: mood,
+        // Kategori = mood_tag (geriye dönük uyumluluk için ikisi de yazılır)
+        category: category,
+        mood_tag: category,
         is_anonymous: isAnonymous,
         is_temporary: isTemporary,
         expires_at: isTemporary ? new Date(Date.now() + 24 * 3600 * 1000).toISOString() : null,
@@ -130,27 +132,27 @@ export default function NewConfessionPage() {
             </div>
           </div>
 
-          {/* Ruh hali etiketi */}
+          {/* Kategori seçimi */}
           <div>
             <span className="mb-2 block text-sm font-medium text-slate-300">
-              Ruh hali (isteğe bağlı)
+              Kategori (isteğe bağlı)
             </span>
             <div className="flex flex-wrap gap-2">
-              {moodTags.map((m) => {
-                const active = mood === m.value;
+              {CATEGORIES.map((c) => {
+                const active = category === c.value;
                 return (
                   <button
-                    key={m.value}
+                    key={c.value}
                     type="button"
-                    onClick={() => setMood(active ? null : m.value)}
+                    onClick={() => setCategory(active ? null : c.value)}
                     className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
                       active
                         ? "border-brand-500/60 bg-brand-500/15 text-brand-100"
                         : "border-white/10 bg-white/[0.03] text-slate-300 hover:bg-white/[0.06]"
                     }`}
                   >
-                    <span>{m.emoji}</span>
-                    {m.value}
+                    <span>{c.emoji}</span>
+                    {c.value}
                   </button>
                 );
               })}

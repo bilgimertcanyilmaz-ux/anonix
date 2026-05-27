@@ -7,6 +7,7 @@ import { AuthShell } from "@/components/auth/AuthShell";
 import { Input } from "@/components/ui/Input";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
+import { OAuthButtons } from "@/components/auth/OAuthButtons";
 import { useAuth } from "@/components/auth/AuthProvider";
 
 export default function LoginPage() {
@@ -55,6 +56,8 @@ export default function LoginPage() {
         </>
       }
     >
+      <OAuthButtons />
+
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && <Alert tone="error">{error}</Alert>}
 

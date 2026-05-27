@@ -8,9 +8,12 @@ import { UnreadProvider } from "@/components/messages/UnreadProvider";
 import { NotifProvider } from "@/components/notifications/NotifProvider";
 import { StreakTracker } from "@/components/streaks/StreakTracker";
 import { SoundManager } from "@/components/sound/SoundManager";
+import { SessionTracker } from "@/components/analytics/SessionTracker";
 import { Navbar } from "@/components/layout/Navbar";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { PwaManager } from "@/components/pwa/PwaManager";
+import { FeedbackWidget } from "@/components/feedback/FeedbackWidget";
+import { SatisfactionPopup } from "@/components/feedback/SatisfactionPopup";
 import { siteConfig } from "@/lib/site";
 
 const inter = Inter({
@@ -75,6 +78,7 @@ export default function RootLayout({
                 <NotifProvider>
                   <StreakTracker />
                   <SoundManager />
+                  <SessionTracker />
                   <Navbar />
                   <main className="pt-6">{children}</main>
                   {/* Footer global değil — yalnızca /profile sayfasında gösterilir. */}
@@ -82,6 +86,8 @@ export default function RootLayout({
                   <div className="h-20 md:hidden" />
                   <BottomNav />
                   <PwaManager />
+                  <FeedbackWidget />
+                  <SatisfactionPopup />
                 </NotifProvider>
               </UnreadProvider>
             </ToastProvider>

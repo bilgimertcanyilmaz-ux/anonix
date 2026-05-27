@@ -61,6 +61,10 @@ export interface Profile {
   banned_reason: string | null;
   plus_expires_at: string | null;
   subscription_type: string | null;
+  /** Abonelik paketi: free | plus | ultra_plus (Stage 16). */
+  subscription_tier: string;
+  /** Günlük boost hakkı (Plus 1, Ultra Plus 3). */
+  plus_boosts: number;
   iyzico_customer_id: string | null;
   streak_count: number;
   last_active_date: string | null;
@@ -70,6 +74,11 @@ export interface Profile {
   theme_preference: string;
   notification_sound_enabled: boolean;
   message_sound_enabled: boolean;
+  is_beta_user: boolean;
+  beta_invite_code: string | null;
+  /** Yaş onayı (17+). OAuth ile gelen kullanıcılarda başlangıçta false olur. */
+  age_confirmed: boolean;
+  age_confirmed_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -83,6 +92,7 @@ export interface SignUpData {
   isAnonymous: boolean;
   ageConfirmed: boolean;
   referralCode?: string | null;
+  inviteCode?: string | null;
 }
 
 /** İtiraf/yorum kartlarında gösterilen yazar bilgisi (profiles ilişkisinden). */
@@ -99,6 +109,8 @@ export interface ConfessionRecord {
   user_id: string;
   content: string;
   mood_tag: string | null;
+  /** Kategori (Stage 15). Yeni paylaşımlarda mood_tag ile aynı değere yazılır. */
+  category?: string | null;
   is_anonymous: boolean;
   like_count: number;
   comment_count: number;
@@ -269,8 +281,19 @@ export interface BannedWord {
   created_at: string;
 }
 
-/** Plus abonelik türü. */
-export type SubscriptionType = "monthly" | "yearly";
+/** Abonelik paketi (tier). */
+export type SubscriptionTier = "free" | "plus" | "ultra_plus";
+
+/**
+ * Abonelik/plan türü.
+ * Stage 16: plus_monthly / ultra_plus_monthly. Eski monthly/yearly geriye
+ * dönük uyumluluk için korunur (eski subscription kayıtları).
+ */
+export type SubscriptionType =
+  | "plus_monthly"
+  | "ultra_plus_monthly"
+  | "monthly"
+  | "yearly";
 
 /** Supabase `subscriptions` tablosundaki abonelik. */
 export interface Subscription {
@@ -326,4 +349,85 @@ export interface PaymentLog {
   status: string;
   raw_response: unknown;
   created_at: string;
+}
+
+/** Bilinen özellik bayrağı anahtarları (lib/features.ts ile eşleşir). */
+export type FeatureKey =
+  | "beta_mode"
+  | "push_notifications"
+  | "ai_moderation"
+  | "ghost_mode"
+  | "viral_feed"
+  | "onboarding_v2"
+  | "satisfaction_popup"
+  | "referral_program";
+
+/** Supabase `feature_flags` tablosundaki bayrak. */
+export interface FeatureFlag {
+  key: string;
+  enabled: boolean;
+  description: string | null;
+  rollout_pct: number;
+  updated_at: string;
+}
+
+/** Supabase `invite_codes` tablosundaki davet kodu. */
+export interface InviteCode {
+  id: string;
+  code: string;
+  label: string | null;
+  max_uses: number;
+  used_count: number;
+  is_active: boolean;
+  created_by: string | null;
+  expires_at: string | null;
+  created_at: string;
+}
+
+/** Geri bildirim / hata / memnuniyet kaydı türü. */
+export type FeedbackKind = "feedback" | "bug" | "idea" | "satisfaction";
+
+/** Supabase `feedback_reports` tablosundaki kayıt. */
+export interface FeedbackReport {
+  id: string;
+  user_id: string | null;
+  kind: FeedbackKind;
+  rating: number | null;
+  message: string | null;
+  page: string | null;
+  meta: Record<string, unknown>;
+  status: string;
+  created_at: string;
+}
+
+/** Supabase `flagged_users` tablosundaki işaretleme. */
+export interface FlaggedUser {
+  id: string;
+  user_id: string;
+  reason: string;
+  severity: string;
+  detail: Record<string, unknown>;
+  resolved: boolean;
+  created_at: string;
+  profiles?: { username: string; gender: Gender } | null;
+}
+
+/** admin_growth_metrics RPC dönüşü. */
+export interface GrowthMetrics {
+  total_users: number;
+  beta_users: number;
+  plus_users: number;
+  new_users_24h: number;
+  new_users_7d: number;
+  dau: number;
+  wau: number;
+  mau: number;
+  confessions_24h: number;
+  golge_24h: number;
+  open_feedback: number;
+  flagged_open: number;
+  invites_active: number;
+  avg_satisfaction: number | null;
+  install_rate: number;
+  d1_retention: number;
 }

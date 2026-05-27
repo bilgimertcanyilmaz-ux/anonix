@@ -18,6 +18,7 @@ import {
 } from "@/lib/feeds";
 import { getExploreFeed } from "@/lib/recommendations";
 import { getBlockedIds } from "@/lib/blocks";
+import { CATEGORY_FILTERS } from "@/lib/categories";
 import { PlusCircleIcon, TrophyIcon } from "@/components/ui/icons";
 import type { ConfessionRecord } from "@/types";
 
@@ -28,6 +29,7 @@ export default function ConfessionsPage() {
   const [confessions, setConfessions] = useState<ConfessionRecord[]>([]);
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
   const [filter, setFilter] = useState<ExtendedFilter>("new");
+  const [category, setCategory] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notFollowingAnyone, setNotFollowingAnyone] = useState(false);
@@ -72,13 +74,15 @@ export default function ConfessionsPage() {
         setLoading(false);
         return;
       }
-      const { data, error } = await supabase
+      let followingQuery = supabase
         .from("confessions")
         .select(CONF_SELECT)
         .in("user_id", ids)
         .eq("is_anonymous", false)
         .eq("moderation_status", "approved")
-        .or(nonExpiredFilter())
+        .or(nonExpiredFilter());
+      if (category) followingQuery = followingQuery.or(`category.eq.${category},mood_tag.eq.${category}`);
+      const { data, error } = await followingQuery
         .order("created_at", { ascending: false })
         .limit(60);
       if (error) {
@@ -94,6 +98,7 @@ export default function ConfessionsPage() {
 
     // --- Diğer filtreler ---
     let query = supabase.from("confessions").select(CONF_SELECT).or(nonExpiredFilter());
+    if (category) query = query.or(`category.eq.${category},mood_tag.eq.${category}`);
     if (filter === "likes") query = query.order("like_count", { ascending: false });
     else if (filter === "comments") query = query.order("comment_count", { ascending: false });
     else query = query.order("created_at", { ascending: false });
@@ -122,7 +127,7 @@ export default function ConfessionsPage() {
     setConfessions(rows.slice(0, 50));
     await loadLikes();
     setLoading(false);
-  }, [user, filter, loadLikes]);
+  }, [user, filter, category, loadLikes]);
 
   useEffect(() => {
     load();
@@ -183,6 +188,26 @@ export default function ConfessionsPage() {
               {f.label}
             </button>
           ))}
+        </div>
+
+        {/* Kategori filtresi (yatay kaydırılabilir) */}
+        <div className="-mx-1 mb-5 flex gap-2 overflow-x-auto px-1 pb-1">
+          {CATEGORY_FILTERS.map((c) => {
+            const active = category === c.value;
+            return (
+              <button
+                key={c.label}
+                onClick={() => setCategory(c.value)}
+                className={`shrink-0 whitespace-nowrap rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+                  active
+                    ? "border-brand-500/60 bg-brand-500/15 text-brand-100"
+                    : "border-white/10 bg-white/[0.03] text-slate-400 hover:bg-white/[0.06]"
+                }`}
+              >
+                {c.label}
+              </button>
+            );
+          })}
         </div>
 
         {loading ? (
