@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
+import { useToast } from "@/components/ui/ToastProvider";
 
 /** Google logosu (resmi renkli "G"). */
 function GoogleIcon() {
@@ -31,6 +32,7 @@ function AppleIcon() {
  */
 export function OAuthButtons() {
   const { signInWithOAuth } = useAuth();
+  const toast = useToast();
   const [busy, setBusy] = useState<"google" | "apple" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,7 +41,11 @@ export function OAuthButtons() {
     setBusy(provider);
     const res = await signInWithOAuth(provider);
     if (res.error) {
+      // Ham JSON kullanıcıya GÖSTERİLMEZ — mapSupabaseAuthError çıktısı + toast.
       setError(res.error);
+      toast.error(
+        provider === "google" ? "Google ile giriş yapılamadı." : "Apple ile giriş yapılamadı."
+      );
       setBusy(null);
     }
     // Başarılıysa sayfa sağlayıcıya yönlenir (busy kalır).

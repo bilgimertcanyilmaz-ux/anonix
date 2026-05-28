@@ -10,7 +10,7 @@ import {
 } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabaseClient";
-import { authErrorToTr } from "@/lib/authErrors";
+import { authErrorToTr, mapSupabaseAuthError } from "@/lib/authErrors";
 import type { Profile, SignUpData } from "@/types";
 
 interface AuthResult {
@@ -133,13 +133,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async (provider: "google" | "apple"): Promise<AuthResult> => {
       const redirectTo =
         typeof window !== "undefined" ? `${window.location.origin}/auth/callback` : undefined;
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: { redirectTo },
-      });
-      if (error) return { error: authErrorToTr(error.message) };
-      // Başarılıysa tarayıcı sağlayıcıya yönlenir; dönüş /auth/callback'te ele alınır.
-      return {};
+      // Sağlayıcı adı KESİNLİKLE küçük harf (Supabase küçük harf bekler).
+      const providerName = provider.toLowerCase() as "google" | "apple";
+      try {
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: providerName,
+          options: { redirectTo },
+        });
+        if (error) {
+          // Ham JSON / "provider is not enabled" gibi mesajları Türkçe'ye çevir.
+          return { error: mapSupabaseAuthError(error as unknown as Parameters<typeof mapSupabaseAuthError>[0]) };
+        }
+        // Başarılıysa tarayıcı sağlayıcıya yönlenir; dönüş /auth/callback'te ele alınır.
+        return {};
+      } catch (e) {
+        return { error: mapSupabaseAuthError((e as Error)?.message ?? "unknown") };
+      }
     },
     []
   );

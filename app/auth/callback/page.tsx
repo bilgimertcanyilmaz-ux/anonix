@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Container } from "@/components/layout/Container";
 import { supabase } from "@/lib/supabaseClient";
+import { useToast } from "@/components/ui/ToastProvider";
+import { mapSupabaseAuthError } from "@/lib/authErrors";
 
 /**
  * OAuth (Google / Apple) dönüş adresi.
@@ -14,15 +16,31 @@ import { supabase } from "@/lib/supabaseClient";
  */
 export default function AuthCallbackPage() {
   const router = useRouter();
+  const toast = useToast();
   const [message, setMessage] = useState("Giriş tamamlanıyor...");
 
   useEffect(() => {
     let active = true;
 
     (async () => {
-      // PKCE kod akışı: URL'de ?code= varsa oturuma çevir (zaten çevrildiyse hatayı yut).
+      // 1) Sağlayıcı tarafı hata: ?error=access_denied gibi
       try {
         const url = new URL(window.location.href);
+        const oauthError =
+          url.searchParams.get("error") || url.searchParams.get("error_code");
+        const oauthDesc = url.searchParams.get("error_description");
+        if (oauthError) {
+          const friendly = mapSupabaseAuthError({
+            error: oauthError,
+            error_description: oauthDesc,
+          });
+          toast.error(friendly);
+          setMessage(friendly);
+          router.replace("/login");
+          return;
+        }
+
+        // 2) PKCE kod akışı: ?code= varsa oturuma çevir (idempotent)
         const code = url.searchParams.get("code");
         if (code) {
           await supabase.auth.exchangeCodeForSession(code).catch(() => {});
@@ -46,6 +64,7 @@ export default function AuthCallbackPage() {
 
       if (!session?.user) {
         setMessage("Giriş yapılamadı. Yönlendiriliyorsun...");
+        toast.error("Sosyal giriş tamamlanamadı. Lütfen tekrar dene.");
         router.replace("/login");
         return;
       }
