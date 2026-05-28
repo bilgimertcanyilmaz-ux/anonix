@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { createClient } from "@supabase/supabase-js";
 import { sendEmail } from "@/lib/email";
 import { getServerEnv } from "@/lib/env";
 
@@ -14,6 +14,19 @@ function esc(s: string): string {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+}
+
+/**
+ * Supabase istemcisi — yalnızca anon key kullanır (service_role gerektirmez).
+ * Auth doğrulama: opsiyonel Bearer JWT, auth.getUser(token) ile çözülür.
+ * Insert: feedback_reports RLS politikası user_id=null veya auth.uid()=user_id'ye izin verir.
+ */
+function getClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+  return createClient(url, anon, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
 }
 
 /** Geri bildirim gönder: DB'ye kaydet + support@anonix.digital'e e-posta. */
@@ -38,14 +51,15 @@ export async function POST(req: NextRequest) {
     }
     const cleanMessage = message.trim().slice(0, 2000);
 
-    // Opsiyonel oturum (Bearer)
-    const admin = getSupabaseAdmin();
+    const supabase = getClient();
+
+    // Opsiyonel oturum (Bearer JWT) — service_role gerektirmez.
     let userId: string | null = null;
     let detectedEmail: string | null = null;
     const auth = req.headers.get("authorization") || "";
     const token = auth.replace(/^Bearer\s+/i, "");
     if (token) {
-      const { data } = await admin.auth.getUser(token);
+      const { data } = await supabase.auth.getUser(token);
       userId = data.user?.id ?? null;
       detectedEmail = data.user?.email ?? null;
     }
@@ -57,9 +71,8 @@ export async function POST(req: NextRequest) {
       req.headers.get("x-real-ip") ||
       null;
 
-    // Mevcut feedback_reports şemasına uyarla:
-    //   kind=type, message=cleanMessage, page=page_url, meta={user_email,user_agent,ip}
-    const { error: dbErr } = await admin.from("feedback_reports").insert({
+    // RLS: user_id null veya auth.uid()=user_id allow → anon client ile insert çalışır.
+    const { error: dbErr } = await supabase.from("feedback_reports").insert({
       user_id: userId,
       kind: type,
       message: cleanMessage,
@@ -72,7 +85,6 @@ export async function POST(req: NextRequest) {
     });
 
     if (dbErr) {
-      // DB trigger'ı rate-limit dönerse anlamlı mesaj
       if ((dbErr.message || "").toLowerCase().includes("çok fazla")) {
         return NextResponse.json(
           { error: "Çok fazla geri bildirim gönderdin. Lütfen biraz sonra tekrar dene." },
@@ -84,7 +96,7 @@ export async function POST(req: NextRequest) {
 
     // E-posta (yapılandırılmışsa) — fire-and-forget; hata akışı bozmaz
     const env = getServerEnv();
-    const to = process.env.SUPPORT_EMAIL || "support@anonix.digital";
+    const to = env.supportEmail || "support@anonix.digital";
     if (env.resendApiKey && env.fromEmail) {
       const html =
         `<h2>Yeni Anonix Geri Bildirimi</h2>` +
