@@ -80,10 +80,9 @@ export default function RootLayout({
                   <SoundManager />
                   <SessionTracker />
                   <Navbar />
-                  <main className="pt-6">{children}</main>
-                  {/* Footer global değil — yalnızca /profile sayfasında gösterilir. */}
-                  {/* Alt boşluk: mobilde bottom-nav'ın içeriği örtmemesi için */}
-                  <div className="h-20 md:hidden" />
+                  <main className="anonix-main pt-6">{children}</main>
+                  {/* Footer global değil — yalnızca /profile sayfasında gösterilir.
+                      Bottom-nav + iOS Safari safe-area için padding .anonix-main içinde. */}
                   <BottomNav />
                   <PwaManager />
                   <FeedbackWidget />

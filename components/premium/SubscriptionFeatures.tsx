@@ -43,15 +43,15 @@ export function SubscriptionFeatures() {
             href="/plus"
             className="flex flex-col gap-1 rounded-2xl border border-brand-500/40 bg-brand-500/10 p-4 transition-colors hover:bg-brand-500/15"
           >
-            <span className="text-sm font-bold text-brand-200">Plus’a Geç</span>
-            <span className="text-xs text-slate-400">Mesajlaşma, kim beğendi, boost…</span>
+            <span className="tier-cta-plus text-sm">Plus’a Geç</span>
+            <span className="text-xs text-slate-500">Mesajlaşma, kim beğendi, boost…</span>
           </Link>
           <Link
             href="/plus"
-            className="flex flex-col gap-1 rounded-2xl border-2 border-amber-400/50 bg-gradient-to-br from-amber-500/15 to-brand-700/30 p-4 transition-transform hover:scale-[1.02]"
+            className="flex flex-col gap-1 rounded-2xl border-2 border-amber-400/60 bg-gradient-to-br from-amber-500/20 to-brand-700/30 p-4 transition-transform hover:scale-[1.02]"
           >
-            <span className="text-sm font-extrabold text-amber-200">Ultra Plus’a Geç ⚡</span>
-            <span className="text-xs text-slate-300">Hayalet mod, kimler baktı, temalar…</span>
+            <span className="tier-cta-ultra text-sm">Ultra Plus’a Geç ⚡</span>
+            <span className="text-xs text-slate-500">Hayalet mod, kimler baktı, temalar…</span>
           </Link>
         </div>
       </div>

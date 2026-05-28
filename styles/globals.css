@@ -187,6 +187,72 @@ html.light .alert-info {
   color: #6d28d9;                   /* violet-700 */
 }
 
+/* ---------------------------------------------------------------------
+   AÇIK TEMA — Stage 18 düzeltmeleri (kontrast, modal, input)
+   --------------------------------------------------------------------- */
+
+/* Modal & form inputs açık temada beyaz/koyu metin */
+html.light .anonix-modal {
+  background-color: rgba(15, 23, 42, 0.40);
+}
+html.light .anonix-modal-card {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 10px 40px rgba(15, 23, 42, 0.15);
+}
+html.light .anonix-modal-card .text-slate-400 { color: #475569; }
+html.light .anonix-modal-card .text-slate-500 { color: #475569; }
+html.light .anonix-modal-card .border-white\/10,
+html.light .anonix-modal-card .border-white\/5 { border-color: #e2e8f0; }
+
+/* Native select / textarea — koyu zemin yerine beyaz ve okunur metin */
+html.light select.bg-ink-900,
+html.light input.bg-ink-900,
+html.light textarea.bg-ink-900 {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #e2e8f0 !important;
+}
+html.light textarea.bg-white\/\[0\.04\],
+html.light input.bg-white\/\[0\.04\] {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #e2e8f0 !important;
+}
+html.light .placeholder\:text-slate-500::placeholder,
+html.light textarea::placeholder,
+html.light input::placeholder { color: #94a3b8 !important; }
+
+/* Şikayet/feedback modal'ında "Vazgeç" ghost butonu net görünsün */
+html.light .anonix-modal-card .btn-ghost {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* Profil "Abonelik Özellikleri" — Ultra Plus altın kartı: yazı her zaman koyu+kalın */
+.tier-cta-ultra { color: #1f2937; font-weight: 800; }
+html.light .tier-cta-ultra { color: #4c1d95; }       /* indigo/purple-950 */
+html:not(.light) .tier-cta-ultra { color: #fde68a; } /* amber-200 */
+.tier-cta-plus { color: #5b21b6; font-weight: 700; }
+html:not(.light) .tier-cta-plus { color: #c4b5fd; }
+
+/* Floating widget butonu açık temada: koyu daire + beyaz emoji */
+html.light .anonix-fab {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+  border-color: #1e293b !important;
+}
+
+/* Sayfa içerik bottom padding — Safari adres çubuğu + bottom nav + safe area */
+.anonix-main {
+  padding-bottom: calc(7rem + env(safe-area-inset-bottom));
+}
+@media (min-width: 768px) {
+  .anonix-main { padding-bottom: 2rem; }
+}
+
 /* İnce scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

@@ -22,10 +22,19 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
     return { sent: false, reason: "E-posta yapılandırılmamış (RESEND_API_KEY/FROM_EMAIL)." };
   }
   try {
-    // @ts-expect-error resend paketi opsiyonel; kuruluysa yüklenir
-    const { Resend } = await import("resend");
-    const resend = new Resend(env.resendApiKey);
-    await resend.emails.send({
+    // resend opsiyonel paket — webpack'in statik analizinden kaçınmak için
+    // dinamik specifier kullanılıyor. Paket kuruluysa runtime'da yüklenir.
+    const specifier = "resend";
+    const mod: unknown = await (Function(
+      "s",
+      "return import(s)"
+    )(specifier) as Promise<unknown>);
+    const Resend = (mod as { Resend?: new (k: string) => unknown }).Resend;
+    if (!Resend) return { sent: false, reason: "resend paketi yüklü değil." };
+    const client = new Resend(env.resendApiKey) as {
+      emails: { send: (p: { from: string; to: string; subject: string; html: string }) => Promise<unknown> };
+    };
+    await client.emails.send({
       from: env.fromEmail,
       to: input.to,
       subject: input.subject,
