@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { motion } from "framer-motion";
 import type { ConfessionRecord } from "@/types";
 import { moodEmoji } from "@/lib/moods";
 import { timeAgo } from "@/lib/format";
@@ -11,6 +14,10 @@ interface FeedCardProps {
   liked: boolean;
 }
 
+/**
+ * Premium glass feed card — UI redesign Faz 1.
+ * Glassmorphism + subtle hover lift + neon border + category accent chip.
+ */
 export function FeedCard({ confession, liked }: FeedCardProps) {
   const {
     id,
@@ -21,11 +28,24 @@ export function FeedCard({ confession, liked }: FeedCardProps) {
     created_at,
     profiles,
   } = confession;
-  // Kategori = mood_tag ile uyumlu; eski kayıtlarda mood_tag, yenilerde ikisi de dolu.
   const mood_tag = confession.mood_tag ?? confession.category ?? null;
 
   return (
-    <article className="card card-hover p-5">
+    <motion.article
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ type: "spring", stiffness: 240, damping: 26 }}
+      whileHover={{ y: -2 }}
+      className="glass-card glass-card-hover relative p-5"
+    >
+      {/* Sol kenar mood accent (mor neon stripe) */}
+      {mood_tag && (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-y-4 left-0 w-1 rounded-r bg-gradient-to-b from-brand-400 via-brand-500 to-transparent opacity-70"
+        />
+      )}
+
       <div className="mb-3 flex items-center justify-between gap-3">
         <AuthorBadge
           anonymous={is_anonymous}
@@ -33,7 +53,7 @@ export function FeedCard({ confession, liked }: FeedCardProps) {
           subtitle={timeAgo(created_at)}
         />
         {mood_tag && (
-          <span className="chip shrink-0">
+          <span className="chip-neon shrink-0">
             <span>{moodEmoji(mood_tag)}</span>
             {mood_tag}
           </span>
@@ -61,6 +81,6 @@ export function FeedCard({ confession, liked }: FeedCardProps) {
           {comment_count}
         </Link>
       </div>
-    </article>
+    </motion.article>
   );
 }

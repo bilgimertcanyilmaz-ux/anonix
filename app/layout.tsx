@@ -14,6 +14,7 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import { PwaManager } from "@/components/pwa/PwaManager";
 import { FeedbackWidget } from "@/components/feedback/FeedbackWidget";
 import { SatisfactionPopup } from "@/components/feedback/SatisfactionPopup";
+import { CinematicBackground } from "@/components/layout/CinematicBackground";
 import { siteConfig } from "@/lib/site";
 
 const inter = Inter({
@@ -76,6 +77,7 @@ export default function RootLayout({
             <ToastProvider>
               <UnreadProvider>
                 <NotifProvider>
+                  <CinematicBackground />
                   <StreakTracker />
                   <SoundManager />
                   <SessionTracker />

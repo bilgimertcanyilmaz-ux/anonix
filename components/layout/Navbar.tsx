@@ -31,17 +31,22 @@ export function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-white/5 bg-ink-950/70 backdrop-blur-md [padding-top:env(safe-area-inset-top)]">
+    <header className="sticky top-0 z-40 border-b border-white/10 bg-ink-950/65 backdrop-blur-xl [padding-top:env(safe-area-inset-top)]">
+      {/* Üst hafif neon hat — premium dokunuş */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-400/40 to-transparent" />
       <div className="mx-auto flex h-16 w-full max-w-2xl items-center justify-between gap-4 px-4 sm:px-6 lg:max-w-6xl">
-        <Link href="/" className="flex shrink-0 items-center gap-2">
-          <Image
-            src="/logo.png"
-            alt="Anonix"
-            width={36}
-            height={36}
-            priority
-            className="rounded-xl shadow-glow"
-          />
+        <Link href="/" className="group flex shrink-0 items-center gap-2.5">
+          <span className="relative inline-flex">
+            <span className="absolute inset-0 rounded-xl bg-brand-500/40 blur-md transition-opacity duration-300 group-hover:bg-brand-400/55" aria-hidden />
+            <Image
+              src="/logo.png"
+              alt="Anonix"
+              width={36}
+              height={36}
+              priority
+              className="relative rounded-xl shadow-glow"
+            />
+          </span>
           <span className="text-lg font-extrabold tracking-tight text-white">
             Anon<span className="text-gradient">ix</span>
           </span>
@@ -84,7 +89,7 @@ export function Navbar() {
           </Link>
           <Link
             href="/plus"
-            className="hidden items-center gap-1.5 whitespace-nowrap rounded-full border border-brand-500/40 bg-brand-500/10 px-3 py-1.5 text-xs font-semibold text-brand-200 transition-colors hover:bg-brand-500/20 md:inline-flex"
+            className="hidden items-center gap-1.5 whitespace-nowrap rounded-full border border-gold-400/50 bg-gradient-to-r from-gold-500/15 to-brand-500/15 px-3 py-1.5 text-xs font-bold text-gold-300 shadow-glow-sm transition-all hover:from-gold-500/25 hover:to-brand-500/25 hover:shadow-glow-gold md:inline-flex"
           >
             <SparkIcon className="h-3.5 w-3.5" />
             Plus

@@ -36,14 +36,15 @@ export function FeedbackWidget() {
 
   return (
     <>
-      {/* Yüzen buton — sol altta, bottom-nav üstünde ama içerikten yüksek (mobil safe-area) */}
+      {/* Yüzen buton — sol altta, premium neon glow */}
       <button
         onClick={() => setOpen(true)}
         aria-label="Geri bildirim gönder"
-        className="anonix-fab fixed left-3 z-30 flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-ink-800/90 text-lg text-white shadow-card backdrop-blur-md transition-transform hover:scale-105 md:bottom-6"
+        className="anonix-fab group fixed left-3 z-30 flex h-12 w-12 items-center justify-center rounded-full border border-brand-400/30 bg-ink-900/85 text-lg text-white shadow-glow-sm backdrop-blur-xl transition-all hover:scale-110 hover:border-brand-300/60 hover:shadow-glow md:bottom-6"
         style={{ bottom: "calc(6rem + env(safe-area-inset-bottom))" }}
       >
-        💬
+        <span className="pointer-events-none absolute inset-0 rounded-full bg-brand-500/15 opacity-0 blur-md transition-opacity group-hover:opacity-100" />
+        <span className="relative">💬</span>
       </button>
 
       <Modal open={open} onClose={() => setOpen(false)} title="Geri bildirim">
