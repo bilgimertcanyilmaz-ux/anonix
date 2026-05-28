@@ -22,7 +22,13 @@ export function getServerEnv() {
     resendApiKey: process.env.RESEND_API_KEY || "",
     fromEmail: process.env.FROM_EMAIL || "",
     adminEmail: process.env.ADMIN_EMAIL || "",
-    supportEmail: process.env.SUPPORT_EMAIL || "support@anonix.digital",
+    supportEmail: process.env.SUPPORT_EMAIL || "destek@anonix.digital",
+    // SMTP (Hostinger / generic). Varsa Resend'den önce kullanılır.
+    smtpHost: process.env.SMTP_HOST || "",
+    smtpPort: Number(process.env.SMTP_PORT || 465),
+    smtpUser: process.env.SMTP_USER || "",
+    smtpPass: process.env.SMTP_PASS || "",
+    smtpSecure: (process.env.SMTP_SECURE ?? "true").toLowerCase() !== "false",
   };
 }
 
