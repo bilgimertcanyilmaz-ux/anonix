@@ -381,6 +381,31 @@ html.light .anonix-dock .text-white { color: #0f172a; }
   .anonix-main { padding-bottom: 2rem; }
 }
 
+/* Premium input focus ring */
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+}
+
+/* Smooth page transitions */
+.page-transition-enter {
+  opacity: 0;
+  transform: translateY(8px);
+}
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+
+/* GPU-accelerated glow blur */
+.glow-blob {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+/* Premium scrollbar */
 /* İnce scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
