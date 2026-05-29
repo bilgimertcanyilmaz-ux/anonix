@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell -NoProfile -Command \"$ErrorActionPreference='SilentlyContinue'; cd 'C:\\Users\\vatan\\OneDrive\\Masaüstü\\anonix-main'; $changed = git status --porcelain; if ($changed) { git add -A | Out-Null; git -c user.email='noreply@anthropic.com' -c user.name='Claude' commit -m ('auto: ' + (Get-Date -Format 'yyyy-MM-dd HH:mm:ss')) | Out-Null; git push origin main 2>&1 | Out-Null }; exit 0\""
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"C:\\Users\\vatan\\OneDrive\\Masaüstü\\anonix-main\\.claude\\auto-push.ps1\""
           }
         ]
       }
