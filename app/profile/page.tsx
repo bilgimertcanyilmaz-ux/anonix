@@ -190,15 +190,13 @@ export default function ProfilePage() {
             <div className="relative flex items-start gap-4">
               {/* Avatar with glow ring */}
               <div className={`relative shrink-0 ${isUltra ? "aura-gold" : ""}`}>
-                <div className={`relative ${!isUltra ? "glow-ring" : ""}`}>
-                  <ProfileFrame
-                    gender={profile.gender}
-                    username={profile.username}
-                    avatarUrl={profile.avatar_url}
-                    isPlus={profile.is_plus}
-                    size="lg"
-                  />
-                </div>
+                <ProfileFrame
+                  gender={profile.gender}
+                  username={profile.username}
+                  avatarUrl={profile.avatar_url}
+                  isPlus={profile.is_plus}
+                  size="lg"
+                />
                 {/* Online indicator */}
                 <span className="absolute bottom-1 right-1 h-3.5 w-3.5 rounded-full border-2 border-ink-950 bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
               </div>

@@ -186,19 +186,56 @@ html.light body {
     linear-gradient(180deg, #faf9ff 0%, #f0edff 100%);
 }
 
-/* Metin renkleri */
-html.light .text-white { color: #0f172a; }
-html.light .text-slate-100 { color: #1e293b; }
-html.light .text-slate-200 { color: #1e293b; }
-html.light .text-slate-300 { color: #334155; }
-html.light .text-slate-400 { color: #64748b; }
-html.light .text-slate-500 { color: #94a3b8; }
+/* Metin renkleri — TÜM tonlar light mode'da okunabilir koyu eşdeğerlere mapleniyor.
+   KURAL: Hiçbir yazı arkaplanına kaybolmasın. Tüm kullanılan slate/gri tonları burada.
+   AÇIK temada en açık yazı tonu slate-500 (#64748b) — daha açığı kullanılmasın. */
+html.light .text-white { color: #0f172a !important; }
+html.light .text-slate-100 { color: #0f172a !important; }
+html.light .text-slate-200 { color: #1e293b !important; }
+html.light .text-slate-300 { color: #334155 !important; }
+html.light .text-slate-400 { color: #475569 !important; }
+html.light .text-slate-500 { color: #64748b !important; }
+/* slate-600 (#475569) ve slate-700 (#334155) Tailwind default'ları zaten yeterince koyu — override yok (circular @apply önlemek için) */
+
+/* Gold/amber tonlar — beyaz arka planda kayboluyor, koyu mor altın eşdeğer */
+html.light .text-amber-100,
+html.light .text-amber-200,
+html.light .text-amber-300,
+html.light .text-gold-100,
+html.light .text-gold-200,
+html.light .text-gold-300 { color: #92400e !important; }
+html.light .text-gold-100\/50,
+html.light .text-gold-100\/60,
+html.light .text-gold-100\/70 { color: #b45309 !important; }
+html.light .text-white\/50,
+html.light .text-white\/60,
+html.light .text-white\/70,
+html.light .text-white\/80 { color: #475569 !important; }
+html.light .text-white\/40 { color: #64748b !important; }
+
+/* Kırmızı (Tehlikeli Alan / hata mesajları) — koyu kırmızı */
+html.light .text-red-200,
+html.light .text-red-300,
+html.light .text-red-400 { color: #b91c1c !important; }
+html.light .text-red-200\/80 { color: #991b1b !important; }
+html.light .bg-red-500\/\[0\.06\] { background-color: #fef2f2 !important; }
+html.light .border-red-500\/40,
+html.light .border-red-500\/50 { border-color: #fca5a5 !important; }
+
+/* Emerald / yeşil ton */
+html.light .text-emerald-300,
+html.light .text-emerald-400 { color: #047857 !important; }
+
+/* Pink / rose */
+html.light .text-pink-200,
+html.light .text-pink-300 { color: #be185d !important; }
 
 /* Zemin tonları (koyu ink → açık gri) */
 html.light .bg-ink-950,
 html.light .bg-ink-900,
 html.light .bg-ink-800,
 html.light .bg-ink-700 { background-color: #ffffff; }
+html.light .bg-ink-950\/65 { background-color: rgba(255, 255, 255, 0.78); }
 html.light .bg-ink-950\/70 { background-color: rgba(255, 255, 255, 0.7); }
 html.light .bg-ink-950\/85 { background-color: rgba(255, 255, 255, 0.85); }
 
@@ -343,6 +380,19 @@ html.light input.bg-white\/\[0\.04\] {
 html.light .placeholder\:text-slate-500::placeholder,
 html.light textarea::placeholder,
 html.light input::placeholder { color: #94a3b8 !important; }
+
+/* Modal içindeki tüm input/textarea — light mode'da koyu yazı zorunlu */
+html.light .anonix-modal-card textarea,
+html.light .anonix-modal-card input,
+html.light .anonix-modal-card select {
+  color: #0f172a !important;
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+html.light .anonix-modal-card textarea.text-white,
+html.light .anonix-modal-card input.text-white {
+  color: #0f172a !important;
+}
 
 html.light .anonix-modal-card .btn-ghost {
   background-color: #f1f5f9 !important;
