@@ -30,8 +30,8 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
     name: "Neon Purple",
     ring: "bg-gradient-to-tr from-fuchsia-500 via-purple-500 to-violet-600",
     preview: "bg-gradient-to-tr from-fuchsia-500 via-purple-500 to-violet-600",
-    frameSrc: "/frames/frames-set-1.png",
-    frameBgPos: "0% 0%", // sol-üst — pembe/magenta neon
+    frameSrc: "/frames/set1-tl.png",
+    frameBgPos: "center",
     accent: "#d946ef",
   },
   {
@@ -39,8 +39,8 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
     name: "Electric Blue",
     ring: "bg-gradient-to-tr from-sky-400 via-blue-500 to-indigo-600",
     preview: "bg-gradient-to-tr from-sky-400 via-blue-500 to-indigo-600",
-    frameSrc: "/frames/frames-set-1.png",
-    frameBgPos: "100% 0%", // sağ-üst — elektrik mavisi
+    frameSrc: "/frames/set1-tr.png",
+    frameBgPos: "center",
     accent: "#3b82f6",
   },
   {
@@ -48,8 +48,8 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
     name: "Midnight Gold",
     ring: "bg-gradient-to-tr from-amber-300 via-yellow-500 to-amber-600",
     preview: "bg-gradient-to-tr from-amber-300 via-yellow-500 to-amber-600",
-    frameSrc: "/frames/frames-set-1.png",
-    frameBgPos: "0% 100%", // sol-alt — altın
+    frameSrc: "/frames/set1-bl.png",
+    frameBgPos: "center",
     accent: "#fbbf24",
   },
   {
@@ -57,8 +57,8 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
     name: "Cyber Pink",
     ring: "bg-gradient-to-tr from-pink-400 via-rose-500 to-fuchsia-600",
     preview: "bg-gradient-to-tr from-pink-400 via-rose-500 to-fuchsia-600",
-    frameSrc: "/frames/frames-set-1.png",
-    frameBgPos: "100% 100%", // sağ-alt — pembe
+    frameSrc: "/frames/set1-br.png",
+    frameBgPos: "center",
     accent: "#ec4899",
   },
   {
@@ -66,8 +66,8 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
     name: "Crimson",
     ring: "bg-gradient-to-tr from-red-500 via-rose-600 to-red-700",
     preview: "bg-gradient-to-tr from-red-500 via-rose-600 to-red-700",
-    frameSrc: "/frames/frames-set-2.png",
-    frameBgPos: "100% 100%", // sağ-alt — kızıl
+    frameSrc: "/frames/set2-br.png",
+    frameBgPos: "center",
     accent: "#ef4444",
   },
 ];

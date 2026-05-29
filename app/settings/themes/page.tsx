@@ -42,20 +42,17 @@ function ThemeCard({
           : "0 4px 24px -8px rgba(0,0,0,0.4)",
       }}
     >
-      {/* PNG çerçeve görseli — 2x2 grid'in ilgili kadranını gösterir */}
+      {/* PNG neon çerçeve — bireysel görsel, ortalanır + sığar */}
       <div
-        className="pointer-events-none absolute inset-0 flex items-center justify-center"
+        className="pointer-events-none absolute inset-x-2 top-2 bottom-10 flex items-center justify-center"
         aria-hidden
       >
-        <div
-          className="absolute inset-2 transition-transform duration-300 group-hover:scale-105"
-          style={{
-            backgroundImage: `url(${theme.frameSrc})`,
-            backgroundSize: "200% 200%", // 2x2 → her kadran %100x%100
-            backgroundPosition: theme.frameBgPos,
-            backgroundRepeat: "no-repeat",
-            filter: `drop-shadow(0 0 12px ${theme.accent}66)`,
-          }}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={theme.frameSrc}
+          alt=""
+          className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
+          style={{ filter: `drop-shadow(0 0 14px ${theme.accent}80)` }}
         />
       </div>
 
