@@ -31,3 +31,6 @@ next-env.d.ts
 # editor
 .vscode/
 .idea/
+
+# Claude Code (local only)
+.claude/settings.local.json
