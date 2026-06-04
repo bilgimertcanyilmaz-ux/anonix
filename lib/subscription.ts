@@ -61,12 +61,15 @@ type ProfileLike = {
  * - değilse is_plus'tan türet (geriye dönük uyumluluk)
  */
 /**
- * Gerçek (satın alınmış) paket — admin bypass YOK.
- * Faturalama / paket gösterimi (profil rozeti, /plus "sahip" durumu) için kullanılır.
- * Böylece satın almamış bir admin "Ultra Plus üyesi" gibi GÖZÜKMEZ.
+ * Geçerli paket.
+ * - admin → her zaman Ultra Plus (üyelik + tüm özellikler; satın alma gerekmez)
+ * - subscription_tier doluysa onu kullan
+ * - değilse is_plus'tan türet (geriye dönük uyumluluk)
  */
 export function getSubscriptionTier(profile: ProfileLike): SubscriptionTier {
   if (!profile) return "free";
+  // Adminler Ultra Plus üyedir — rozet, /plus "sahip" durumu ve tüm özellikler dahil.
+  if (profile.role === "admin") return "ultra_plus";
   // is_plus açıkça false ise (süresi dolmuş / hiç alınmamış) paket free'dir.
   if (profile.is_plus === false) return "free";
   const tier = profile.subscription_tier;
