@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -123,6 +123,7 @@ export default function ThemesSettingsPage() {
   const { user, profile, loading, updateProfile } = useAuth();
   const { success, error: toastError } = useToast();
   const allowed = canUseFeature(profile, "premium_themes");
+  const [category, setCategory] = useState<"rank" | "plus">("rank");
 
   useEffect(() => {
     if (!loading && !user) router.replace("/login");
@@ -169,7 +170,28 @@ export default function ThemesSettingsPage() {
           Rütbe çerçeveleri rütbe atladıkça açılır; animasyonlu çerçeveler Ultra Plus ile.
         </motion.p>
 
-        {!allowed && (
+        {/* Kategori sekmeleri */}
+        <div className="mb-4 flex gap-2">
+          {([
+            { key: "rank" as const, label: "🏅 Rütbe Çerçeveleri" },
+            { key: "plus" as const, label: "✨ Plus Çerçeveleri" },
+          ]).map((c) => (
+            <button
+              key={c.key}
+              type="button"
+              onClick={() => setCategory(c.key)}
+              className={`flex-1 rounded-full border px-3 py-2 text-xs font-bold transition-colors ${
+                category === c.key
+                  ? "border-brand-500/60 bg-brand-500/15 text-brand-100"
+                  : "border-white/10 bg-white/[0.03] text-slate-400 hover:bg-white/[0.06]"
+              }`}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
+
+        {category === "plus" && !allowed && (
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -190,7 +212,9 @@ export default function ThemesSettingsPage() {
         )}
 
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {PREMIUM_THEMES.map((t, i) => (
+          {PREMIUM_THEMES.filter((t) =>
+            category === "rank" ? t.unlockPoints !== undefined : t.unlockPoints === undefined
+          ).map((t, i) => (
             <motion.div
               key={t.id}
               initial={{ opacity: 0, y: 12 }}
