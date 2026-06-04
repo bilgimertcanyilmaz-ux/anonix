@@ -28,11 +28,11 @@ const HEX = "polygon(50% 0, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%)";
 /* ── Bilgi pili (cinsiyet/rütbe/puan/katılım) ───────────────── */
 function InfoPill({ icon, label, value }: { icon: string; label: string; value: string }) {
   return (
-    <div className="flex min-w-0 flex-1 items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.05] px-3 py-2 backdrop-blur-sm">
-      <span className="text-base">{icon}</span>
+    <div className="flex w-full items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.05] px-3 py-2 backdrop-blur-sm">
+      <span className="shrink-0 text-base">{icon}</span>
       <div className="min-w-0">
-        <p className="truncate text-sm font-bold leading-tight text-white">{value}</p>
-        <p className="truncate text-[10px] text-slate-400">{label}</p>
+        <p className="text-sm font-bold leading-tight text-white">{value}</p>
+        <p className="text-[10px] text-slate-400">{label}</p>
       </div>
     </div>
   );
@@ -73,7 +73,7 @@ function HexBadge({ icon, name, label }: { icon: string; name: string; label: st
           {icon}
         </span>
       </div>
-      <span className="max-w-[68px] truncate text-center text-[10px] font-bold leading-tight text-white">{name}</span>
+      <span className="line-clamp-2 max-w-full text-center text-[10px] font-bold leading-tight text-white">{name}</span>
       <span className="text-[8px] font-semibold uppercase tracking-wide text-amber-300/90">{label}</span>
     </div>
   );
@@ -232,33 +232,33 @@ export default function PublicProfilePage() {
                 )}
               </div>
 
-              {/* Tier + rütbe rozetleri (alt alta, referanstaki gibi) */}
-              <div className="mt-2 flex flex-col gap-1.5">
+              {/* Tier + rütbe rozetleri */}
+              <div className="mt-2 flex flex-wrap items-center gap-1.5">
                 {(tier === "ultra_plus" || tier === "plus") && (
                   <span
-                    className="inline-flex w-fit items-center gap-1.5 rounded-lg border border-amber-300/60 bg-gradient-to-r from-amber-400/20 to-amber-600/10 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wide text-amber-200"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-amber-300/60 bg-gradient-to-r from-amber-400/20 to-amber-600/10 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wide text-amber-200"
                     style={{ boxShadow: "0 0 16px -4px rgba(252,211,77,0.6)" }}
                   >
                     <CrownIcon className="h-3.5 w-3.5" />
                     {tier === "ultra_plus" ? "Ultra Premium" : "Plus Üye"}
                   </span>
                 )}
-                <span className="inline-flex w-fit items-center gap-1.5 rounded-lg border border-brand-400/50 bg-brand-500/15 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-brand-100">
+                <span className="inline-flex items-center gap-1.5 rounded-lg border border-brand-400/50 bg-brand-500/15 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-brand-100">
                   {rankIcon(profile.rank)} {profile.rank}
                 </span>
               </div>
             </div>
-
-            {/* Aksiyonlar */}
-            <div className="flex shrink-0 flex-col items-stretch gap-2">
-              <FollowButton targetUserId={profile.id} />
-              <MessageButton authorId={profile.id} />
-              <BlockButton targetUserId={profile.id} size="sm" />
-            </div>
           </div>
 
-          {/* Bilgi pilleri */}
-          <div className="mt-4 flex gap-2">
+          {/* Aksiyonlar — tam genişlik satır */}
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <FollowButton targetUserId={profile.id} />
+            <MessageButton authorId={profile.id} />
+            <BlockButton targetUserId={profile.id} size="sm" />
+          </div>
+
+          {/* Bilgi pilleri — 2×2 (mobil), tek satır (geniş) */}
+          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
             <InfoPill icon={genderIcon} label="Cinsiyet" value={genderLabel} />
             <InfoPill icon={rankIcon(profile.rank)} label="Rütbe" value={profile.rank} />
             <InfoPill icon="⭐" label="Puan" value={profile.points.toLocaleString("tr-TR")} />
