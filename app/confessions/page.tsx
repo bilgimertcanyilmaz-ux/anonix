@@ -18,6 +18,7 @@ import {
 } from "@/lib/feeds";
 import { getExploreFeed } from "@/lib/recommendations";
 import { getBlockedIds } from "@/lib/blocks";
+import { isBoosted } from "@/lib/boost";
 import { CATEGORIES } from "@/lib/categories";
 import { AdSlot } from "@/components/premium/AdSlot";
 import { PlusCircleIcon, TrophyIcon, SparkIcon } from "@/components/ui/icons";
@@ -464,6 +465,9 @@ export default function ConfessionsPage() {
     else if (filter === "hot") rows = sortByHot(rows);
     else if (filter === "today") rows = sortByHot(rows.filter((r) => isFromToday(r.created_at)));
     else if (filter === "new" && user) rows = await getExploreFeed(user.id, rows);
+
+    // Boost'lu (süresi dolmamış) itiraflar her filtrede en üste taşınır (stabil sıra korunur).
+    rows = [...rows.filter((r) => isBoosted(r.boosted_until)), ...rows.filter((r) => !isBoosted(r.boosted_until))];
 
     setConfessions(rows.slice(0, 50));
     await loadLikes();

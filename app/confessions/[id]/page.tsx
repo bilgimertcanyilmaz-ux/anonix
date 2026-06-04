@@ -260,11 +260,23 @@ export default function ConfessionDetailPage() {
               <button
                 type="button"
                 onClick={handleBoost}
-                disabled={boosting || !canUseFeature(profile, "boost")}
+                disabled={boosting || isBoosted(confession.boosted_until) || !canUseFeature(profile, "boost")}
                 className="shrink-0 rounded-full bg-gradient-to-r from-amber-300 to-amber-500 px-4 py-1.5 text-xs font-bold text-ink-900 shadow-glow transition-transform active:scale-95 disabled:opacity-50"
-                title={canUseFeature(profile, "boost") ? "" : "Boost için Plus gerekir"}
+                title={
+                  isBoosted(confession.boosted_until)
+                    ? "Boost süresi dolunca tekrar boostlayabilirsin"
+                    : canUseFeature(profile, "boost")
+                      ? ""
+                      : "Boost için Plus gerekir"
+                }
               >
-                {boosting ? "..." : canUseFeature(profile, "boost") ? "🚀 Boostla" : "🔒 Boost (Plus)"}
+                {boosting
+                  ? "..."
+                  : isBoosted(confession.boosted_until)
+                    ? "🚀 Öne çıkıyor"
+                    : canUseFeature(profile, "boost")
+                      ? "🚀 Boostla"
+                      : "🔒 Boost (Plus)"}
               </button>
             </div>
           )}
