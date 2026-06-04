@@ -40,7 +40,7 @@ export default function LoginPage() {
       setError(result.error);
       return;
     }
-    router.push("/profile");
+    router.push("/");
   }
 
   return (

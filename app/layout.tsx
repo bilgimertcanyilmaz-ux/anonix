@@ -9,6 +9,7 @@ import { NotifProvider } from "@/components/notifications/NotifProvider";
 import { StreakTracker } from "@/components/streaks/StreakTracker";
 import { SoundManager } from "@/components/sound/SoundManager";
 import { SessionTracker } from "@/components/analytics/SessionTracker";
+import { LaunchRedirect } from "@/components/layout/LaunchRedirect";
 import { Navbar } from "@/components/layout/Navbar";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { PwaManager } from "@/components/pwa/PwaManager";
@@ -78,6 +79,7 @@ export default function RootLayout({
               <UnreadProvider>
                 <NotifProvider>
                   <CinematicBackground />
+                  <LaunchRedirect />
                   <StreakTracker />
                   <SoundManager />
                   <SessionTracker />
