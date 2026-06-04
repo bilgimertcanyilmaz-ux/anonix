@@ -78,7 +78,7 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
     preview: "bg-gradient-to-tr from-fuchsia-500 via-purple-600 to-amber-500",
     frameSrc: "/frames/anim-1.gif",
     accent: "#a855f7",
-    hole: { cx: 0.498, cy: 0.460, r: 0.130 },
+    hole: { cx: 0.515, cy: 0.521, r: 0.193 },
   },
   {
     id: "anim-dragon",
@@ -87,7 +87,7 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
     preview: "bg-gradient-to-tr from-sky-400 via-blue-600 to-amber-400",
     frameSrc: "/frames/anim-2.gif",
     accent: "#3b82f6",
-    hole: { cx: 0.470, cy: 0.450, r: 0.115 },
+    hole: { cx: 0.492, cy: 0.474, r: 0.195 },
   },
   {
     id: "anim-crown",
@@ -96,7 +96,7 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
     preview: "bg-gradient-to-tr from-violet-500 via-purple-600 to-amber-400",
     frameSrc: "/frames/anim-3.gif",
     accent: "#9333ea",
-    hole: { cx: 0.507, cy: 0.510, r: 0.127 },
+    hole: { cx: 0.499, cy: 0.568, r: 0.233 },
   },
   {
     id: "anim-wings",
@@ -105,7 +105,7 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
     preview: "bg-gradient-to-tr from-pink-400 via-fuchsia-500 to-purple-600",
     frameSrc: "/frames/anim-4.gif",
     accent: "#d946ef",
-    hole: { cx: 0.500, cy: 0.483, r: 0.140 },
+    hole: { cx: 0.463, cy: 0.435, r: 0.225 },
   },
   {
     id: "anim-rose",
@@ -114,7 +114,7 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
     preview: "bg-gradient-to-tr from-rose-400 via-pink-500 to-fuchsia-500",
     frameSrc: "/frames/anim-5.gif",
     accent: "#ec4899",
-    hole: { cx: 0.525, cy: 0.415, r: 0.123 },
+    hole: { cx: 0.542, cy: 0.451, r: 0.193 },
   },
   {
     id: "anim-sapphire",
@@ -123,7 +123,7 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
     preview: "bg-gradient-to-tr from-blue-500 via-indigo-600 to-amber-400",
     frameSrc: "/frames/anim-6.gif",
     accent: "#2563eb",
-    hole: { cx: 0.507, cy: 0.455, r: 0.130 },
+    hole: { cx: 0.505, cy: 0.470, r: 0.188 },
   },
 ];
 
