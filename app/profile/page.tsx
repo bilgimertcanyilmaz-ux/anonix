@@ -629,35 +629,6 @@ export default function ProfilePage() {
           >
             <CityBackdrop />
 
-            {/* Floating streak chip — top-right */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8, y: -8 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ delay: 0.2, type: "spring" }}
-              className="absolute right-4 top-4 z-10 flex items-center gap-2 rounded-2xl px-3 py-2 backdrop-blur-md"
-              style={{
-                background: "linear-gradient(135deg, rgba(249,115,22,0.2), rgba(239,68,68,0.12))",
-                border: "1px solid rgba(249,115,22,0.5)",
-                boxShadow: "0 0 20px -4px rgba(249,115,22,0.5)",
-              }}
-            >
-              <motion.span
-                animate={{ scale: [1, 1.15, 1], rotate: [0, 5, -5, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="text-lg"
-              >
-                🔥
-              </motion.span>
-              <div className="text-right">
-                <p className="text-base font-extrabold leading-none text-white">
-                  {profile.streak_count}
-                </p>
-                <p className="text-[9px] uppercase tracking-wider text-orange-200/90">
-                  Günlük Seri
-                </p>
-              </div>
-            </motion.div>
-
             {/* Avatar + identity row */}
             <div className="relative flex items-start gap-4">
               {(() => {
