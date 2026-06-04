@@ -37,20 +37,22 @@ const THREAT_PATTERNS = [
   "mahvederim",
 ];
 
+// Tam kelime olarak aranır (alt-dizi DEĞİL) — "kaptı"/"dairesel" gibi yanlış eşleşmeleri önler.
 const ADDRESS_KEYWORDS = [
   "mahalle",
-  "mah.",
+  "mahallesi",
   "sokak",
-  "sok.",
+  "sokağı",
   "cadde",
-  "cad.",
+  "caddesi",
   "apartman",
-  "apt",
-  "kat ",
+  "apartmanı",
   "daire",
-  "no:",
   "blok",
+  "bulvar",
 ];
+// Kısaltmalar — nokta/iki nokta içerdikleri için alt-dizi riski düşük.
+const ADDRESS_ABBR = ["mah.", "sok.", "cad.", "apt.", "no:", "no.", "kat:"];
 
 const SPAM_DOMAINS = ["bit.ly", "t.me", "wa.me", "tinyurl", "telegram.me"];
 
@@ -108,11 +110,19 @@ export function detectTCKNLikeNumber(text: string): boolean {
   return /\b\d{11}\b/.test(compact) || /\d{11}/.test(compact);
 }
 
-/** Açık adres ifadeleri. */
+/** Açık adres ifadeleri. Gerçek adres = en az iki ipucu VE bir sayı (kapı/kat no). */
 export function detectAddressLikeText(text: string): boolean {
   const t = normalize(text);
-  const hits = ADDRESS_KEYWORDS.filter((k) => t.includes(k)).length;
-  return hits >= 2; // en az iki adres ipucu birlikte
+  let hits = 0;
+  for (const w of ADDRESS_KEYWORDS) {
+    const re = new RegExp(`(^|[^a-zçğıöşü])${w}([^a-zçğıöşü]|$)`, "i");
+    if (re.test(t)) hits++;
+  }
+  for (const a of ADDRESS_ABBR) {
+    if (t.includes(a)) hits++;
+  }
+  // Sayı yoksa (kapı/kat numarası) açık adres saymayız — duygusal metinlerde FP'yi keser.
+  return hits >= 2 && /\d/.test(text);
 }
 
 /** Tehdit ifadeleri. */

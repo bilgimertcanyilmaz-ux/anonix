@@ -70,8 +70,13 @@ export default function NewConfessionPage() {
       setError(`İtiraf en fazla ${MAX} karakter olabilir.`);
       return;
     }
-    if (!moderateText(text).allowed) {
-      setError(MODERATION_BLOCK_MESSAGE);
+    const mod = moderateText(text);
+    if (!mod.allowed) {
+      setError(
+        mod.reasons.length
+          ? `${MODERATION_BLOCK_MESSAGE} (Tespit edilen: ${mod.reasons.join(", ")})`
+          : MODERATION_BLOCK_MESSAGE
+      );
       return;
     }
 
