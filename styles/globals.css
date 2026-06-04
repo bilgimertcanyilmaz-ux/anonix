@@ -253,6 +253,19 @@ html.light .anonix-dark-card .text-slate-400,
 html.light .anonix-dark-card .text-white\/55,
 html.light .anonix-dark-card .text-white\/60,
 html.light .anonix-dark-card .text-white\/70 { color: #94a3b8 !important; }
+/* Renkli yazı + kart-içi yüzeyler de koyu-tema değerinde kalsın (kart koyu olduğu için) */
+html.light .anonix-dark-card .text-amber-100,
+html.light .anonix-dark-card .text-amber-200,
+html.light .anonix-dark-card .text-amber-300,
+html.light .anonix-dark-card .text-amber-300\/80,
+html.light .anonix-dark-card .text-amber-300\/90 { color: #fcd34d !important; }
+html.light .anonix-dark-card .text-brand-100,
+html.light .anonix-dark-card .text-brand-200,
+html.light .anonix-dark-card .text-brand-300 { color: #ddd6fe !important; }
+html.light .anonix-dark-card .bg-white\/5,
+html.light .anonix-dark-card .bg-white\/\[0\.05\] { background-color: rgba(255, 255, 255, 0.06) !important; }
+html.light .anonix-dark-card .border-white\/10 { border-color: rgba(255, 255, 255, 0.12) !important; }
+html.light .anonix-dark-card .divide-white\/10 > :not([hidden]) ~ :not([hidden]) { border-color: rgba(255, 255, 255, 0.1) !important; }
 
 /* Kırmızı (Tehlikeli Alan / hata mesajları) — koyu kırmızı */
 html.light .text-red-200,

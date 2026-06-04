@@ -209,42 +209,39 @@ export default function PublicProfilePage() {
         <div
           className="anonix-dark-card relative overflow-hidden rounded-3xl border border-brand-500/30 p-4 sm:p-5"
           style={{
-            background: "linear-gradient(160deg, rgba(45,27,90,0.65) 0%, rgba(20,14,40,0.85) 60%, rgba(12,8,28,0.92) 100%)",
+            background: "linear-gradient(160deg, rgba(40,24,80,0.97) 0%, rgba(20,14,40,0.98) 60%, rgba(12,8,28,0.99) 100%)",
             boxShadow: "0 0 60px -16px rgba(124,58,237,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
           }}
         >
-          <div className="flex items-start gap-3 sm:gap-4">
-            {/* Emblem (premium çerçeve ya da altın taç) */}
+          {/* Avatar + kullanıcı adı aynı hizada; tier + rütbe sağda küçük */}
+          <div className="flex items-center gap-3.5 sm:gap-4">
             <div className="shrink-0">
-              <FramedAvatar themeId={getPremiumTheme(profile.premium_theme) ? profile.premium_theme : "gold"} size={96}>
+              <FramedAvatar themeId={getPremiumTheme(profile.premium_theme) ? profile.premium_theme : "gold"} size={104}>
                 {avatarInner}
               </FramedAvatar>
             </div>
 
-            {/* Kimlik */}
-            <div className="min-w-0 flex-1 pt-1">
-              <div className="flex items-center gap-1.5">
-                <h1 className="truncate text-lg font-extrabold text-white sm:text-xl">@{profile.username}</h1>
+            <div className="flex min-w-0 flex-1 items-center justify-between gap-2">
+              <h1 className="flex min-w-0 items-center gap-1.5 text-xl font-extrabold text-white sm:text-2xl">
+                <span className="truncate">@{profile.username}</span>
                 {verified && (
                   <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-300 to-amber-500 text-[11px] font-black text-ink-900 shadow-glow">
                     ✓
                   </span>
                 )}
-              </div>
+              </h1>
 
-              {/* Tier + rütbe rozetleri */}
-              <div className="mt-2 flex flex-wrap items-center gap-1.5">
+              {/* Sağ köşe: tier + rütbe (küçük) */}
+              <div className="flex shrink-0 flex-col items-end gap-1">
                 {(tier === "ultra_plus" || tier === "plus") && (
-                  <span
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-amber-300/60 bg-gradient-to-r from-amber-400/20 to-amber-600/10 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wide text-amber-200"
-                    style={{ boxShadow: "0 0 16px -4px rgba(252,211,77,0.6)" }}
-                  >
-                    <CrownIcon className="h-3.5 w-3.5" />
-                    {tier === "ultra_plus" ? "Ultra Premium" : "Plus Üye"}
+                  <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/60 bg-amber-400/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-amber-200">
+                    <CrownIcon className="h-2.5 w-2.5" />
+                    {tier === "ultra_plus" ? "Ultra" : "Plus"}
                   </span>
                 )}
-                <span className="inline-flex items-center gap-1.5 rounded-lg border border-brand-400/50 bg-brand-500/15 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-brand-100">
-                  {rankIcon(profile.rank)} {profile.rank}
+                <span className="inline-flex max-w-[88px] items-center gap-1 rounded-full border border-brand-400/50 bg-brand-500/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-brand-100">
+                  <span>{rankIcon(profile.rank)}</span>
+                  <span className="truncate">{profile.rank}</span>
                 </span>
               </div>
             </div>
@@ -270,7 +267,7 @@ export default function PublicProfilePage() {
         <div
           className="anonix-dark-card relative overflow-hidden rounded-2xl border border-amber-300/30 p-2"
           style={{
-            background: "linear-gradient(135deg, rgba(45,27,90,0.5), rgba(20,14,40,0.7))",
+            background: "linear-gradient(135deg, rgba(40,24,80,0.96), rgba(18,12,36,0.98))",
             boxShadow: "0 0 30px -12px rgba(252,211,77,0.4)",
           }}
         >
@@ -285,7 +282,7 @@ export default function PublicProfilePage() {
         {badges.length > 0 && (
           <div
             className="anonix-dark-card rounded-2xl border border-white/10 p-4"
-            style={{ background: "linear-gradient(135deg, rgba(30,20,55,0.5), rgba(18,12,36,0.6))" }}
+            style={{ background: "linear-gradient(135deg, rgba(34,22,62,0.96), rgba(18,12,36,0.98))" }}
           >
             <div className="flex flex-wrap justify-around gap-y-4">
               {badges.slice(0, 5).map((ub) => (
