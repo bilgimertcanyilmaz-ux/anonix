@@ -61,18 +61,19 @@ export default function ProfileViewsPage() {
           </div>
         ) : (
           <div className="space-y-2">
-            {views.map((v) => {
-              const anon = v.profiles?.is_anonymous ?? true;
-              return (
-                <div key={v.id} className="card flex items-center justify-between gap-3 p-3">
-                  {anon || !v.profiles ? (
-                    <div className="flex items-center gap-3">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-lg">
-                        🥷
-                      </span>
-                      <span className="text-sm font-semibold text-slate-300">Anonim Ziyaretçi</span>
-                    </div>
-                  ) : (
+            {views.map((v) => (
+              <div key={v.id} className="card flex items-center justify-between gap-3 p-3">
+                {!v.profiles?.username ? (
+                  // Yalnızca ziyaretçi hesabı silinmiş/yoksa kimlik gösterilemez.
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-lg">
+                      🥷
+                    </span>
+                    <span className="text-sm font-semibold text-slate-300">Bilinmeyen Ziyaretçi</span>
+                  </div>
+                ) : (
+                  // Ultra Plus ayrıcalığı: ziyaretçi anonim modda olsa bile gerçek kimliği gösterilir.
+                  <div className="flex min-w-0 items-center gap-2">
                     <UserIdentity
                       username={v.profiles.username}
                       gender={v.profiles.gender}
@@ -83,11 +84,19 @@ export default function ProfileViewsPage() {
                       size="sm"
                       profileHref={`/users/${v.profiles.username}`}
                     />
-                  )}
-                  <span className="shrink-0 text-xs text-slate-500">{timeAgo(v.created_at)}</span>
-                </div>
-              );
-            })}
+                    {v.profiles.is_anonymous && (
+                      <span
+                        className="shrink-0 rounded-full border border-amber-400/40 bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-amber-300"
+                        title="Bu kullanıcı anonim modda; Ultra Plus sayesinde kimliği sana görünüyor."
+                      >
+                        🎭 anonim
+                      </span>
+                    )}
+                  </div>
+                )}
+                <span className="shrink-0 text-xs text-slate-500">{timeAgo(v.created_at)}</span>
+              </div>
+            ))}
           </div>
         )}
       </div>
