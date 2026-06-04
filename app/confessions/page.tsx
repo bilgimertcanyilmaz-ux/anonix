@@ -502,7 +502,7 @@ export default function ConfessionsPage() {
         <NightHeroCard totalCount={confessions.length > 0 ? confessions.length * 640 : 32800} />
 
         {/* ── FILTER PILLS ───────────────────────────────────────── */}
-        <div className="-mx-1 mb-3 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="-mx-1 mb-3 flex flex-nowrap gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap sm:overflow-x-visible">
           {extendedFilters.map((f, i) => {
             const active = filter === f.value;
             const icon = FILTER_ICON[f.value];
@@ -540,7 +540,7 @@ export default function ConfessionsPage() {
         </div>
 
         {/* ── CATEGORY PILLS (with emojis) ───────────────────────── */}
-        <div className="-mx-1 mb-6 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="-mx-1 mb-6 flex flex-nowrap gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap sm:overflow-x-visible">
           <motion.button
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
