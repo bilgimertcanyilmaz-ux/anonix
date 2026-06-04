@@ -2,16 +2,14 @@ import { supabase } from "@/lib/supabaseClient";
 import type { ProfileView } from "@/types";
 
 /**
- * Profil görüntüleme kaydı (RPC — kendi profilini/ghost/spam durumlarını sunucu eler).
- * Aynı oturumda tekrar tetiklememek için sessionStorage ile throttle edilir.
+ * Profil görüntüleme kaydı.
+ * Dedup, kendi-profili ve hayalet-mod elemesi tamamen RPC'de (sunucu) yapılır —
+ * aynı ziyaretçi 1 saat içinde tekrar sayılmaz. İstemci tarafında throttle YOK
+ * (eski sessionStorage throttle'ı, RPC başarısız olsa bile bayrak bırakıp sonraki
+ * denemeleri engellediği için kaldırıldı).
  */
 export async function recordProfileView(profileId: string): Promise<void> {
   try {
-    if (typeof window !== "undefined") {
-      const key = `anonix-pv-${profileId}`;
-      if (sessionStorage.getItem(key)) return;
-      sessionStorage.setItem(key, "1");
-    }
     await supabase.rpc("record_profile_view", { p_profile: profileId });
   } catch {
     /* görüntüleme kaydı kritik değil */
