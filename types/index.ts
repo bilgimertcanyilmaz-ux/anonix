@@ -142,6 +142,7 @@ export interface CommentRecord {
   content: string;
   is_anonymous: boolean;
   created_at: string;
+  like_count?: number;
   profiles?: ConfessionAuthor | null;
 }
 

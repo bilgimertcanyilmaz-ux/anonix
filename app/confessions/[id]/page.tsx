@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
 import { AuthorBadge } from "@/components/confession/AuthorBadge";
 import { LikeButton } from "@/components/confession/LikeButton";
+import { CommentLikeButton } from "@/components/confession/CommentLikeButton";
 import { MessageButton } from "@/components/messages/MessageButton";
 import { FollowButton } from "@/components/profile/FollowButton";
 import { BlockButton } from "@/components/profile/BlockButton";
@@ -38,6 +39,7 @@ export default function ConfessionDetailPage() {
 
   const [confession, setConfession] = useState<ConfessionRecord | null>(null);
   const [comments, setComments] = useState<CommentRecord[]>([]);
+  const [likedComments, setLikedComments] = useState<Set<string>>(new Set());
   const [liked, setLiked] = useState(false);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -82,7 +84,8 @@ export default function ConfessionDetailPage() {
       .select("*, profiles(username, gender, is_anonymous, avatar_url, subscription_tier, is_plus, premium_theme)")
       .eq("confession_id", id)
       .order("created_at", { ascending: true });
-    setComments((cmts as CommentRecord[]) ?? []);
+    const commentRows = (cmts as CommentRecord[]) ?? [];
+    setComments(commentRows);
 
     if (user) {
       const { data: likeRow } = await supabase
@@ -92,6 +95,18 @@ export default function ConfessionDetailPage() {
         .eq("user_id", user.id)
         .maybeSingle();
       setLiked(!!likeRow);
+
+      // Kullanıcının beğendiği yorumlar
+      if (commentRows.length > 0) {
+        const { data: clikes } = await supabase
+          .from("comment_likes")
+          .select("comment_id")
+          .eq("user_id", user.id)
+          .in("comment_id", commentRows.map((c) => c.id));
+        setLikedComments(new Set((clikes ?? []).map((r) => r.comment_id as string)));
+      } else {
+        setLikedComments(new Set());
+      }
     }
 
     setLoading(false);
@@ -363,6 +378,13 @@ export default function ConfessionDetailPage() {
                 <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-slate-200">
                   {c.content}
                 </p>
+                <div className="mt-2.5 flex items-center">
+                  <CommentLikeButton
+                    commentId={c.id}
+                    initialLiked={likedComments.has(c.id)}
+                    initialCount={c.like_count ?? 0}
+                  />
+                </div>
               </div>
               );
             })

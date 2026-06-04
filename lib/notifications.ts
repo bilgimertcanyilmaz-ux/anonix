@@ -5,6 +5,7 @@ export function notificationIcon(type: string): string {
   switch (type) {
     case "confession_like":
     case "golge_like":
+    case "comment_like":
       return "❤️";
     case "confession_comment":
     case "golge_comment":
