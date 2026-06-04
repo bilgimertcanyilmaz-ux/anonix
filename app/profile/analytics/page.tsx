@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Container } from "@/components/layout/Container";
 import { useAuth } from "@/components/auth/AuthProvider";
@@ -22,14 +23,44 @@ interface Stats {
   boostCount: number;
 }
 
-function StatCard({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
-  return (
-    <div className="card p-4">
+function StatCard({
+  label,
+  value,
+  sub,
+  href,
+  action,
+}: {
+  label: string;
+  value: string | number;
+  sub?: string;
+  /** Verilirse kart bu adrese tıklanabilir bir butona dönüşür. */
+  href?: string;
+  /** Tıklanabilir kartlarda gösterilen aksiyon etiketi (örn. "Kimler baktı? →"). */
+  action?: string;
+}) {
+  const inner = (
+    <>
       <p className="text-2xl font-extrabold text-white">{value}</p>
       <p className="text-xs text-slate-400">{label}</p>
       {sub && <p className="mt-0.5 text-[11px] text-brand-300">{sub}</p>}
-    </div>
+      {action && (
+        <p className="mt-1.5 text-[11px] font-bold text-amber-300 transition-colors group-hover:text-amber-200">
+          {action}
+        </p>
+      )}
+    </>
   );
+  if (href) {
+    return (
+      <Link
+        href={href}
+        className="group card block p-4 transition-all hover:border-amber-400/40 hover:bg-white/[0.04] hover:shadow-glow-sm"
+      >
+        {inner}
+      </Link>
+    );
+  }
+  return <div className="card p-4">{inner}</div>;
 }
 
 export default function ProfileAnalyticsPage() {
@@ -140,7 +171,12 @@ export default function ProfileAnalyticsPage() {
           <section>
             <h2 className="mb-2 text-sm font-bold text-amber-200">Gelişmiş (Ultra Plus)</h2>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <StatCard label="Profil görüntülenme" value={stats.profileViews} />
+              <StatCard
+                label="Profil görüntülenme"
+                value={stats.profileViews}
+                href="/profile/views"
+                action="👁️ Kimler baktı? →"
+              />
               <StatCard label="En çok beğeni alan" value={stats.topPostLikes} sub="tek paylaşım" />
               <StatCard label="En popüler kategori" value={stats.topCategory ?? "—"} />
               <StatCard label="Haftalık etkileşim" value={stats.weeklyEngagement} sub="son 7 gün" />
