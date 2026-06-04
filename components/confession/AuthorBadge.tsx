@@ -10,6 +10,8 @@ interface AuthorBadgeProps {
   size?: "sm" | "md" | "lg";
   /** Açık yazarı /users/[username] profiline bağla (varsayılan açık). */
   linkProfile?: boolean;
+  /** Abonelik paketi — cinsiyet rozetinin yanında PLUS/ULTRA rozeti gösterir. */
+  tier?: "free" | "plus" | "ultra_plus" | null;
 }
 
 /**
@@ -17,7 +19,7 @@ interface AuthorBadgeProps {
  * Anonimse kullanıcı adı gizlenir; cinsiyet her zaman (çerçeve + rozet) görünür.
  * Anonim olmayan yazar varsayılan olarak açık profiline linklenir.
  */
-export function AuthorBadge({ anonymous, author, subtitle, size = "md", linkProfile = true }: AuthorBadgeProps) {
+export function AuthorBadge({ anonymous, author, subtitle, size = "md", linkProfile = true, tier }: AuthorBadgeProps) {
   const profileHref =
     linkProfile && !anonymous && author?.username ? `/users/${author.username}` : undefined;
   return (
@@ -26,6 +28,7 @@ export function AuthorBadge({ anonymous, author, subtitle, size = "md", linkProf
       gender={author?.gender}
       avatarUrl={author?.avatar_url}
       premiumTheme={author?.premium_theme}
+      tier={tier}
       isAnonymous={anonymous}
       subtitle={subtitle}
       size={size}

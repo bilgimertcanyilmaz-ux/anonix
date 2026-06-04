@@ -355,19 +355,13 @@ export default function ConfessionDetailPage() {
               return (
               <div key={c.id} className={`card p-4 ${glow}`}>
                 <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-1.5">
-                    <AuthorBadge
-                      anonymous={c.is_anonymous}
-                      author={c.profiles}
-                      subtitle={timeAgo(c.created_at)}
-                      size="sm"
-                    />
-                    {ctier === "ultra_plus" && (
-                      <span className="rounded-full bg-gradient-to-r from-amber-300 to-amber-500 px-1.5 py-0.5 text-[9px] font-bold text-ink-900">
-                        ULTRA
-                      </span>
-                    )}
-                  </div>
+                  <AuthorBadge
+                    anonymous={c.is_anonymous}
+                    author={c.profiles}
+                    subtitle={timeAgo(c.created_at)}
+                    size="sm"
+                    tier={ctier}
+                  />
                   <ReportButton
                     entityType="confession_comment"
                     entityId={c.id}

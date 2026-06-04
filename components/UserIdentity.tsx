@@ -27,6 +27,8 @@ interface UserIdentityProps {
   showUsername?: boolean;
   /** Yazarın premium rütbe çerçevesi (anonim değilse avatar etrafında gösterilir). */
   premiumTheme?: string | null;
+  /** Abonelik paketi — cinsiyet rozetinin yanında PLUS/ULTRA rozeti gösterir. */
+  tier?: "free" | "plus" | "ultra_plus" | null;
   /** Avatar yanındaki ikincil metin (örn. tarih). */
   subtitle?: string;
   /**
@@ -68,6 +70,7 @@ export function UserIdentity({
   showGender = true,
   showUsername = true,
   premiumTheme,
+  tier,
   subtitle,
   profileHref,
 }: UserIdentityProps) {
@@ -124,6 +127,15 @@ export function UserIdentity({
               {getGenderLabel(gender)}
             </span>
           )}
+          {tier === "ultra_plus" ? (
+            <span className="inline-flex items-center rounded-full bg-gradient-to-r from-amber-300 to-amber-500 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-ink-900">
+              Ultra
+            </span>
+          ) : tier === "plus" ? (
+            <span className="inline-flex items-center rounded-full bg-gradient-to-r from-brand-400 to-brand-600 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white">
+              Plus
+            </span>
+          ) : null}
         </div>
         {subtitle && <p className="text-xs text-slate-400">{subtitle}</p>}
       </div>
