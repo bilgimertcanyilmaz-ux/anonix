@@ -35,7 +35,7 @@ function ThemeCard({
       whileHover={disabled ? undefined : { y: -3, scale: 1.02 }}
       whileTap={disabled ? undefined : { scale: 0.97 }}
       transition={{ type: "spring", stiffness: 300, damping: 22 }}
-      className={`group relative flex aspect-[4/5] flex-col items-center justify-end overflow-hidden rounded-2xl p-3 transition-all disabled:opacity-50 ${
+      className={`group relative flex h-[180px] flex-col items-center justify-center gap-2 overflow-hidden rounded-2xl p-3 transition-all disabled:opacity-50 ${
         selected ? "ring-2 ring-offset-2 ring-offset-ink-950" : ""
       }`}
       style={{
@@ -47,13 +47,13 @@ function ThemeCard({
           : "0 4px 24px -8px rgba(0,0,0,0.4)",
       }}
     >
-      {/* PNG taç çerçeve — içinde avatar önizlemesiyle */}
+      {/* PNG taç çerçeve — sabit boyut, içinde avatar önizlemesiyle */}
       <div
-        className="pointer-events-none absolute inset-x-2 top-2 bottom-10 flex items-center justify-center transition-transform duration-300 group-hover:scale-105"
+        className="pointer-events-none relative z-10 transition-transform duration-300 group-hover:scale-105"
         style={{ filter: `drop-shadow(0 0 14px ${theme.accent}80)` }}
         aria-hidden
       >
-        <FramedAvatar themeId={theme.id} fill>
+        <FramedAvatar themeId={theme.id} size={124}>
           {avatarUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
