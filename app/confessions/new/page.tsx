@@ -14,7 +14,7 @@ import { LOUNGE_ROOMS } from "@/lib/lounge";
 import { moderateText, MODERATION_BLOCK_MESSAGE } from "@/lib/moderation";
 
 const MIN = 10;
-const MAX = 1000;
+const MAX = 10000;
 
 export default function NewConfessionPage() {
   const router = useRouter();
