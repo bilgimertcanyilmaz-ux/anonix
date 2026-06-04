@@ -25,6 +25,7 @@ export function AuthorBadge({ anonymous, author, subtitle, size = "md", linkProf
       username={author?.username}
       gender={author?.gender}
       avatarUrl={author?.avatar_url}
+      premiumTheme={author?.premium_theme}
       isAnonymous={anonymous}
       subtitle={subtitle}
       size={size}

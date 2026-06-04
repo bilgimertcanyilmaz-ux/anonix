@@ -107,6 +107,8 @@ export interface ConfessionAuthor {
   gender: Gender;
   is_anonymous: boolean;
   avatar_url?: string | null;
+  /** Yazarın seçtiği premium rütbe çerçevesi (her yüzeyde avatar etrafında gösterilir). */
+  premium_theme?: string | null;
 }
 
 /** Supabase `confessions` tablosundaki bir itiraf kaydı. */

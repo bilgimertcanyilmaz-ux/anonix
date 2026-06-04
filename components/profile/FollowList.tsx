@@ -15,6 +15,7 @@ interface ListProfile {
   gender: Gender;
   is_anonymous: boolean;
   avatar_url: string | null;
+  premium_theme: string | null;
 }
 
 type Mode = "followers" | "following";
@@ -57,7 +58,7 @@ export function FollowList({ mode }: { mode: Mode }) {
 
     const { data: profs } = await supabase
       .from("profiles")
-      .select("id, username, gender, is_anonymous, avatar_url")
+      .select("id, username, gender, is_anonymous, avatar_url, premium_theme")
       .in("id", ids);
     setPeople((profs as ListProfile[]) ?? []);
     setLoading(false);
@@ -116,6 +117,7 @@ export function FollowList({ mode }: { mode: Mode }) {
                   username={p.username}
                   gender={p.gender}
                   avatarUrl={p.avatar_url}
+                  premiumTheme={p.premium_theme}
                   isAnonymous={p.is_anonymous}
                   showGender
                   showUsername

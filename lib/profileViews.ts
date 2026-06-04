@@ -25,7 +25,7 @@ export async function recordProfileView(profileId: string): Promise<void> {
 export async function getProfileViews(profileId: string, limit = 50): Promise<ProfileView[]> {
   const { data } = await supabase
     .from("profile_views")
-    .select("*, profiles:viewer_id (username, gender, avatar_url, is_anonymous, ghost_mode)")
+    .select("*, profiles:viewer_id (username, gender, avatar_url, is_anonymous, ghost_mode, premium_theme)")
     .eq("profile_id", profileId)
     .order("created_at", { ascending: false })
     .limit(limit);

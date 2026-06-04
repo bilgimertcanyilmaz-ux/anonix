@@ -42,7 +42,7 @@ export default function ForYouPage() {
     // Son içerikleri çek, ilgi alanına göre kişiselleştir
     const { data } = await supabase
       .from("confessions")
-      .select("*, profiles(username, gender, is_anonymous, avatar_url)")
+      .select("*, profiles(username, gender, is_anonymous, avatar_url, premium_theme)")
       .or(nonExpiredFilter())
       .order("created_at", { ascending: false })
       .limit(60);

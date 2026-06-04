@@ -77,6 +77,7 @@ export default function ProfileViewsPage() {
                       username={v.profiles.username}
                       gender={v.profiles.gender}
                       avatarUrl={v.profiles.avatar_url ?? null}
+                      premiumTheme={v.profiles.premium_theme}
                       isAnonymous={false}
                       showUsername
                       size="sm"

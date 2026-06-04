@@ -11,7 +11,7 @@ import { canUseFeature, FEATURE_REQUIRES_ULTRA } from "@/lib/subscription";
 import { isNightHours, nonExpiredFilter } from "@/lib/feeds";
 import type { ConfessionRecord } from "@/types";
 
-const CONF_SELECT = "*, profiles(username, gender, is_anonymous, avatar_url)";
+const CONF_SELECT = "*, profiles(username, gender, is_anonymous, avatar_url, premium_theme)";
 
 export default function NightAreaPage() {
   const router = useRouter();

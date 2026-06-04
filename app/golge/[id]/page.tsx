@@ -46,7 +46,7 @@ export default function GolgeDetailPage() {
     setLoading(true);
     const { data: p, error } = await supabase
       .from("golge_posts")
-      .select("*, profiles(username, gender, is_anonymous, avatar_url)")
+      .select("*, profiles(username, gender, is_anonymous, avatar_url, premium_theme)")
       .eq("id", id)
       .maybeSingle();
 
@@ -59,7 +59,7 @@ export default function GolgeDetailPage() {
 
     const { data: cmts } = await supabase
       .from("golge_comments")
-      .select("*, profiles(username, gender, is_anonymous, avatar_url)")
+      .select("*, profiles(username, gender, is_anonymous, avatar_url, premium_theme)")
       .eq("golge_post_id", id)
       .order("created_at", { ascending: true });
     setComments((cmts as GolgeComment[]) ?? []);

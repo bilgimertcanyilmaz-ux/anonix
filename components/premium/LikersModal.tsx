@@ -42,7 +42,7 @@ export function LikersModal({
     setLoading(true);
     supabase
       .from(table)
-      .select(`user_id, profiles:user_id (username, gender, avatar_url, is_anonymous)`)
+      .select(`user_id, profiles:user_id (username, gender, avatar_url, is_anonymous, premium_theme)`)
       .eq(idCol, id)
       .order("created_at", { ascending: false })
       .limit(100)
@@ -96,6 +96,7 @@ export function LikersModal({
                   username={l.profiles?.username ?? ""}
                   gender={l.profiles?.gender ?? "other"}
                   avatarUrl={l.profiles?.avatar_url ?? null}
+                  premiumTheme={l.profiles?.premium_theme}
                   isAnonymous={l.profiles?.is_anonymous ?? true}
                   showUsername
                   size="sm"

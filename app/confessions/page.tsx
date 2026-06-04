@@ -23,7 +23,7 @@ import { AdSlot } from "@/components/premium/AdSlot";
 import { PlusCircleIcon, TrophyIcon, SparkIcon } from "@/components/ui/icons";
 import type { ConfessionRecord } from "@/types";
 
-const CONF_SELECT = "*, profiles(username, gender, is_anonymous, avatar_url)";
+const CONF_SELECT = "*, profiles(username, gender, is_anonymous, avatar_url, premium_theme)";
 
 /* ═══════════════════════════════════════════════════════════════
    STARFIELD — CSS-only animated background particles

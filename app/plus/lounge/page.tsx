@@ -12,7 +12,7 @@ import { nonExpiredFilter } from "@/lib/feeds";
 import { LOUNGE_ROOMS } from "@/lib/lounge";
 import type { ConfessionRecord } from "@/types";
 
-const CONF_SELECT = "*, profiles(username, gender, is_anonymous, avatar_url)";
+const CONF_SELECT = "*, profiles(username, gender, is_anonymous, avatar_url, premium_theme)";
 
 export default function PlusLoungePage() {
   const router = useRouter();

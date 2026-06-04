@@ -1,9 +1,18 @@
 import Link from "next/link";
 import type { Gender } from "@/types";
 import { getGenderLabel, getGenderFrameClass, getGenderBadgeClass } from "@/lib/gender";
+import { getPremiumTheme } from "@/lib/themes";
+import { FramedAvatar } from "@/components/profile/FramedAvatar";
 import { MaskIcon } from "@/components/ui/icons";
 
 type Size = "sm" | "md" | "lg";
+
+/** Premium çerçeve gösterildiğinde kullanılan kare kutu boyutu (px). */
+const FRAME_BOX: Record<Size, number> = {
+  sm: 46,
+  md: 58,
+  lg: 78,
+};
 
 interface UserIdentityProps {
   username?: string | null;
@@ -16,6 +25,8 @@ interface UserIdentityProps {
   showGender?: boolean;
   /** Anonim değilse kullanıcı adını göster. */
   showUsername?: boolean;
+  /** Yazarın premium rütbe çerçevesi (anonim değilse avatar etrafında gösterilir). */
+  premiumTheme?: string | null;
   /** Avatar yanındaki ikincil metin (örn. tarih). */
   subtitle?: string;
   /**
@@ -56,6 +67,7 @@ export function UserIdentity({
   size = "md",
   showGender = true,
   showUsername = true,
+  premiumTheme,
   subtitle,
   profileHref,
 }: UserIdentityProps) {
@@ -64,10 +76,24 @@ export function UserIdentity({
   const frame = getGenderFrameClass(gender);
   // Yalnızca kimlik açıkken link olur; anonim kullanıcı tıklanamaz.
   const linkable = !!profileHref && revealName;
+  // Premium çerçeve yalnızca kimlik açıkken gösterilir (anonimde gizli kalır).
+  const theme = revealName ? getPremiumTheme(premiumTheme) : null;
 
-  const inner = (
-    <>
-      {/* Cinsiyet çerçeveli avatar (her zaman çerçeveli) */}
+  const avatar =
+    theme ? (
+      // Premium rütbe çerçeveli avatar — her yüzeyde tutarlı.
+      <FramedAvatar themeId={premiumTheme} size={FRAME_BOX[size]} className="shrink-0">
+        {avatarUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={avatarUrl} alt={displayName} className="h-full w-full object-cover" />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-ink-900 text-xs font-bold text-white">
+            {username ? initialsOf(username) : ""}
+          </div>
+        )}
+      </FramedAvatar>
+    ) : (
+      // Cinsiyet çerçeveli avatar (premium çerçeve yoksa / anonimde)
       <div className={`flex shrink-0 items-center justify-center rounded-full p-[2px] ${frame}`}>
         <div
           className={`flex items-center justify-center overflow-hidden rounded-full bg-ink-900 font-bold text-white ${AVATAR[size]}`}
@@ -82,6 +108,11 @@ export function UserIdentity({
           )}
         </div>
       </div>
+    );
+
+  const inner = (
+    <>
+      {avatar}
 
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-1.5">

@@ -65,7 +65,7 @@ export default function ConfessionDetailPage() {
 
     const { data: conf, error } = await supabase
       .from("confessions")
-      .select("*, profiles(username, gender, is_anonymous, avatar_url)")
+      .select("*, profiles(username, gender, is_anonymous, avatar_url, premium_theme)")
       .eq("id", id)
       .maybeSingle();
 
@@ -78,7 +78,7 @@ export default function ConfessionDetailPage() {
 
     const { data: cmts } = await supabase
       .from("confession_comments")
-      .select("*, profiles(username, gender, is_anonymous, avatar_url, subscription_tier, is_plus)")
+      .select("*, profiles(username, gender, is_anonymous, avatar_url, subscription_tier, is_plus, premium_theme)")
       .eq("confession_id", id)
       .order("created_at", { ascending: true });
     setComments((cmts as CommentRecord[]) ?? []);

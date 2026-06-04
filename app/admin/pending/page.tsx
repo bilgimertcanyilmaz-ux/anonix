@@ -21,13 +21,13 @@ export default function AdminPendingPage() {
     const [{ data: confs }, { data: golge }] = await Promise.all([
       supabase
         .from("confessions")
-        .select("*, profiles(username, gender, is_anonymous, avatar_url)")
+        .select("*, profiles(username, gender, is_anonymous, avatar_url, premium_theme)")
         .eq("moderation_status", "pending_review")
         .order("created_at", { ascending: false })
         .limit(50),
       supabase
         .from("golge_posts")
-        .select("*, profiles(username, gender, is_anonymous, avatar_url)")
+        .select("*, profiles(username, gender, is_anonymous, avatar_url, premium_theme)")
         .eq("moderation_status", "pending_review")
         .order("created_at", { ascending: false })
         .limit(50),
