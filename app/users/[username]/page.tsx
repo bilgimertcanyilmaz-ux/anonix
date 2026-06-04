@@ -16,7 +16,8 @@ import { initialsOf } from "@/lib/profile";
 import { rankIcon } from "@/lib/ranks";
 import { recordProfileView } from "@/lib/profileViews";
 import { getSubscriptionTier } from "@/lib/subscription";
-import { premiumThemeRing } from "@/lib/themes";
+import { premiumThemeRing, getPremiumTheme } from "@/lib/themes";
+import { FramedAvatar } from "@/components/profile/FramedAvatar";
 import { CrownIcon, MaskIcon } from "@/components/ui/icons";
 import type { Profile, ConfessionRecord } from "@/types";
 
@@ -128,11 +129,29 @@ export default function PublicProfilePage() {
         {/* Başlık kartı */}
         <div className="card p-6">
           <div className="flex items-center gap-4">
-            <div className={`flex h-20 w-20 items-center justify-center rounded-full p-[3px] ${premiumThemeRing(profile.premium_theme) || getGenderFrameClass(profile.gender)} ${profile.is_plus ? "shadow-glow ring-2 ring-amber-300/70" : ""}`}>
-              <div className="flex h-full w-full items-center justify-center rounded-full bg-ink-900 text-xl font-bold text-white">
-                {initialsOf(profile.username)}
+            {getPremiumTheme(profile.premium_theme) ? (
+              <FramedAvatar themeId={profile.premium_theme} size={104}>
+                {profile.avatar_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={profile.avatar_url} alt={profile.username} className="h-full w-full object-cover" />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center bg-ink-900 text-xl font-bold text-white">
+                    {initialsOf(profile.username)}
+                  </div>
+                )}
+              </FramedAvatar>
+            ) : (
+              <div className={`flex h-20 w-20 items-center justify-center rounded-full p-[3px] ${premiumThemeRing(profile.premium_theme) || getGenderFrameClass(profile.gender)} ${profile.is_plus ? "shadow-glow ring-2 ring-amber-300/70" : ""}`}>
+                <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-ink-900 text-xl font-bold text-white">
+                  {profile.avatar_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={profile.avatar_url} alt={profile.username} className="h-full w-full object-cover" />
+                  ) : (
+                    initialsOf(profile.username)
+                  )}
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">

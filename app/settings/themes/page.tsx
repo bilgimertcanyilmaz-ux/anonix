@@ -9,17 +9,22 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/components/ui/ToastProvider";
 import { canUseFeature } from "@/lib/subscription";
 import { PREMIUM_THEMES, type PremiumTheme } from "@/lib/themes";
+import { FramedAvatar } from "@/components/profile/FramedAvatar";
 
-/** Tek bir tema kartı — premium PNG çerçeveyi sergiler. */
+/** Tek bir tema kartı — premium PNG çerçeveyi (içinde avatarla) sergiler. */
 function ThemeCard({
   theme,
   selected,
   disabled,
+  avatarUrl,
+  username,
   onPick,
 }: {
   theme: PremiumTheme;
   selected: boolean;
   disabled: boolean;
+  avatarUrl?: string | null;
+  username?: string | null;
   onPick: () => void;
 }) {
   return (
@@ -42,18 +47,22 @@ function ThemeCard({
           : "0 4px 24px -8px rgba(0,0,0,0.4)",
       }}
     >
-      {/* PNG neon çerçeve — bireysel görsel, ortalanır + sığar */}
+      {/* PNG taç çerçeve — içinde avatar önizlemesiyle */}
       <div
-        className="pointer-events-none absolute inset-x-2 top-2 bottom-10 flex items-center justify-center"
+        className="pointer-events-none absolute inset-x-2 top-2 bottom-10 flex items-center justify-center transition-transform duration-300 group-hover:scale-105"
+        style={{ filter: `drop-shadow(0 0 14px ${theme.accent}80)` }}
         aria-hidden
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={theme.frameSrc}
-          alt=""
-          className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
-          style={{ filter: `drop-shadow(0 0 14px ${theme.accent}80)` }}
-        />
+        <FramedAvatar themeId={theme.id} size={132}>
+          {avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand-500 to-accent-500 text-lg font-extrabold text-white">
+              {username?.[0]?.toUpperCase() ?? "A"}
+            </div>
+          )}
+        </FramedAvatar>
       </div>
 
       {/* Hover/selected glow blob */}
@@ -190,6 +199,8 @@ export default function ThemesSettingsPage() {
                 theme={t}
                 selected={current === t.id}
                 disabled={!allowed}
+                avatarUrl={profile.avatar_url}
+                username={profile.username}
                 onPick={() => pick(t.id)}
               />
             </motion.div>

@@ -15,6 +15,8 @@ import { getFollowCounts, type FollowCounts } from "@/lib/follows";
 import { badgeIcon } from "@/lib/badges";
 import { CrownIcon, SparkIcon } from "@/components/ui/icons";
 import { ProfileFrame } from "@/components/profile/ProfileFrame";
+import { FramedAvatar } from "@/components/profile/FramedAvatar";
+import { getPremiumTheme } from "@/lib/themes";
 import { GenderBadge } from "@/components/profile/GenderBadge";
 import { ProfileSetup } from "@/components/profile/ProfileSetup";
 import { AvatarPicker } from "@/components/profile/AvatarPicker";
@@ -658,16 +660,26 @@ export default function ProfilePage() {
 
             {/* Avatar + identity row */}
             <div className="relative flex items-start gap-4">
-              <NeonAvatarRing ultra={isUltra} gender={profile.gender}>
-                {profile.avatar_url ? (
+              {(() => {
+                const avatarInner = profile.avatar_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={profile.avatar_url} alt={profile.username} className="h-full w-full object-cover" />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand-500 to-accent-500 text-2xl font-extrabold text-white">
                     {profile.username[0]?.toUpperCase()}
                   </div>
-                )}
-              </NeonAvatarRing>
+                );
+                // Premium rütbe çerçevesi seçiliyse onu göster, yoksa neon halka.
+                return getPremiumTheme(profile.premium_theme) ? (
+                  <FramedAvatar themeId={profile.premium_theme} size={132}>
+                    {avatarInner}
+                  </FramedAvatar>
+                ) : (
+                  <NeonAvatarRing ultra={isUltra} gender={profile.gender}>
+                    {avatarInner}
+                  </NeonAvatarRing>
+                );
+              })()}
 
               <div className="relative min-w-0 flex-1 pt-2">
                 <div className="flex flex-wrap items-center gap-1.5">
