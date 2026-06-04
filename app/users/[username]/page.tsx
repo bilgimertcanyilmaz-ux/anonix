@@ -213,38 +213,35 @@ export default function PublicProfilePage() {
             boxShadow: "0 0 60px -16px rgba(124,58,237,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
           }}
         >
-          {/* Avatar + kullanıcı adı aynı hizada; tier + rütbe sağda küçük */}
-          <div className="flex items-center gap-3.5 sm:gap-4">
+          {/* Sağ-üst köşe: tier + rütbe (küçük) */}
+          <div className="absolute right-3 top-3 z-10 flex flex-col items-end gap-1">
+            {(tier === "ultra_plus" || tier === "plus") && (
+              <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/60 bg-amber-400/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-amber-200">
+                <CrownIcon className="h-2.5 w-2.5" />
+                {tier === "ultra_plus" ? "Ultra" : "Plus"}
+              </span>
+            )}
+            <span className="inline-flex max-w-[96px] items-center gap-1 rounded-full border border-brand-400/50 bg-brand-500/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-brand-100">
+              <span>{rankIcon(profile.rank)}</span>
+              <span className="truncate">{profile.rank}</span>
+            </span>
+          </div>
+
+          {/* Avatar + kullanıcı adı aynı hizada (isim tam genişlik) */}
+          <div className="flex items-center gap-3.5 pr-1 sm:gap-4">
             <div className="shrink-0">
               <FramedAvatar themeId={getPremiumTheme(profile.premium_theme) ? profile.premium_theme : "gold"} size={104}>
                 {avatarInner}
               </FramedAvatar>
             </div>
-
-            <div className="flex min-w-0 flex-1 items-center justify-between gap-2">
-              <h1 className="flex min-w-0 items-center gap-1.5 text-xl font-extrabold text-white sm:text-2xl">
-                <span className="truncate">@{profile.username}</span>
-                {verified && (
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-300 to-amber-500 text-[11px] font-black text-ink-900 shadow-glow">
-                    ✓
-                  </span>
-                )}
-              </h1>
-
-              {/* Sağ köşe: tier + rütbe (küçük) */}
-              <div className="flex shrink-0 flex-col items-end gap-1">
-                {(tier === "ultra_plus" || tier === "plus") && (
-                  <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/60 bg-amber-400/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-amber-200">
-                    <CrownIcon className="h-2.5 w-2.5" />
-                    {tier === "ultra_plus" ? "Ultra" : "Plus"}
-                  </span>
-                )}
-                <span className="inline-flex max-w-[88px] items-center gap-1 rounded-full border border-brand-400/50 bg-brand-500/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-brand-100">
-                  <span>{rankIcon(profile.rank)}</span>
-                  <span className="truncate">{profile.rank}</span>
+            <h1 className="flex min-w-0 items-center gap-1.5 text-lg font-extrabold text-white sm:text-xl">
+              <span className="truncate">@{profile.username}</span>
+              {verified && (
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-300 to-amber-500 text-[11px] font-black text-ink-900 shadow-glow">
+                  ✓
                 </span>
-              </div>
-            </div>
+              )}
+            </h1>
           </div>
 
           {/* Aksiyonlar — tam genişlik satır */}
