@@ -21,11 +21,13 @@ function esc(s: string): string {
  * Auth doğrulama: opsiyonel Bearer JWT, auth.getUser(token) ile çözülür.
  * Insert: feedback_reports RLS politikası user_id=null veya auth.uid()=user_id'ye izin verir.
  */
-function getClient() {
+function getClient(token?: string | null) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
   return createClient(url, anon, {
     auth: { persistSession: false, autoRefreshToken: false },
+    // Token verilirse insert kullanıcı bağlamında çalışır (RLS: auth.uid()=user_id geçer).
+    global: token ? { headers: { Authorization: `Bearer ${token}` } } : {},
   });
 }
 
@@ -51,18 +53,23 @@ export async function POST(req: NextRequest) {
     }
     const cleanMessage = message.trim().slice(0, 2000);
 
-    const supabase = getClient();
-
     // Opsiyonel oturum (Bearer JWT) — service_role gerektirmez.
+    const auth = req.headers.get("authorization") || "";
+    const token = auth.replace(/^Bearer\s+/i, "").trim() || null;
+
+    const anonClient = getClient();
     let userId: string | null = null;
     let detectedEmail: string | null = null;
-    const auth = req.headers.get("authorization") || "";
-    const token = auth.replace(/^Bearer\s+/i, "");
     if (token) {
-      const { data } = await supabase.auth.getUser(token);
+      const { data } = await anonClient.auth.getUser(token);
       userId = data.user?.id ?? null;
       detectedEmail = data.user?.email ?? null;
     }
+
+    // Girişli + geçerli token ise insert'i KULLANICI bağlamında yap; aksi halde anon.
+    // (RLS: with check (user_id is null or auth.uid() = user_id) — anon client'ta
+    //  auth.uid() null olduğundan dolu user_id ile insert reddediliyordu.)
+    const supabase = userId && token ? getClient(token) : anonClient;
     const finalEmail = (user_email && /@/.test(user_email) ? user_email : null) || detectedEmail;
 
     // İstemci IP (rate-limit + iz için)
@@ -96,8 +103,9 @@ export async function POST(req: NextRequest) {
 
     // E-posta (yapılandırılmışsa) — fire-and-forget; hata akışı bozmaz
     const env = getServerEnv();
-    const to = env.supportEmail || "support@anonix.digital";
-    if (env.resendApiKey && env.fromEmail) {
+    const to = env.supportEmail || "destek@anonix.digital";
+    // E-posta SMTP (Hostinger) veya Resend ile gönderilir; ikisi de fromEmail ister.
+    if (env.fromEmail && (env.smtpHost || env.resendApiKey)) {
       const html =
         `<h2>Yeni Anonix Geri Bildirimi</h2>` +
         `<p><strong>Tür:</strong> ${esc(type)}</p>` +
