@@ -53,7 +53,7 @@ function ThemeCard({
         style={{ filter: `drop-shadow(0 0 14px ${theme.accent}80)` }}
         aria-hidden
       >
-        <FramedAvatar themeId={theme.id} size={132}>
+        <FramedAvatar themeId={theme.id} fill>
           {avatarUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
