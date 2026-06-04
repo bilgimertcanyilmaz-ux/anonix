@@ -210,7 +210,13 @@ begin
   perform public.award_badge(new.user_id, 'İlk Beğeni');
   perform public.bump_task_progress(new.user_id, 'like', 1);
   select user_id into author from public.confessions where id = new.confession_id;
-  if author is not null and author <> new.user_id then
+  -- Aynı kullanıcı aynı itirafı tekrar beğenince (beğen/çek/beğen) tekrar bildirim GİTMEZ.
+  if author is not null and author <> new.user_id
+     and not exists (
+       select 1 from public.notifications
+       where user_id = author and actor_id = new.user_id
+         and type = 'confession_like' and entity_id = new.confession_id
+     ) then
     insert into public.notifications (user_id, actor_id, type, entity_type, entity_id, message)
     values (author, new.user_id, 'confession_like', 'confession', new.confession_id,
       'Bir itirafın beğeni aldı ❤️');
@@ -263,7 +269,13 @@ begin
   perform public.award_badge(new.user_id, 'İlk Beğeni');
   perform public.bump_task_progress(new.user_id, 'like', 1);
   select user_id into author from public.golge_posts where id = new.golge_post_id;
-  if author is not null and author <> new.user_id then
+  -- Aynı kullanıcı aynı Gölge'yi tekrar beğenince (beğen/çek/beğen) tekrar bildirim GİTMEZ.
+  if author is not null and author <> new.user_id
+     and not exists (
+       select 1 from public.notifications
+       where user_id = author and actor_id = new.user_id
+         and type = 'golge_like' and entity_id = new.golge_post_id
+     ) then
     insert into public.notifications (user_id, actor_id, type, entity_type, entity_id, message)
     values (author, new.user_id, 'golge_like', 'golge', new.golge_post_id,
       'Bir Gölge paylaşımın beğeni aldı ❤️');
