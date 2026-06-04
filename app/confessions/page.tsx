@@ -182,7 +182,7 @@ function NightHeroCard({ totalCount }: { totalCount: number }) {
       initial={{ opacity: 0, y: 16, scale: 0.98 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ type: "spring", stiffness: 200, damping: 22, delay: 0.1 }}
-      className="relative mb-5 overflow-hidden rounded-3xl"
+      className="anonix-dark-card relative mb-5 overflow-hidden rounded-3xl"
       style={{
         background:
           "linear-gradient(135deg, rgba(76,29,149,0.55) 0%, rgba(30,27,75,0.7) 50%, rgba(15,23,42,0.85) 100%)",

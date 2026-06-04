@@ -75,9 +75,9 @@ export function MessageButton({ confessionId, authorId }: MessageButtonProps) {
     <button
       onClick={handleClick}
       disabled={busy}
-      className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-brand-500 to-brand-700 px-5 py-2.5 text-sm font-semibold text-white shadow-glow transition-transform active:scale-95 disabled:opacity-60"
+      className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-gradient-to-r from-brand-500 to-brand-700 px-4 py-2 text-xs font-semibold text-white shadow-glow transition-transform active:scale-95 disabled:opacity-60 sm:text-sm"
     >
-      <ChatIcon className="h-4 w-4" />
+      <ChatIcon className="h-4 w-4 shrink-0" />
       {busy ? "Açılıyor..." : "Mesaj Gönder"}
     </button>
   );

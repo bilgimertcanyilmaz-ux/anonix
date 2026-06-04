@@ -16,6 +16,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/components/ui/ToastProvider";
 import { moodEmoji } from "@/lib/moods";
+import { ChatIcon } from "@/components/ui/icons";
 import { timeAgo } from "@/lib/format";
 import { moderateText, MODERATION_BLOCK_MESSAGE } from "@/lib/moderation";
 import { trackInteraction } from "@/lib/recommendations";
@@ -227,24 +228,25 @@ export default function ConfessionDetailPage() {
             {confession.content}
           </p>
 
-          <div className="mt-4 flex items-center justify-between gap-3 border-t border-white/5 pt-4">
-            <div className="flex items-center gap-5">
+          <div className="mt-4 flex items-center justify-between gap-2 border-t border-white/5 pt-4">
+            <div className="flex items-center gap-3.5">
               <LikeButton
                 confessionId={confession.id}
                 initialLiked={liked}
                 initialCount={confession.like_count}
                 moodTag={confession.mood_tag}
               />
+              <span className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap text-sm text-slate-400">
+                <ChatIcon className="h-4 w-4" />
+                {confession.comment_count}
+              </span>
               <button
                 type="button"
                 onClick={() => setLikersOpen(true)}
-                className="text-sm text-slate-400 transition-colors hover:text-brand-300"
+                className="shrink-0 whitespace-nowrap text-xs font-medium text-slate-400 transition-colors hover:text-brand-300"
               >
                 Beğenenler
               </button>
-              <span className="text-sm text-slate-400">
-                {confession.comment_count} yorum
-              </span>
             </div>
             <MessageButton confessionId={confession.id} authorId={confession.user_id} />
           </div>

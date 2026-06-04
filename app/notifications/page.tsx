@@ -98,10 +98,10 @@ export default function NotificationsPage() {
               <button
                 key={n.id}
                 onClick={() => openNotification(n)}
-                className={`flex w-full items-center gap-3 rounded-2xl border p-4 text-left transition-colors ${
+                className={`flex w-full items-center gap-3 rounded-2xl border p-4 text-left shadow-sm transition-colors ${
                   n.is_read
-                    ? "border-white/5 bg-white/[0.02] hover:bg-white/[0.04]"
-                    : "border-brand-500/30 bg-brand-500/10 hover:bg-brand-500/15"
+                    ? "notif-read border-white/10 bg-white/[0.04] hover:bg-white/[0.07]"
+                    : "border-brand-500/40 bg-brand-500/10 hover:bg-brand-500/15"
                 }`}
               >
                 <span className="text-xl">{notificationIcon(n.type)}</span>

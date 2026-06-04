@@ -77,7 +77,7 @@ export function AuthHome() {
   return (
     <div className="space-y-6 py-4">
       {/* Hoş geldin */}
-      <section className="relative overflow-hidden rounded-3xl border border-brand-500/30 bg-gradient-to-br from-brand-600 via-brand-800 to-ink-900 p-6 shadow-glow">
+      <section className="anonix-dark-card relative overflow-hidden rounded-3xl border border-brand-500/30 bg-gradient-to-br from-brand-600 via-brand-800 to-ink-900 p-6 shadow-glow">
         <div className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full bg-brand-400/20 blur-3xl" />
         <div className="relative flex items-start justify-between gap-3">
           <div className="min-w-0">
