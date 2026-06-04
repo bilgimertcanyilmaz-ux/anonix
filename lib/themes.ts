@@ -69,6 +69,62 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
     accent: "#c084fc",
     hole: { cx: 0.468, cy: 0.542, r: 0.198 },
   },
+
+  // ── Animasyonlu premium çerçeveler (GIF) ──────────────────────
+  {
+    id: "anim-amethyst",
+    name: "Ametist Alev",
+    ring: "bg-gradient-to-tr from-fuchsia-500 via-purple-600 to-amber-500",
+    preview: "bg-gradient-to-tr from-fuchsia-500 via-purple-600 to-amber-500",
+    frameSrc: "/frames/anim-1.gif",
+    accent: "#a855f7",
+    hole: { cx: 0.498, cy: 0.460, r: 0.130 },
+  },
+  {
+    id: "anim-dragon",
+    name: "Ejder Buzu",
+    ring: "bg-gradient-to-tr from-sky-400 via-blue-600 to-amber-400",
+    preview: "bg-gradient-to-tr from-sky-400 via-blue-600 to-amber-400",
+    frameSrc: "/frames/anim-2.gif",
+    accent: "#3b82f6",
+    hole: { cx: 0.470, cy: 0.450, r: 0.115 },
+  },
+  {
+    id: "anim-crown",
+    name: "Mor Taç",
+    ring: "bg-gradient-to-tr from-violet-500 via-purple-600 to-amber-400",
+    preview: "bg-gradient-to-tr from-violet-500 via-purple-600 to-amber-400",
+    frameSrc: "/frames/anim-3.gif",
+    accent: "#9333ea",
+    hole: { cx: 0.507, cy: 0.510, r: 0.127 },
+  },
+  {
+    id: "anim-wings",
+    name: "Fuşya Kanat",
+    ring: "bg-gradient-to-tr from-pink-400 via-fuchsia-500 to-purple-600",
+    preview: "bg-gradient-to-tr from-pink-400 via-fuchsia-500 to-purple-600",
+    frameSrc: "/frames/anim-4.gif",
+    accent: "#d946ef",
+    hole: { cx: 0.500, cy: 0.483, r: 0.140 },
+  },
+  {
+    id: "anim-rose",
+    name: "Gül Bahçesi",
+    ring: "bg-gradient-to-tr from-rose-400 via-pink-500 to-fuchsia-500",
+    preview: "bg-gradient-to-tr from-rose-400 via-pink-500 to-fuchsia-500",
+    frameSrc: "/frames/anim-5.gif",
+    accent: "#ec4899",
+    hole: { cx: 0.525, cy: 0.415, r: 0.123 },
+  },
+  {
+    id: "anim-sapphire",
+    name: "Safir Çiçeği",
+    ring: "bg-gradient-to-tr from-blue-500 via-indigo-600 to-amber-400",
+    preview: "bg-gradient-to-tr from-blue-500 via-indigo-600 to-amber-400",
+    frameSrc: "/frames/anim-6.gif",
+    accent: "#2563eb",
+    hole: { cx: 0.507, cy: 0.455, r: 0.130 },
+  },
 ];
 
 /** Tema id'sinden tanım (yoksa null). */
