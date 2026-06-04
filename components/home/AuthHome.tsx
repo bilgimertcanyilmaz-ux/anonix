@@ -228,7 +228,7 @@ export function AuthHome() {
             </Link>
           </div>
         ) : (
-          <div className="columns-2 gap-3">
+          <div className="grid grid-cols-2 gap-x-3">
             {golge.map((p) => (
               <GolgeCard key={p.id} post={p} liked={likedGolge.has(p.id)} />
             ))}
