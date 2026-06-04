@@ -855,7 +855,7 @@ export default function ProfilePage() {
                 <p className="text-xs text-slate-400">Henüz rozetin yok. İtiraf paylaş ve rozet kazan!</p>
               </div>
             ) : (
-              <div className="flex gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              <div className="flex flex-nowrap gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap sm:overflow-x-visible">
                 {badges.map((ub, i) => <HexBadge key={ub.id} ub={ub} i={i} />)}
               </div>
             )}

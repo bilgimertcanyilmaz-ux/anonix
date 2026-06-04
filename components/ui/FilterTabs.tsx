@@ -10,7 +10,7 @@ interface FilterTabsProps {
 /** Feed filtre sekmeleri: Yeni / Trend / En Çok Beğenilen / En Çok Yorumlanan. */
 export function FilterTabs({ value, onChange }: FilterTabsProps) {
   return (
-    <div className="-mx-1 mb-4 flex gap-2 overflow-x-auto px-1 pb-1">
+    <div className="-mx-1 mb-4 flex flex-nowrap gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap sm:overflow-x-visible">
       {feedFilters.map((f) => (
         <button
           key={f.value}
