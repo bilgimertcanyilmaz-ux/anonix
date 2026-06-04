@@ -31,7 +31,7 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
     preview: "bg-gradient-to-tr from-orange-500 via-amber-500 to-orange-700",
     frameSrc: "/frames/rank-bronze.png",
     accent: "#ea580c",
-    hole: { cx: 0.491, cy: 0.482, r: 0.195 },
+    hole: { cx: 0.459, cy: 0.516, r: 0.196 },
   },
   {
     id: "silver",
@@ -40,7 +40,7 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
     preview: "bg-gradient-to-tr from-slate-200 via-slate-400 to-slate-500",
     frameSrc: "/frames/rank-silver.png",
     accent: "#cbd5e1",
-    hole: { cx: 0.519, cy: 0.543, r: 0.159 },
+    hole: { cx: 0.480, cy: 0.539, r: 0.158 },
   },
   {
     id: "gold",
@@ -49,7 +49,7 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
     preview: "bg-gradient-to-tr from-amber-300 via-yellow-400 to-amber-600",
     frameSrc: "/frames/rank-gold.png",
     accent: "#fbbf24",
-    hole: { cx: 0.534, cy: 0.549, r: 0.179 },
+    hole: { cx: 0.487, cy: 0.542, r: 0.178 },
   },
   {
     id: "platinum",
@@ -58,7 +58,7 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
     preview: "bg-gradient-to-tr from-teal-300 via-cyan-400 to-sky-500",
     frameSrc: "/frames/rank-platinum.png",
     accent: "#22d3ee",
-    hole: { cx: 0.544, cy: 0.527, r: 0.155 },
+    hole: { cx: 0.500, cy: 0.537, r: 0.155 },
   },
   {
     id: "diamond",
@@ -67,7 +67,7 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
     preview: "bg-gradient-to-tr from-fuchsia-400 via-purple-500 to-violet-600",
     frameSrc: "/frames/rank-diamond.png",
     accent: "#c084fc",
-    hole: { cx: 0.501, cy: 0.550, r: 0.139 },
+    hole: { cx: 0.468, cy: 0.542, r: 0.143 },
   },
 ];
 
