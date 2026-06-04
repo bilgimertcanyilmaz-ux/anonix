@@ -8,7 +8,7 @@ import { Container } from "@/components/layout/Container";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/components/ui/ToastProvider";
 import { canUseFeature } from "@/lib/subscription";
-import { PREMIUM_THEMES, type PremiumTheme } from "@/lib/themes";
+import { PREMIUM_THEMES, type PremiumTheme, isThemeUnlocked, themeLockLabel } from "@/lib/themes";
 import { FramedAvatar } from "@/components/profile/FramedAvatar";
 
 /** Tek bir tema kartı — premium PNG çerçeveyi (içinde avatarla) sergiler. */
@@ -16,6 +16,7 @@ function ThemeCard({
   theme,
   selected,
   disabled,
+  lockText = "🔒 Kilitli",
   avatarUrl,
   username,
   onPick,
@@ -23,6 +24,7 @@ function ThemeCard({
   theme: PremiumTheme;
   selected: boolean;
   disabled: boolean;
+  lockText?: string;
   avatarUrl?: string | null;
   username?: string | null;
   onPick: () => void;
@@ -106,9 +108,9 @@ function ThemeCard({
 
       {/* Locked overlay */}
       {disabled && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-[2px]">
-          <span className="rounded-full bg-black/60 px-3 py-1 text-xs font-bold text-amber-300">
-            🔒 Ultra Plus
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
+          <span className="max-w-[90%] truncate rounded-full bg-black/70 px-3 py-1 text-center text-[11px] font-bold text-amber-300">
+            {lockText}
           </span>
         </div>
       )}
@@ -164,7 +166,7 @@ export default function ThemesSettingsPage() {
           transition={{ delay: 0.1 }}
           className="mb-5 text-sm text-slate-400"
         >
-          Profil çerçeveni glow efektli premium temalarla kişiselleştir (Ultra Plus).
+          Rütbe çerçeveleri rütbe atladıkça açılır; animasyonlu çerçeveler Ultra Plus ile.
         </motion.p>
 
         {!allowed && (
@@ -176,7 +178,7 @@ export default function ThemesSettingsPage() {
           >
             <span className="flex items-center gap-2 text-sm text-slate-300">
               <span className="text-lg">🔒</span>
-              <span>Premium temalar Ultra Plus ile açılır.</span>
+              <span>Animasyonlu çerçeveler Ultra Plus ile; rütbe çerçeveleri rütbenle açılır.</span>
             </span>
             <Link
               href="/plus"
@@ -198,7 +200,8 @@ export default function ThemesSettingsPage() {
               <ThemeCard
                 theme={t}
                 selected={current === t.id}
-                disabled={!allowed}
+                disabled={!isThemeUnlocked(t, profile.points, allowed)}
+                lockText={themeLockLabel(t)}
                 avatarUrl={profile.avatar_url}
                 username={profile.username}
                 onPick={() => pick(t.id)}
@@ -207,7 +210,7 @@ export default function ThemesSettingsPage() {
           ))}
         </div>
 
-        {allowed && current && (
+        {current && (
           <motion.button
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

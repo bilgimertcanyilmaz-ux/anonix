@@ -21,6 +21,13 @@ export interface PremiumTheme {
    * cx/cy: dairenin merkezi, r: yarıçapı (0–1 arası, kutu genişliğine oranla).
    */
   hole: { cx: number; cy: number; r: number };
+  /**
+   * Rütbe çerçeveleri rütbeyle açılır: bu XP eşiğine ulaşan herkes kullanabilir
+   * (Ultra Plus gerekmez). Tanımsızsa çerçeve Ultra Plus ile açılır (animasyonlular).
+   */
+  unlockPoints?: number;
+  /** Kilit etiketinde gösterilecek gereken rütbe adı (rank çerçeveleri için). */
+  unlockRank?: string;
 }
 
 export const PREMIUM_THEMES: PremiumTheme[] = [
@@ -32,6 +39,8 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
     frameSrc: "/frames/rank-bronze.png",
     accent: "#ea580c",
     hole: { cx: 0.459, cy: 0.516, r: 0.260 },
+    unlockPoints: 0,
+    unlockRank: "Sessiz Ruh",
   },
   {
     id: "silver",
@@ -41,6 +50,8 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
     frameSrc: "/frames/rank-silver.png",
     accent: "#cbd5e1",
     hole: { cx: 0.480, cy: 0.539, r: 0.197 },
+    unlockPoints: 3000,
+    unlockRank: "Gizli Yazar",
   },
   {
     id: "gold",
@@ -50,6 +61,8 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
     frameSrc: "/frames/rank-gold.png",
     accent: "#fbbf24",
     hole: { cx: 0.487, cy: 0.542, r: 0.218 },
+    unlockPoints: 15000,
+    unlockRank: "Gölge Sakini",
   },
   {
     id: "platinum",
@@ -59,6 +72,8 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
     frameSrc: "/frames/rank-platinum.png",
     accent: "#22d3ee",
     hole: { cx: 0.500, cy: 0.537, r: 0.201 },
+    unlockPoints: 60000,
+    unlockRank: "Anonim Usta",
   },
   {
     id: "diamond",
@@ -68,6 +83,8 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
     frameSrc: "/frames/rank-diamond.png",
     accent: "#c084fc",
     hole: { cx: 0.468, cy: 0.542, r: 0.198 },
+    unlockPoints: 1000000,
+    unlockRank: "Gölge Efsanesi",
   },
 
   // ── Animasyonlu premium çerçeveler (GIF) ──────────────────────
@@ -131,6 +148,25 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
 export function getPremiumTheme(id: string | null | undefined): PremiumTheme | null {
   if (!id) return null;
   return PREMIUM_THEMES.find((t) => t.id === id) ?? null;
+}
+
+/**
+ * Çerçevenin kilidi kullanıcı için açık mı?
+ * - Rütbe çerçevesi (unlockPoints tanımlı): kullanıcının XP'si eşiğe ulaştıysa açık.
+ * - Animasyonlu çerçeve (unlockPoints yok): Ultra Plus (ultraAllowed) gerekir.
+ */
+export function isThemeUnlocked(
+  theme: PremiumTheme,
+  points: number,
+  ultraAllowed: boolean
+): boolean {
+  if (theme.unlockPoints !== undefined) return points >= theme.unlockPoints;
+  return ultraAllowed;
+}
+
+/** Kilitliyken gösterilecek kısa etiket. */
+export function themeLockLabel(theme: PremiumTheme): string {
+  return theme.unlockPoints !== undefined ? `🔒 ${theme.unlockRank}` : "🔒 Ultra Plus";
 }
 
 /**
