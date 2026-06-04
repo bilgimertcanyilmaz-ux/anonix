@@ -621,7 +621,7 @@ export default function ProfilePage() {
             initial="hidden"
             animate="show"
             custom={0}
-            className="relative overflow-hidden rounded-3xl border border-white/10 p-5"
+            className="anonix-dark-card relative overflow-hidden rounded-3xl border border-white/10 p-5"
             style={{
               background: "linear-gradient(180deg, rgba(30,27,75,0.45) 0%, rgba(15,10,35,0.7) 100%)",
               boxShadow: "0 0 60px -20px rgba(124,58,237,0.5), 0 30px 60px -30px rgba(0,0,0,0.6)",
@@ -732,7 +732,7 @@ export default function ProfilePage() {
             initial="hidden"
             animate="show"
             custom={1}
-            className="relative overflow-hidden rounded-3xl border border-white/10 p-5"
+            className="anonix-dark-card relative overflow-hidden rounded-3xl border border-white/10 p-5"
             style={{
               background: "linear-gradient(135deg, rgba(30,27,75,0.55) 0%, rgba(15,10,35,0.7) 100%)",
               boxShadow: "0 0 40px -16px rgba(168,85,247,0.4)",
