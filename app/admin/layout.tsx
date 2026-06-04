@@ -11,6 +11,7 @@ const navItems = [
   { href: "/admin", label: "Panel" },
   { href: "/admin/pending", label: "Acil İnceleme" },
   { href: "/admin/reports", label: "Şikayetler" },
+  { href: "/admin/feedback", label: "Geri Bildirimler" },
   { href: "/admin/users", label: "Kullanıcılar" },
   { href: "/admin/moderation", label: "Moderasyon" },
   { href: "/admin/banned-words", label: "Yasaklı Kelimeler" },

@@ -17,6 +17,10 @@ export function notificationIcon(type: string): string {
       return "🏅";
     case "task_completed":
       return "🎯";
+    case "admin_reply":
+      return "📣";
+    case "profile_view":
+      return "👁️";
     default:
       return "🔔";
   }
