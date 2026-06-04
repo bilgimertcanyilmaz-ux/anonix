@@ -105,18 +105,20 @@ export function GolgeReels({ posts, likedIds, loadMore, hasMore }: GolgeReelsPro
               </div>
 
               {/* Sağ: Reels tarzı aksiyon yığını */}
-              <div className="absolute bottom-0 right-2 flex flex-col items-center gap-5 p-1 pb-28">
+              <div className="absolute bottom-0 right-2.5 flex flex-col items-center gap-5 p-1 pb-28">
                 <GolgeLikeButton
                   postId={p.id}
                   initialLiked={likedIds.has(p.id)}
                   initialCount={p.like_count}
+                  variant="reels"
                 />
-                <Link
-                  href={`/golge/${p.id}`}
-                  className="flex flex-col items-center gap-1 text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]"
-                >
-                  <ChatIcon className="h-7 w-7" />
-                  <span className="text-xs font-semibold">{p.comment_count}</span>
+                <Link href={`/golge/${p.id}`} className="flex flex-col items-center gap-1">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-black/45 text-white ring-1 ring-white/20 backdrop-blur-sm transition-transform active:scale-90">
+                    <ChatIcon className="h-7 w-7 drop-shadow-[0_2px_6px_rgba(0,0,0,0.85)]" />
+                  </span>
+                  <span className="text-xs font-bold text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">
+                    {p.comment_count}
+                  </span>
                 </Link>
               </div>
             </div>

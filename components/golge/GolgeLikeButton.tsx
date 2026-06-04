@@ -11,9 +11,11 @@ interface GolgeLikeButtonProps {
   postId: string;
   initialLiked: boolean;
   initialCount: number;
+  /** "reels" = tam ekran akış için koyu cam daire + büyük ikon + alt sayı. */
+  variant?: "default" | "reels";
 }
 
-export function GolgeLikeButton({ postId, initialLiked, initialCount }: GolgeLikeButtonProps) {
+export function GolgeLikeButton({ postId, initialLiked, initialCount, variant = "default" }: GolgeLikeButtonProps) {
   const router = useRouter();
   const { user, profile } = useAuth();
   const { error: toastError } = useToast();
@@ -57,6 +59,31 @@ export function GolgeLikeButton({ postId, initialLiked, initialCount }: GolgeLik
       setCount((c) => Math.max(0, c + (next ? -1 : 1)));
       toastError("Beğeni işlemi başarısız oldu. Tekrar dene.");
     }
+  }
+
+  if (variant === "reels") {
+    return (
+      <button
+        onClick={handleClick}
+        aria-pressed={liked}
+        aria-label={liked ? "Beğeniyi kaldır" : "Beğen"}
+        className="flex flex-col items-center gap-1"
+      >
+        <span
+          className={`flex h-12 w-12 items-center justify-center rounded-full bg-black/45 ring-1 ring-white/20 backdrop-blur-sm transition-transform active:scale-90 ${
+            liked ? "text-pink-500" : "text-white"
+          }`}
+        >
+          <HeartIcon
+            className="h-7 w-7 drop-shadow-[0_2px_6px_rgba(0,0,0,0.85)]"
+            fill={liked ? "currentColor" : "none"}
+          />
+        </span>
+        <span className="text-xs font-bold text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">
+          {count}
+        </span>
+      </button>
+    );
   }
 
   return (
