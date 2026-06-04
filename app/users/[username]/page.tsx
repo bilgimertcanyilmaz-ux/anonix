@@ -9,18 +9,75 @@ import { BlockButton } from "@/components/profile/BlockButton";
 import { MessageButton } from "@/components/messages/MessageButton";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { getGenderFrameClass, getGenderLabel, getGenderBadgeClass } from "@/lib/gender";
+import { getGenderFrameClass, getGenderLabel } from "@/lib/gender";
 import { getFollowCounts, type FollowCounts } from "@/lib/follows";
 import { fetchLikedConfessionIds } from "@/lib/home";
 import { nonExpiredFilter } from "@/lib/feeds";
 import { initialsOf } from "@/lib/profile";
 import { rankIcon } from "@/lib/ranks";
+import { badgeIcon } from "@/lib/badges";
 import { recordProfileView } from "@/lib/profileViews";
 import { getSubscriptionTier } from "@/lib/subscription";
-import { premiumThemeRing, getPremiumTheme } from "@/lib/themes";
+import { getPremiumTheme } from "@/lib/themes";
 import { FramedAvatar } from "@/components/profile/FramedAvatar";
 import { CrownIcon, MaskIcon } from "@/components/ui/icons";
-import type { Profile, ConfessionRecord } from "@/types";
+import type { Profile, ConfessionRecord, UserBadge } from "@/types";
+
+const HEX = "polygon(50% 0, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%)";
+
+/* ── Bilgi pili (cinsiyet/rütbe/puan/katılım) ───────────────── */
+function InfoPill({ icon, label, value }: { icon: string; label: string; value: string }) {
+  return (
+    <div className="flex min-w-0 flex-1 items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.05] px-3 py-2 backdrop-blur-sm">
+      <span className="text-base">{icon}</span>
+      <div className="min-w-0">
+        <p className="truncate text-sm font-bold leading-tight text-white">{value}</p>
+        <p className="truncate text-[10px] text-slate-400">{label}</p>
+      </div>
+    </div>
+  );
+}
+
+/* ── Sıralama/takipçi/takip sütunu ──────────────────────────── */
+function StatCol({ top, value, bottom }: { top: string; value: string; bottom: string }) {
+  return (
+    <div className="flex flex-1 flex-col items-center justify-center px-2 py-1 text-center">
+      <p className="text-[9px] font-bold uppercase tracking-wider text-amber-300/80">{top}</p>
+      <p className="my-0.5 text-2xl font-extrabold text-white">{value}</p>
+      <p className="text-[10px] text-slate-400">{bottom}</p>
+    </div>
+  );
+}
+
+/* ── Hexagon rozet ──────────────────────────────────────────── */
+function HexBadge({ icon, name, label }: { icon: string; name: string; label: string }) {
+  return (
+    <div className="flex w-[19%] shrink-0 flex-col items-center gap-1.5">
+      <div className="relative h-16 w-16">
+        <span
+          className="absolute inset-0"
+          style={{
+            clipPath: HEX,
+            background: "linear-gradient(135deg, rgba(252,211,77,0.5), rgba(168,85,247,0.45))",
+            boxShadow: "0 0 18px -4px rgba(252,211,77,0.5)",
+          }}
+        />
+        <span
+          className="absolute inset-[2px]"
+          style={{
+            clipPath: HEX,
+            background: "linear-gradient(135deg, rgba(36,24,66,0.96), rgba(20,14,40,0.96))",
+          }}
+        />
+        <span className="absolute inset-0 flex items-center justify-center text-2xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
+          {icon}
+        </span>
+      </div>
+      <span className="max-w-[68px] truncate text-center text-[10px] font-bold leading-tight text-white">{name}</span>
+      <span className="text-[8px] font-semibold uppercase tracking-wide text-amber-300/90">{label}</span>
+    </div>
+  );
+}
 
 export default function PublicProfilePage() {
   const params = useParams();
@@ -31,6 +88,8 @@ export default function PublicProfilePage() {
   const [confessions, setConfessions] = useState<ConfessionRecord[]>([]);
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
   const [counts, setCounts] = useState<FollowCounts>({ followers: 0, following: 0 });
+  const [badges, setBadges] = useState<UserBadge[]>([]);
+  const [rankPos, setRankPos] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
@@ -51,7 +110,15 @@ export default function PublicProfilePage() {
     }
     const p = prof as Profile;
     setProfile(p);
-    setCounts(await getFollowCounts(p.id));
+
+    const [fc, { data: bData }, { count: ahead }] = await Promise.all([
+      getFollowCounts(p.id),
+      supabase.from("user_badges").select("*, badges(*)").eq("user_id", p.id).order("earned_at", { ascending: false }).limit(8),
+      supabase.from("profiles").select("id", { count: "exact", head: true }).gt("points", p.points),
+    ]);
+    setCounts(fc);
+    setBadges((bData as UserBadge[]) ?? []);
+    setRankPos((ahead ?? 0) + 1);
 
     // Anonim kullanıcının içerikleri/kimliği ifşa edilmez.
     if (!p.is_anonymous) {
@@ -74,7 +141,6 @@ export default function PublicProfilePage() {
     load();
   }, [load]);
 
-  // Profil görüntüleme kaydı (RPC kendi profilini/ghost/spam durumlarını eler)
   useEffect(() => {
     if (profile && user && profile.id !== user.id) {
       void recordProfileView(profile.id);
@@ -85,7 +151,7 @@ export default function PublicProfilePage() {
     return (
       <Container>
         <div className="space-y-4 py-4">
-          <div className="card h-40 animate-pulse" />
+          <div className="card h-72 animate-pulse" />
           <div className="card h-36 animate-pulse" />
         </div>
       </Container>
@@ -95,9 +161,7 @@ export default function PublicProfilePage() {
   if (notFound || !profile) {
     return (
       <Container>
-        <div className="card my-8 p-8 text-center text-sm text-slate-400">
-          Böyle bir kullanıcı bulunamadı.
-        </div>
+        <div className="card my-8 p-8 text-center text-sm text-slate-400">Böyle bir kullanıcı bulunamadı.</div>
       </Container>
     );
   }
@@ -113,7 +177,7 @@ export default function PublicProfilePage() {
             </div>
           </div>
           <p className="text-sm font-semibold text-white">Anonim Kullanıcı</p>
-          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${getGenderBadgeClass(profile.gender)}`}>
+          <span className="inline-flex items-center rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-semibold text-slate-300">
             {getGenderLabel(profile.gender)}
           </span>
           <p className="max-w-xs text-xs text-slate-400">
@@ -124,74 +188,119 @@ export default function PublicProfilePage() {
     );
   }
 
+  const tier = getSubscriptionTier(profile);
+  const verified = tier === "ultra_plus" || profile.role === "admin";
+  const joinDate = new Date(profile.created_at).toLocaleDateString("tr-TR", { month: "long", year: "numeric" });
+  const genderLabel = getGenderLabel(profile.gender);
+  const genderIcon = genderLabel === "Kadın" ? "♀" : genderLabel === "Erkek" ? "♂" : "⚧";
+  const avatarInner = profile.avatar_url ? (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={profile.avatar_url} alt={profile.username} className="h-full w-full object-cover" />
+  ) : (
+    <div className="flex h-full w-full items-center justify-center bg-ink-900 text-2xl font-extrabold text-white">
+      {initialsOf(profile.username)}
+    </div>
+  );
+
   return (
     <Container>
       <div className="space-y-5 py-4">
-        {/* Başlık kartı */}
-        <div className="card p-6">
-          <div className="flex items-center gap-4">
-            {getPremiumTheme(profile.premium_theme) ? (
-              <FramedAvatar themeId={profile.premium_theme} size={104}>
-                {profile.avatar_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={profile.avatar_url} alt={profile.username} className="h-full w-full object-cover" />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-ink-900 text-xl font-bold text-white">
-                    {initialsOf(profile.username)}
-                  </div>
-                )}
+        {/* ═══════════ PREMIUM HERO ═══════════ */}
+        <div
+          className="anonix-dark-card relative overflow-hidden rounded-3xl border border-brand-500/30 p-4 sm:p-5"
+          style={{
+            background: "linear-gradient(160deg, rgba(45,27,90,0.65) 0%, rgba(20,14,40,0.85) 60%, rgba(12,8,28,0.92) 100%)",
+            boxShadow: "0 0 60px -16px rgba(124,58,237,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
+          }}
+        >
+          <div className="flex items-start gap-3 sm:gap-4">
+            {/* Emblem (premium çerçeve ya da altın taç) */}
+            <div className="shrink-0">
+              <FramedAvatar themeId={getPremiumTheme(profile.premium_theme) ? profile.premium_theme : "gold"} size={96}>
+                {avatarInner}
               </FramedAvatar>
-            ) : (
-              <div className={`flex h-20 w-20 items-center justify-center rounded-full p-[3px] ${premiumThemeRing(profile.premium_theme) || getGenderFrameClass(profile.gender)} ${profile.is_plus ? "shadow-glow ring-2 ring-amber-300/70" : ""}`}>
-                <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-ink-900 text-xl font-bold text-white">
-                  {profile.avatar_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={profile.avatar_url} alt={profile.username} className="h-full w-full object-cover" />
-                  ) : (
-                    initialsOf(profile.username)
-                  )}
-                </div>
-              </div>
-            )}
+            </div>
 
-            <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <h1 className="truncate text-xl font-extrabold text-white">@{profile.username}</h1>
-                {getSubscriptionTier(profile) === "ultra_plus" ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-200 via-amber-400 to-brand-500 px-2.5 py-0.5 text-[10px] font-extrabold text-ink-900 shadow-glow ring-1 ring-amber-200/60">
-                    <CrownIcon className="h-3 w-3" />
-                    ULTRA PLUS
+            {/* Kimlik */}
+            <div className="min-w-0 flex-1 pt-1">
+              <div className="flex items-center gap-1.5">
+                <h1 className="truncate text-lg font-extrabold text-white sm:text-xl">@{profile.username}</h1>
+                {verified && (
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-300 to-amber-500 text-[11px] font-black text-ink-900 shadow-glow">
+                    ✓
                   </span>
-                ) : getSubscriptionTier(profile) === "plus" ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-300 to-amber-500 px-2 py-0.5 text-[10px] font-bold text-ink-900 shadow-glow">
-                    <CrownIcon className="h-3 w-3" />
-                    PLUS
+                )}
+              </div>
+
+              {/* Tier + rütbe rozetleri (alt alta, referanstaki gibi) */}
+              <div className="mt-2 flex flex-col gap-1.5">
+                {(tier === "ultra_plus" || tier === "plus") && (
+                  <span
+                    className="inline-flex w-fit items-center gap-1.5 rounded-lg border border-amber-300/60 bg-gradient-to-r from-amber-400/20 to-amber-600/10 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wide text-amber-200"
+                    style={{ boxShadow: "0 0 16px -4px rgba(252,211,77,0.6)" }}
+                  >
+                    <CrownIcon className="h-3.5 w-3.5" />
+                    {tier === "ultra_plus" ? "Ultra Premium" : "Plus Üye"}
                   </span>
-                ) : null}
-              </div>
-              <div className="mt-1.5 flex flex-wrap items-center gap-2">
-                <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${getGenderBadgeClass(profile.gender)}`}>
-                  {getGenderLabel(profile.gender)}
+                )}
+                <span className="inline-flex w-fit items-center gap-1.5 rounded-lg border border-brand-400/50 bg-brand-500/15 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-brand-100">
+                  {rankIcon(profile.rank)} {profile.rank}
                 </span>
-                <span className="text-xs text-slate-400">
-                  {rankIcon(profile.rank)} {profile.rank} · {profile.points.toLocaleString("tr-TR")} puan
-                </span>
-              </div>
-              <div className="mt-2 flex items-center gap-4 text-xs text-slate-400">
-                <span><span className="font-bold text-white">{counts.followers}</span> Takipçi</span>
-                <span><span className="font-bold text-white">{counts.following}</span> Takip</span>
               </div>
             </div>
 
-            <div className="flex shrink-0 flex-col items-end gap-2">
+            {/* Aksiyonlar */}
+            <div className="flex shrink-0 flex-col items-stretch gap-2">
               <FollowButton targetUserId={profile.id} />
               <MessageButton authorId={profile.id} />
               <BlockButton targetUserId={profile.id} size="sm" />
             </div>
           </div>
+
+          {/* Bilgi pilleri */}
+          <div className="mt-4 flex gap-2">
+            <InfoPill icon={genderIcon} label="Cinsiyet" value={genderLabel} />
+            <InfoPill icon={rankIcon(profile.rank)} label="Rütbe" value={profile.rank} />
+            <InfoPill icon="⭐" label="Puan" value={profile.points.toLocaleString("tr-TR")} />
+            <InfoPill icon="📅" label="Katılım" value={joinDate} />
+          </div>
         </div>
 
-        {/* Açık itirafları */}
+        {/* ═══════════ SIRALAMA / TAKİPÇİ / TAKİP ═══════════ */}
+        <div
+          className="anonix-dark-card relative overflow-hidden rounded-2xl border border-amber-300/30 p-2"
+          style={{
+            background: "linear-gradient(135deg, rgba(45,27,90,0.5), rgba(20,14,40,0.7))",
+            boxShadow: "0 0 30px -12px rgba(252,211,77,0.4)",
+          }}
+        >
+          <div className="flex items-stretch divide-x divide-white/10">
+            <StatCol top="Sıralama" value={`#${rankPos ?? "—"}`} bottom="En Aktif" />
+            <StatCol top="Toplam Takipçi" value={counts.followers.toLocaleString("tr-TR")} bottom="Kişi" />
+            <StatCol top="Toplam Takip" value={counts.following.toLocaleString("tr-TR")} bottom="Kişi" />
+          </div>
+        </div>
+
+        {/* ═══════════ ROZETLER ═══════════ */}
+        {badges.length > 0 && (
+          <div
+            className="anonix-dark-card rounded-2xl border border-white/10 p-4"
+            style={{ background: "linear-gradient(135deg, rgba(30,20,55,0.5), rgba(18,12,36,0.6))" }}
+          >
+            <div className="flex flex-wrap justify-around gap-y-4">
+              {badges.slice(0, 5).map((ub) => (
+                <HexBadge
+                  key={ub.id}
+                  icon={ub.badges ? badgeIcon(ub.badges) : "🏅"}
+                  name={ub.badges?.name ?? "Rozet"}
+                  label={ub.badges?.badge_type === "special" ? "Efsanevi" : ub.badges?.badge_type === "rank" ? "Epik" : "Üye"}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ═══════════ PAYLAŞIMLARI ═══════════ */}
         <div>
           <h2 className="mb-3 text-lg font-bold text-white">Paylaşımları</h2>
           {confessions.length === 0 ? (
