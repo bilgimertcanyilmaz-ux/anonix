@@ -18,6 +18,8 @@ interface PayStats {
   revenue: number;
   plusSubs: number;
   ultraSubs: number;
+  /** Ücretsiz Ultra olan adminler — abone/gelir sayımına dahil DEĞİL, ayrı gösterilir. */
+  adminUltra: number;
   mrr: number;
   plusRevenue: number;
   ultraRevenue: number;
@@ -55,10 +57,14 @@ export default function AdminDashboard() {
         ]);
       setStats({ users, confessions, golge, pendingReports, bannedUsers, last24h: conf24 + golge24 });
 
-      // Ödeme istatistikleri — paket bazlı (profiles.subscription_tier)
-      const [plusSubs, ultraSubs, failed, successLogs, recent] = await Promise.all([
-        countOf("profiles", (q) => q.eq("subscription_tier", "plus")),
-        countOf("profiles", (q) => q.eq("subscription_tier", "ultra_plus")),
+      // Ödeme istatistikleri — paket bazlı (profiles.subscription_tier).
+      // Adminler ücretsiz Ultra olduğundan ABONE/GELİR sayımına dahil EDİLMEZ;
+      // yalnızca gerçek (ödeme yapan) aboneler sayılır, adminler ayrı gösterilir.
+      const notAdmin = (q: any) => q.or("role.is.null,role.neq.admin");
+      const [plusSubs, ultraSubs, adminUltra, failed, successLogs, recent] = await Promise.all([
+        countOf("profiles", (q) => notAdmin(q.eq("subscription_tier", "plus"))),
+        countOf("profiles", (q) => notAdmin(q.eq("subscription_tier", "ultra_plus"))),
+        countOf("profiles", (q) => q.eq("role", "admin")),
         countOf("payment_logs", (q) => q.eq("status", "failed")),
         supabase.from("payment_logs").select("amount").eq("status", "success"),
         supabase.from("payment_logs").select("*").order("created_at", { ascending: false }).limit(5),
@@ -73,6 +79,7 @@ export default function AdminDashboard() {
         revenue,
         plusSubs,
         ultraSubs,
+        adminUltra,
         mrr: plusRevenue + ultraRevenue,
         plusRevenue,
         ultraRevenue,
@@ -95,6 +102,7 @@ export default function AdminDashboard() {
     { label: "Aylık MRR", value: pay ? `₺${pay.mrr.toFixed(2)}` : "—", icon: "📈" },
     { label: "Plus aboneler", value: pay?.plusSubs, icon: "⭐" },
     { label: "Ultra Plus aboneler", value: pay?.ultraSubs, icon: "👑" },
+    { label: "Admin (ücretsiz Ultra)", value: pay?.adminUltra, icon: "🛡️" },
     { label: "Plus geliri", value: pay ? `₺${pay.plusRevenue.toFixed(2)}` : "—", icon: "💜" },
     { label: "Ultra Plus geliri", value: pay ? `₺${pay.ultraRevenue.toFixed(2)}` : "—", icon: "🟡" },
     { label: "Toplam gelir", value: pay ? `₺${pay.revenue.toFixed(2)}` : "—", icon: "💰" },
