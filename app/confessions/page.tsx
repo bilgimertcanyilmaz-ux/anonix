@@ -193,76 +193,137 @@ function NightHeroCard({ totalCount }: { totalCount: number }) {
       {/* Starfield particles */}
       <Starfield />
 
-      {/* City silhouette + moon (CSS-only) */}
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-[55%]" aria-hidden>
-        {/* Sky gradient */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(ellipse at 75% 35%, rgba(244,114,182,0.25) 0%, transparent 45%), radial-gradient(ellipse at 50% 70%, rgba(124,58,237,0.4) 0%, transparent 60%)",
-          }}
-        />
-        {/* Moon */}
+      {/* Gece manzarası — aurora + hilal + katmanlı şehir + sis */}
+      <div className="pointer-events-none absolute inset-0" aria-hidden>
+        {/* Aurora ışık bantları (yavaşça süzülür) */}
         <motion.div
-          animate={{ y: [0, -3, 0] }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute right-8 top-6 h-20 w-20 rounded-full sm:right-12 sm:top-8 sm:h-24 sm:w-24"
-          style={{
-            background: "radial-gradient(circle at 35% 35%, #fef3c7 0%, #fcd34d 40%, #f59e0b 70%, transparent 100%)",
-            boxShadow: "0 0 40px 8px rgba(252,211,77,0.4), 0 0 80px 16px rgba(168,85,247,0.3)",
-          }}
-        >
-          {/* Crescent shadow */}
-          <span
-            className="absolute inset-0 rounded-full"
+          animate={{ x: [0, 22, 0], opacity: [0.45, 0.75, 0.45] }}
+          transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute -top-12 right-[10%] h-52 w-80 rounded-full blur-3xl"
+          style={{ background: "radial-gradient(ellipse, rgba(168,85,247,0.38), transparent 70%)" }}
+        />
+        <motion.div
+          animate={{ x: [0, -18, 0], opacity: [0.3, 0.55, 0.3] }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          className="absolute -top-8 right-[38%] h-44 w-64 rounded-full blur-3xl"
+          style={{ background: "radial-gradient(ellipse, rgba(236,72,153,0.22), transparent 70%)" }}
+        />
+        <motion.div
+          animate={{ x: [0, 14, 0], opacity: [0.25, 0.45, 0.25] }}
+          transition={{ duration: 22, repeat: Infinity, ease: "easeInOut", delay: 5 }}
+          className="absolute bottom-2 left-[5%] h-36 w-72 rounded-full blur-3xl"
+          style={{ background: "radial-gradient(ellipse, rgba(59,130,246,0.18), transparent 70%)" }}
+        />
+
+        {/* Kayan yıldız (periyodik) */}
+        <span className="absolute right-[14%] top-[16%] rotate-[28deg]">
+          <motion.span
+            initial={{ x: 30, opacity: 0 }}
+            animate={{ x: [30, -150], opacity: [0, 1, 1, 0] }}
+            transition={{ duration: 1.4, repeat: Infinity, repeatDelay: 7, ease: "easeOut", delay: 3 }}
+            className="block h-px w-20"
             style={{
-              background: "radial-gradient(circle at 70% 50%, transparent 38%, rgba(15,10,30,0.85) 42%)",
+              background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.95), rgba(196,181,253,0.4))",
+              boxShadow: "0 0 6px rgba(255,255,255,0.6)",
             }}
           />
-        </motion.div>
-        {/* City silhouette */}
-        <svg
-          viewBox="0 0 400 120"
-          className="absolute bottom-0 left-0 h-24 w-full sm:h-32"
-          preserveAspectRatio="none"
+        </span>
+
+        {/* Hilal — temiz SVG kesim + çift halo */}
+        <motion.svg
+          viewBox="0 0 100 100"
+          className="absolute right-6 top-4 h-20 w-20 sm:right-11 sm:top-6 sm:h-28 sm:w-28"
+          animate={{ y: [0, -4, 0], rotate: [0, 2, 0] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          style={{
+            filter:
+              "drop-shadow(0 0 16px rgba(252,211,77,0.55)) drop-shadow(0 0 44px rgba(168,85,247,0.38))",
+          }}
         >
           <defs>
-            <linearGradient id="city" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="#1e1b4b" />
-              <stop offset="100%" stopColor="#0f0a1f" />
+            <linearGradient id="nh-moon" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#fffbe8" />
+              <stop offset="55%" stopColor="#fde68a" />
+              <stop offset="100%" stopColor="#f59e0b" />
+            </linearGradient>
+            <mask id="nh-crescent">
+              <rect width="100" height="100" fill="white" />
+              <circle cx="36" cy="40" r="33" fill="black" />
+            </mask>
+          </defs>
+          <circle cx="50" cy="50" r="37" fill="url(#nh-moon)" mask="url(#nh-crescent)" />
+        </motion.svg>
+
+        {/* Şehir — arka katman (flu, menekşe) */}
+        <svg
+          viewBox="0 0 420 110"
+          preserveAspectRatio="none"
+          className="absolute bottom-0 right-0 h-20 w-[78%] opacity-50 blur-[2px] sm:h-28"
+        >
+          <path
+            d="M0,110 L0,76 L26,76 L26,58 L48,58 L48,70 L74,70 L74,44 L96,44 L96,62 L122,62 L122,50 L150,50 L150,66 L178,66 L178,38 L202,38 L202,58 L232,58 L232,46 L262,46 L262,64 L292,64 L292,40 L318,40 L318,56 L348,56 L348,68 L378,68 L378,52 L420,52 L420,110 Z"
+            fill="#4338ca"
+          />
+        </svg>
+
+        {/* Şehir — ön katman (koyu, anten + ışıklı pencereler) */}
+        <svg
+          viewBox="0 0 420 120"
+          preserveAspectRatio="none"
+          className="absolute bottom-0 right-0 h-24 w-[70%] sm:h-32"
+        >
+          <defs>
+            <linearGradient id="nh-city" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stopColor="#221d4e" />
+              <stop offset="100%" stopColor="#0b0817" />
             </linearGradient>
           </defs>
+          {/* Anten / kule uçları */}
+          <rect x="118" y="16" width="2" height="26" fill="#221d4e" />
+          <circle cx="119" cy="14" r="2.4" fill="#f472b6">
+            <animate attributeName="opacity" values="1;0.25;1" dur="2.4s" repeatCount="indefinite" />
+          </circle>
+          <rect x="298" y="10" width="2" height="24" fill="#221d4e" />
+          <circle cx="299" cy="8" r="2.4" fill="#fb7185">
+            <animate attributeName="opacity" values="0.3;1;0.3" dur="3s" repeatCount="indefinite" />
+          </circle>
           <path
-            d="M0,120 L0,80 L20,80 L20,60 L35,60 L35,75 L50,75 L50,40 L65,40 L65,55 L80,55 L80,30 L95,30 L95,50 L110,50 L110,65 L130,65 L130,45 L150,45 L150,55 L170,55 L170,35 L185,35 L185,50 L205,50 L205,25 L220,25 L220,40 L240,40 L240,60 L260,60 L260,45 L280,45 L280,55 L300,55 L300,30 L320,30 L320,50 L340,50 L340,65 L360,65 L360,55 L380,55 L380,70 L400,70 L400,120 Z"
-            fill="url(#city)"
-            opacity="0.85"
+            d="M0,120 L0,86 L20,86 L20,64 L34,64 L34,58 L40,52 L46,58 L46,78 L66,78 L66,42 L70,38 L88,38 L88,56 L106,56 L106,42 L132,42 L132,72 L148,72 L148,50 L154,44 L168,44 L168,60 L186,60 L186,34 L206,34 L206,52 L224,52 L224,68 L244,68 L244,46 L250,40 L268,40 L268,58 L286,58 L286,34 L312,34 L312,54 L332,54 L332,70 L354,70 L354,58 L376,58 L376,76 L398,76 L398,64 L420,64 L420,120 Z"
+            fill="url(#nh-city)"
           />
-          {/* Window lights */}
+          {/* Pencere ışıkları — sıcak, kademeli yanıp sönme */}
           {[
-            [25, 90], [40, 70], [55, 65], [70, 50], [85, 45], [95, 55], [115, 70],
-            [135, 55], [155, 60], [175, 45], [190, 60], [210, 38], [225, 55],
-            [245, 70], [265, 55], [285, 65], [305, 45], [325, 60], [345, 75], [365, 65],
-          ].map(([x, y], i) => (
-            <motion.rect
-              key={i}
-              x={x}
-              y={y}
-              width="1.5"
-              height="1.5"
-              fill="#fde68a"
-              initial={{ opacity: 0.3 }}
-              animate={{ opacity: [0.3, 1, 0.3] }}
-              transition={{ duration: 2 + (i % 5), repeat: Infinity, delay: i * 0.15 }}
-            />
+            [26, 72, 0], [30, 80, 1], [56, 84, 2], [74, 48, 3], [80, 60, 4],
+            [96, 46, 0], [112, 62, 1], [124, 50, 2], [140, 78, 3], [160, 52, 4],
+            [176, 66, 0], [194, 42, 1], [198, 56, 2], [214, 60, 3], [232, 74, 4],
+            [256, 48, 0], [276, 64, 1], [294, 42, 2], [302, 58, 3], [320, 60, 4],
+            [340, 76, 0], [362, 64, 1], [384, 82, 2], [404, 72, 3],
+          ].map(([x, y, g], i) => (
+            <rect key={i} x={x} y={y} width="2.6" height="3" rx="0.6" fill="#fde68a" opacity="0.9">
+              <animate
+                attributeName="opacity"
+                values={g % 2 === 0 ? "0.9;0.25;0.9" : "0.3;0.95;0.3"}
+                dur={`${2.2 + (g as number) * 0.7}s`}
+                begin={`${i * 0.18}s`}
+                repeatCount="indefinite"
+              />
+            </rect>
           ))}
         </svg>
-        {/* Subtle leaves silhouette right edge */}
-        <div
-          className="absolute -right-2 bottom-0 h-full w-16 opacity-40"
+
+        {/* Süzülen sis bandı + zemin sisi */}
+        <motion.div
+          animate={{ x: [0, 36, 0], opacity: [0.5, 0.8, 0.5] }}
+          transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-4 inset-x-0 h-10 blur-2xl"
           style={{
-            background: "radial-gradient(ellipse at right bottom, rgba(15,10,30,0.9) 0%, transparent 70%)",
+            background:
+              "linear-gradient(90deg, transparent 5%, rgba(168,85,247,0.16) 35%, rgba(96,165,250,0.12) 65%, transparent 95%)",
           }}
+        />
+        <div
+          className="absolute inset-x-0 bottom-0 h-14"
+          style={{ background: "linear-gradient(to top, rgba(8,6,18,0.8), transparent)" }}
         />
       </div>
 
@@ -281,8 +342,10 @@ function NightHeroCard({ totalCount }: { totalCount: number }) {
           🔥 Trend
         </span>
 
-        <h2 className="mt-3 flex items-center gap-2 text-2xl font-extrabold text-white sm:text-3xl">
-          <span className="text-2xl">🌙</span>
+        <h2
+          className="mt-3 text-2xl font-extrabold tracking-tight sm:text-3xl"
+          style={{ filter: "drop-shadow(0 2px 14px rgba(168,85,247,0.45))" }}
+        >
           <span className="text-gradient-neon">Gece İtirafları</span>
         </h2>
         <p className="mt-1.5 max-w-[260px] text-xs leading-relaxed text-slate-300/85 sm:text-sm">
@@ -293,7 +356,11 @@ function NightHeroCard({ totalCount }: { totalCount: number }) {
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <Link
             href="#feed"
-            className="group inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-bold text-white backdrop-blur-md transition-all hover:bg-white/15 hover:shadow-glow-sm"
+            className="group inline-flex items-center gap-1.5 rounded-full px-5 py-2 text-xs font-bold text-white transition-all hover:scale-[1.04] active:scale-95"
+            style={{
+              background: "linear-gradient(135deg, #a855f7 0%, #7c3aed 55%, #6d28d9 100%)",
+              boxShadow: "0 0 24px -6px rgba(168,85,247,0.7), inset 0 1px 0 rgba(255,255,255,0.25)",
+            }}
           >
             Keşfet
             <span className="transition-transform group-hover:translate-x-0.5">→</span>
