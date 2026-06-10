@@ -485,6 +485,33 @@ html.light .anonix-modal-card .btn-ghost {
   border-color: #cbd5e1 !important;
 }
 
+/* Liderlik tablosu — başlık ve podyum değerleri (tema duyarlı gradyan metin) */
+.lb-title {
+  background: linear-gradient(135deg, #fff 0%, #fde68a 45%, #f59e0b 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 14px rgba(245, 158, 11, 0.3));
+}
+html.light .lb-title {
+  background: linear-gradient(135deg, #b45309 0%, #d97706 55%, #7c3aed 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: none !important;
+}
+.lb-val-0 { background: linear-gradient(135deg, #fde68a, #f59e0b); }
+.lb-val-1 { background: linear-gradient(135deg, #f1f5f9, #94a3b8); }
+.lb-val-2 { background: linear-gradient(135deg, #fdba74, #ea580c); }
+.lb-val-0, .lb-val-1, .lb-val-2 {
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+html.light .lb-val-0 { background-image: linear-gradient(135deg, #b45309, #92400e) !important; }
+html.light .lb-val-1 { background-image: linear-gradient(135deg, #475569, #1e293b) !important; }
+html.light .lb-val-2 { background-image: linear-gradient(135deg, #c2410c, #9a3412) !important; }
+
 /* Tier CTA */
 .tier-cta-ultra { color: #1f2937; font-weight: 800; }
 html.light .tier-cta-ultra { color: #4c1d95; }
