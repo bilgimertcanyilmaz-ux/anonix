@@ -8,6 +8,7 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { useNotif } from "@/components/notifications/NotifProvider";
 import { notificationIcon, notificationHref } from "@/lib/notifications";
 import { timeAgo } from "@/lib/format";
+import { EmptyState } from "@/components/ui/EmptyState";
 import type { Notification } from "@/types";
 
 export default function NotificationsPage() {
@@ -89,9 +90,13 @@ export default function NotificationsPage() {
             ))}
           </div>
         ) : items.length === 0 ? (
-          <div className="card p-8 text-center">
-            <p className="text-sm text-slate-400">Henüz bildirimin yok.</p>
-          </div>
+          <EmptyState
+            icon="🔔"
+            title="Henüz bildirimin yok"
+            description="Beğeniler, yorumlar ve yeni takipçiler burada görünecek."
+            actionLabel="İtirafları keşfet"
+            actionHref="/confessions"
+          />
         ) : (
           <div className="space-y-2">
             {items.map((n) => (

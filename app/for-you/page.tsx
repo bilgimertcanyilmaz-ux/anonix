@@ -9,6 +9,7 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { personalize, inferPreferredMoods } from "@/lib/engagement";
 import { nonExpiredFilter } from "@/lib/feeds";
 import { SparkIcon } from "@/components/ui/icons";
+import { EmptyState } from "@/components/ui/EmptyState";
 import type { ConfessionRecord } from "@/types";
 
 export default function ForYouPage() {
@@ -80,9 +81,13 @@ export default function ForYouPage() {
             ))}
           </div>
         ) : items.length === 0 ? (
-          <div className="card p-8 text-center text-sm text-slate-400">
-            Henüz öneri yok. Birkaç itiraf beğen, sana özel akışın şekillensin.
-          </div>
+          <EmptyState
+            icon="✨"
+            title="Henüz öneri yok"
+            description="Birkaç itiraf beğen, sana özel akışın şekillensin."
+            actionLabel="İtirafları keşfet"
+            actionHref="/confessions"
+          />
         ) : (
           <div className="space-y-4">
             {items.map((c) => (

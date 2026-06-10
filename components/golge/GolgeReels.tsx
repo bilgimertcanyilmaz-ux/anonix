@@ -84,7 +84,7 @@ export function GolgeReels({ posts, likedIds, loadMore, hasMore }: GolgeReelsPro
               <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
 
               {/* Sol-alt: mood + yazar + açıklama */}
-              <div className="absolute inset-x-0 bottom-0 left-0 right-16 p-4 pb-24">
+              <div className="absolute inset-x-0 bottom-0 left-0 right-16 p-4 pb-[calc(6rem+env(safe-area-inset-bottom))]">
                 {p.mood_tag && (
                   <span className="mb-2 inline-flex items-center gap-1 rounded-full bg-black/50 px-2.5 py-1 text-xs font-medium text-white backdrop-blur-sm">
                     {moodEmoji(p.mood_tag)} {p.mood_tag}

@@ -239,12 +239,12 @@ export default function ConfessionDetailPage() {
             </div>
           </div>
 
-          <p className="whitespace-pre-wrap text-[15px] leading-relaxed text-slate-200">
+          <p className="whitespace-pre-wrap break-words text-[15px] leading-relaxed text-slate-200">
             {confession.content}
           </p>
 
-          <div className="mt-4 flex items-center justify-between gap-2 border-t border-white/5 pt-4">
-            <div className="flex items-center gap-3.5">
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-white/5 pt-4">
+            <div className="flex min-w-0 items-center gap-3.5">
               <LikeButton
                 confessionId={confession.id}
                 initialLiked={liked}
@@ -297,7 +297,7 @@ export default function ConfessionDetailPage() {
               </button>
             </div>
           )}
-          <div className="mt-3 flex items-center justify-between">
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
             <ShareButton type="confession" id={confession.id} text={confession.content} mood={confession.mood_tag} />
             <ReportButton
               entityType="confession"
@@ -369,7 +369,7 @@ export default function ConfessionDetailPage() {
                     compact
                   />
                 </div>
-                <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-slate-200">
+                <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-relaxed text-slate-200">
                   {c.content}
                 </p>
                 <div className="mt-2.5 flex items-center">

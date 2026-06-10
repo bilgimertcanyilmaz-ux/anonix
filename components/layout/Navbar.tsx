@@ -54,7 +54,7 @@ export function Navbar() {
 
         {/* Sağ küme: nav linkleri (lg) + aksiyonlar. Logoyla çakışmaması için
             min-w-0 + flex-wrap-none, linkler arası nefes payı. */}
-        <div className="flex min-w-0 items-center gap-1.5 sm:gap-2 lg:gap-2.5">
+        <div className="flex min-w-0 items-center gap-1 sm:gap-2 lg:gap-2.5">
           <Link
             href="/confessions"
             className={`hidden whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-semibold transition-colors hover:text-white lg:inline-flex ${activeText("/confessions")}`}

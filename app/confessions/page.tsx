@@ -584,7 +584,12 @@ export default function ConfessionsPage() {
               {[0, 1, 2].map((i) => <SkeletonCard key={i} />)}
             </div>
           ) : error ? (
-            <div className="glass-card p-6 text-center text-sm text-red-300">{error}</div>
+            <div className="glass-card flex flex-col items-center gap-3 p-6 text-center text-sm text-red-300">
+              <span>{error}</span>
+              <button type="button" onClick={() => load()} className="btn-ghost px-5 py-2 text-xs">
+                ↻ Tekrar dene
+              </button>
+            </div>
           ) : confessions.length === 0 ? (
             <EmptyState filter={filter} notFollowingAnyone={notFollowingAnyone} href="/confessions/new" />
           ) : (

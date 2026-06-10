@@ -195,7 +195,12 @@ export default function ConversationPage() {
   if (authLoading || !user || loading) {
     return (
       <Container>
-        <div className="py-20 text-center text-sm text-slate-400">Yükleniyor...</div>
+        <div className="space-y-3 py-6">
+          <div className="card h-12 w-2/3 animate-pulse" />
+          <div className="card ml-auto h-12 w-1/2 animate-pulse" />
+          <div className="card h-12 w-3/5 animate-pulse" />
+          <div className="card ml-auto h-12 w-2/5 animate-pulse" />
+        </div>
       </Container>
     );
   }

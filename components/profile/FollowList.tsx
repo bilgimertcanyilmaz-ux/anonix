@@ -77,7 +77,7 @@ export function FollowList({ mode }: { mode: Mode }) {
   }
 
   const tabClass = (active: boolean) =>
-    `flex-1 rounded-full px-4 py-2 text-center text-sm font-semibold transition-colors ${
+    `min-w-0 flex-1 truncate rounded-full px-2.5 py-2 text-center text-xs font-semibold transition-colors sm:px-4 sm:text-sm ${
       active ? "bg-brand-gradient text-white shadow-glow" : "bg-white/5 text-slate-300 hover:bg-white/10"
     }`;
 

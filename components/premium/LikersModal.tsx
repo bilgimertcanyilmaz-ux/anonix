@@ -56,7 +56,7 @@ export function LikersModal({
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60 p-3 backdrop-blur-sm sm:items-center"
+      className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60 p-3 backdrop-blur-md sm:items-center"
       onClick={onClose}
     >
       <div className="card max-h-[70vh] w-full max-w-md overflow-hidden p-0" onClick={(e) => e.stopPropagation()}>

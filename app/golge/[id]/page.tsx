@@ -186,7 +186,7 @@ export default function GolgeDetailPage() {
           </div>
 
           {post.caption && (
-            <p className="whitespace-pre-wrap text-[15px] leading-relaxed text-slate-200">
+            <p className="whitespace-pre-wrap break-words text-[15px] leading-relaxed text-slate-200">
               {post.caption}
             </p>
           )}
@@ -257,7 +257,7 @@ export default function GolgeDetailPage() {
                     compact
                   />
                 </div>
-                <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-slate-200">
+                <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-relaxed text-slate-200">
                   {c.content}
                 </p>
               </div>

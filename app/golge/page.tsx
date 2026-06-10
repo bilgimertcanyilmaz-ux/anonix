@@ -102,7 +102,16 @@ export default function GolgeFeedPage() {
   if (error) {
     return (
       <Container>
-        <div className="glass-card my-8 p-6 text-center text-sm text-red-300">{error}</div>
+        <div className="glass-card my-8 flex flex-col items-center gap-3 p-6 text-center text-sm text-red-300">
+          <span>{error}</span>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="btn-ghost px-5 py-2 text-xs"
+          >
+            ↻ Tekrar dene
+          </button>
+        </div>
       </Container>
     );
   }

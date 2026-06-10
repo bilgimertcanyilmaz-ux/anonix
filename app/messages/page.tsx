@@ -8,6 +8,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { timeAgo } from "@/lib/format";
 import { UserIdentity } from "@/components/UserIdentity";
+import { EmptyState } from "@/components/ui/EmptyState";
 import type { Conversation, Gender } from "@/types";
 
 export default function MessagesPage() {
@@ -73,11 +74,13 @@ export default function MessagesPage() {
             ))}
           </div>
         ) : conversations.length === 0 ? (
-          <div className="card p-8 text-center">
-            <p className="text-sm text-slate-400">
-              Henüz mesajın yok. Bir itirafı beğenip sahibine mesaj göndererek başla.
-            </p>
-          </div>
+          <EmptyState
+            icon="💬"
+            title="Henüz mesajın yok"
+            description="Bir itirafı beğenip sahibine mesaj göndererek sohbete başla."
+            actionLabel="Keşfet'e git"
+            actionHref="/confessions"
+          />
         ) : (
           <div className="space-y-3">
             {conversations.map((c) => {
