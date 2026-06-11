@@ -16,7 +16,6 @@ import {
   isNightHours,
   nonExpiredFilter,
 } from "@/lib/feeds";
-import { getExploreFeed } from "@/lib/recommendations";
 import { getBlockedIds } from "@/lib/blocks";
 import { isBoosted } from "@/lib/boost";
 import { CATEGORIES } from "@/lib/categories";
@@ -531,7 +530,9 @@ export default function ConfessionsPage() {
     if (filter === "trend") rows = sortByTrend(rows);
     else if (filter === "hot") rows = sortByHot(rows);
     else if (filter === "today") rows = sortByHot(rows.filter((r) => isFromToday(r.created_at)));
-    else if (filter === "new" && user) rows = await getExploreFeed(user.id, rows);
+    // "Yeni" salt kronolojiktir (sorgu zaten created_at desc) — kişiselleştirilmiş
+    // sıralama "Sana Özel" sayfasında yaşar. Aksi hâlde yüksek beğenili eski
+    // itiraflar 0 beğenili taze paylaşımları listenin dışına itiyordu.
 
     // Boost'lu (süresi dolmamış) itiraflar her filtrede en üste taşınır (stabil sıra korunur).
     rows = [...rows.filter((r) => isBoosted(r.boosted_until)), ...rows.filter((r) => !isBoosted(r.boosted_until))];
