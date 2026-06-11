@@ -44,7 +44,9 @@ export function FeedbackWidget() {
         style={{ bottom: "calc(6rem + env(safe-area-inset-bottom))" }}
       >
         <span className="pointer-events-none absolute inset-0 rounded-full bg-brand-500/15 opacity-0 blur-md transition-opacity group-hover:opacity-100" />
-        <span className="relative">💬</span>
+        <span className="relative transition-transform duration-300 group-hover:-rotate-12 group-hover:scale-110">
+          💬
+        </span>
       </button>
 
       <Modal open={open} onClose={() => setOpen(false)} title="Geri bildirim">
