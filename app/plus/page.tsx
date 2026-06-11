@@ -408,21 +408,27 @@ export default function PlusPage() {
             <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/5 text-sm">⚖️</span>
             Paket karşılaştırması
           </h2>
-          <div className="glass-card overflow-x-auto">
-            <table className="w-full min-w-[420px] text-sm">
+          <div className="glass-card overflow-hidden">
+            <table className="w-full table-fixed text-sm">
+              <colgroup>
+                <col />
+                <col className="w-11 sm:w-16" />
+                <col className="w-11 sm:w-16" />
+                <col className="w-14 sm:w-20" />
+              </colgroup>
               <thead>
                 <tr className="border-b border-white/10">
-                  <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  <th className="px-3 py-3.5 text-left text-[10px] font-semibold uppercase tracking-wider text-slate-500 sm:px-5 sm:text-xs">
                     Özellik
                   </th>
-                  <th className="px-3 py-3.5 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  <th className="px-1 py-3.5 text-center text-[10px] font-semibold uppercase tracking-wider text-slate-500 sm:px-3 sm:text-xs">
                     Free
                   </th>
-                  <th className="px-3 py-3.5 text-center text-xs font-semibold uppercase tracking-wider text-brand-300">
+                  <th className="px-1 py-3.5 text-center text-[10px] font-semibold uppercase tracking-wider text-brand-300 sm:px-3 sm:text-xs">
                     Plus
                   </th>
-                  <th className="bg-gold-400/[0.07] px-3 py-3.5 text-center text-xs font-semibold uppercase tracking-wider text-gold-300">
-                    👑 Ultra
+                  <th className="bg-gold-400/[0.07] px-1 py-3.5 text-center text-[10px] font-semibold uppercase tracking-wider text-gold-300 sm:px-3 sm:text-xs">
+                    <span className="hidden sm:inline">👑 </span>Ultra
                   </th>
                 </tr>
               </thead>
@@ -437,12 +443,16 @@ export default function PlusPage() {
                       i % 2 ? "bg-white/[0.015]" : ""
                     }`}
                   >
-                    <td className="px-5 py-3 text-slate-200">{row.feature}</td>
-                    <td className="px-3 py-3 text-center text-slate-600">{row.free ? "✓" : "✕"}</td>
-                    <td className="px-3 py-3 text-center font-semibold text-brand-300">
+                    <td className="break-words px-3 py-3 text-[13px] leading-snug text-slate-200 sm:px-5 sm:text-sm">
+                      {row.feature}
+                    </td>
+                    <td className="px-1 py-3 text-center text-slate-600 sm:px-3">
+                      {row.free ? "✓" : "✕"}
+                    </td>
+                    <td className="px-1 py-3 text-center font-semibold text-brand-300 sm:px-3">
                       {row.plus ? "✓" : <span className="font-normal text-slate-600">✕</span>}
                     </td>
-                    <td className="bg-gold-400/[0.07] px-3 py-3 text-center font-bold text-gold-300">
+                    <td className="bg-gold-400/[0.07] px-1 py-3 text-center font-bold text-gold-300 sm:px-3">
                       {row.ultra ? "✓" : "✕"}
                     </td>
                   </motion.tr>
