@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="fg" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#b91c1c"/>
+      <stop offset=".45" stop-color="#f97316"/>
+      <stop offset="1" stop-color="#fde047"/>
+    </linearGradient>
+    <radialGradient id="fring" cx=".5" cy=".5" r=".5">
+      <stop offset=".82" stop-color="#7c2d12"/>
+      <stop offset="1" stop-color="#f97316"/>
+    </radialGradient>
+    <filter id="fglow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="6" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- Tek alev dili -->
+    <path id="tongue" d="M256 70 q14 -34 2 -52 q26 16 16 52 q22 -8 18 -30 q14 26 -6 48 q-26 22 -30 -18z" fill="url(#fg)"/>
+  </defs>
+
+  <!-- Kor halka -->
+  <circle cx="256" cy="256" r="180" fill="none" stroke="url(#fg)" stroke-width="12" filter="url(#fglow)">
+    <animate attributeName="opacity" values="1;.75;1" dur="1.8s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="256" cy="256" r="170" fill="none" stroke="#fde047" stroke-width="2.5" opacity=".7"/>
+
+  <!-- Alev dilleri (üst yarı yoğun, yanlara seyrek) -->
+  <g filter="url(#fglow)">
+    <use href="#tongue" transform="rotate(-66 256 256)"/>
+    <use href="#tongue" transform="rotate(-44 256 256) scale(1.12) translate(-28 -28)"/>
+    <use href="#tongue" transform="rotate(-22 256 256)"/>
+    <use href="#tongue" transform="scale(1.22) translate(-46 -46)">
+      <animate attributeName="opacity" values="1;.7;1" dur="1.2s" repeatCount="indefinite"/>
+    </use>
+    <use href="#tongue" transform="rotate(22 256 256)"/>
+    <use href="#tongue" transform="rotate(44 256 256) scale(1.12) translate(28 -28)"/>
+    <use href="#tongue" transform="rotate(66 256 256)"/>
+    <use href="#tongue" transform="rotate(160 256 256) scale(.8) translate(64 64)"/>
+    <use href="#tongue" transform="rotate(-160 256 256) scale(.8) translate(-64 64)"/>
+  </g>
+
+  <!-- Uçuşan kıvılcımlar -->
+  <g fill="#fde047" filter="url(#fglow)">
+    <circle cx="150" cy="120" r="5">
+      <animate attributeName="cy" values="120;96;120" dur="2.4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="1;.2;1" dur="2.4s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="372" cy="108" r="4">
+      <animate attributeName="cy" values="108;82;108" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values=".9;.15;.9" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="412" cy="350" r="4">
+      <animate attributeName="cy" values="350;330;350" dur="2.7s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values=".8;.2;.8" dur="2.7s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+</svg>

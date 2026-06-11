@@ -142,6 +142,53 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
     accent: "#2563eb",
     hole: { cx: 0.505, cy: 0.470, r: 0.188 },
   },
+
+  // ── Vektörel premium çerçeveler (SVG, gömülü animasyonlu) ─────
+  {
+    id: "prem-neon",
+    name: "Neon Çember",
+    ring: "bg-gradient-to-tr from-cyan-400 via-purple-500 to-pink-500",
+    preview: "bg-gradient-to-tr from-cyan-400 via-purple-500 to-pink-500",
+    frameSrc: "/frames/prem-neon.svg",
+    accent: "#22d3ee",
+    hole: { cx: 0.5, cy: 0.5, r: 0.317 },
+  },
+  {
+    id: "prem-laurel",
+    name: "Altın Defne",
+    ring: "bg-gradient-to-tr from-amber-200 via-amber-400 to-amber-600",
+    preview: "bg-gradient-to-tr from-amber-200 via-amber-400 to-amber-600",
+    frameSrc: "/frames/prem-laurel.svg",
+    accent: "#f59e0b",
+    hole: { cx: 0.5, cy: 0.5, r: 0.324 },
+  },
+  {
+    id: "prem-flame",
+    name: "Alev Halkası",
+    ring: "bg-gradient-to-tr from-red-600 via-orange-500 to-yellow-300",
+    preview: "bg-gradient-to-tr from-red-600 via-orange-500 to-yellow-300",
+    frameSrc: "/frames/prem-flame.svg",
+    accent: "#f97316",
+    hole: { cx: 0.5, cy: 0.5, r: 0.332 },
+  },
+  {
+    id: "prem-ice",
+    name: "Buz Tacı",
+    ring: "bg-gradient-to-tr from-sky-200 via-sky-400 to-blue-700",
+    preview: "bg-gradient-to-tr from-sky-200 via-sky-400 to-blue-700",
+    frameSrc: "/frames/prem-ice.svg",
+    accent: "#38bdf8",
+    hole: { cx: 0.5, cy: 0.5, r: 0.328 },
+  },
+  {
+    id: "prem-galaxy",
+    name: "Galaksi Yörüngesi",
+    ring: "bg-gradient-to-tr from-indigo-400 via-purple-500 to-sky-400",
+    preview: "bg-gradient-to-tr from-indigo-400 via-purple-500 to-sky-400",
+    frameSrc: "/frames/prem-galaxy.svg",
+    accent: "#818cf8",
+    hole: { cx: 0.5, cy: 0.5, r: 0.332 },
+  },
 ];
 
 /** Tema id'sinden tanım (yoksa null). */

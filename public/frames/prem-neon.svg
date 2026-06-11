@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="ng" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#22d3ee"/>
+      <stop offset=".55" stop-color="#a855f7"/>
+      <stop offset="1" stop-color="#ec4899"/>
+    </linearGradient>
+    <filter id="nglow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="7" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- İnce iç halka (avatar kenarına oturur) -->
+  <circle cx="256" cy="256" r="172" fill="none" stroke="url(#ng)" stroke-width="5" opacity=".95" filter="url(#nglow)"/>
+
+  <!-- Ana neon halka -->
+  <circle cx="256" cy="256" r="198" fill="none" stroke="url(#ng)" stroke-width="9" opacity=".85" filter="url(#nglow)">
+    <animate attributeName="opacity" values=".85;.55;.85" dur="3.2s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Dönen dış arklar -->
+  <g fill="none" stroke="url(#ng)" stroke-width="13" stroke-linecap="round" filter="url(#nglow)">
+    <animateTransform attributeName="transform" type="rotate" from="0 256 256" to="360 256 256" dur="12s" repeatCount="indefinite"/>
+    <path d="M256 36 A220 220 0 0 1 446 146"/>
+    <path d="M256 476 A220 220 0 0 1 66 366"/>
+  </g>
+
+  <!-- Karşıt yönde dönen kıvılcım noktaları -->
+  <g filter="url(#nglow)">
+    <animateTransform attributeName="transform" type="rotate" from="360 256 256" to="0 256 256" dur="9s" repeatCount="indefinite"/>
+    <circle cx="256" cy="34" r="8" fill="#22d3ee"/>
+    <circle cx="478" cy="256" r="6" fill="#a855f7"/>
+    <circle cx="256" cy="478" r="8" fill="#ec4899"/>
+    <circle cx="34" cy="256" r="6" fill="#a855f7"/>
+  </g>
+</svg>
