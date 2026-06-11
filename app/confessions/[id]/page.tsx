@@ -16,7 +16,7 @@ import { ShareButton } from "@/components/viral/ShareButton";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/components/ui/ToastProvider";
-import { moodEmoji } from "@/lib/moods";
+import { moodEmoji, moodAccent } from "@/lib/moods";
 import { ChatIcon } from "@/components/ui/icons";
 import { timeAgo } from "@/lib/format";
 import { moderateText, MODERATION_BLOCK_MESSAGE } from "@/lib/moderation";
@@ -216,7 +216,17 @@ export default function ConfessionDetailPage() {
     <Container>
       <div className="space-y-5 py-4">
         {/* İtiraf */}
-        <article className="card p-5">
+        <article className="glass-card relative p-5">
+          {/* Sol kenar mood şeridi */}
+          {confession.mood_tag && (
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-y-4 left-0 w-1 rounded-r opacity-80"
+              style={{
+                background: `linear-gradient(to bottom, ${moodAccent(confession.mood_tag).a}, ${moodAccent(confession.mood_tag).b}, transparent)`,
+              }}
+            />
+          )}
           <div className="mb-3 flex items-center justify-between gap-3">
             <AuthorBadge
               anonymous={confession.is_anonymous}
@@ -231,7 +241,14 @@ export default function ConfessionDetailPage() {
                 </>
               )}
               {confession.mood_tag && (
-                <span className="chip">
+                <span
+                  className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold backdrop-blur"
+                  style={{
+                    background: `${moodAccent(confession.mood_tag).a}1f`,
+                    color: moodAccent(confession.mood_tag).a,
+                    boxShadow: `inset 0 0 0 1px ${moodAccent(confession.mood_tag).a}55`,
+                  }}
+                >
                   <span>{moodEmoji(confession.mood_tag)}</span>
                   {confession.mood_tag}
                 </span>
@@ -308,9 +325,9 @@ export default function ConfessionDetailPage() {
         </article>
 
         {/* Yorum ekleme */}
-        <form onSubmit={handleComment} className="card p-4">
+        <form onSubmit={handleComment} className="glass-card p-1.5">
           {commentError && (
-            <div className="mb-3">
+            <div className="m-2">
               <Alert tone="error">{commentError}</Alert>
             </div>
           )}
@@ -319,41 +336,65 @@ export default function ConfessionDetailPage() {
             onChange={(e) => setCommentText(e.target.value)}
             maxLength={MAX}
             rows={3}
-            placeholder={user ? "Yorumunu yaz..." : "Yorum yapmak için giriş yap"}
-            className="w-full resize-none rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none transition-colors focus:border-brand-500/60"
+            placeholder={user ? "Bu itiraf hakkında ne düşünüyorsun?" : "Yorum yapmak için giriş yap"}
+            className="w-full resize-none rounded-[1.25rem] bg-transparent px-4 py-3 text-sm leading-relaxed text-white placeholder:text-slate-500 outline-none"
           />
-          <div className="mt-2 flex items-center justify-between">
-            <span className="text-xs text-slate-500">
+          <div className="flex items-center justify-between gap-2 border-t border-white/5 px-3 py-2">
+            <span
+              className={`rounded-full px-2 py-0.5 text-[11px] font-bold tabular-nums ${
+                commentText.trim().length > MAX * 0.9
+                  ? "bg-red-500/15 text-red-300"
+                  : "bg-white/5 text-slate-500"
+              }`}
+            >
               {commentText.trim().length}/{MAX}
             </span>
-            <Button type="submit" disabled={submitting} className="!px-5 !py-2 text-xs">
-              {submitting ? "Gönderiliyor..." : "Yorum yap"}
-            </Button>
+            <button
+              type="submit"
+              disabled={submitting || commentText.trim().length < MIN}
+              className="rounded-full px-5 py-2 text-xs font-bold text-white transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+              style={{
+                background: "linear-gradient(135deg, #a855f7, #7c3aed)",
+                boxShadow: "0 0 16px -6px rgba(168,85,247,0.6)",
+              }}
+            >
+              {submitting ? "Gönderiliyor..." : "💬 Yorum yap"}
+            </button>
           </div>
         </form>
 
         {/* Yorumlar */}
         <div className="space-y-3">
-          <h2 className="text-sm font-bold text-slate-300">
-            Yorumlar ({comments.length})
+          <h2 className="flex items-center gap-2 text-sm font-bold text-slate-300">
+            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-white/5 text-xs">
+              💬
+            </span>
+            Yorumlar
+            <span className="rounded-full bg-white/[0.06] px-2 py-0.5 text-[10px] font-extrabold text-slate-400">
+              {comments.length}
+            </span>
           </h2>
           {comments.length === 0 ? (
-            <p className="card p-5 text-center text-sm text-slate-500">
-              Henüz yorum yok. İlk yorumu sen yap.
-            </p>
+            <div className="card flex flex-col items-center gap-2 p-6 text-center">
+              <span className="text-3xl opacity-60">💭</span>
+              <p className="text-sm text-slate-500">Henüz yorum yok — ilk yorumu sen yap.</p>
+            </div>
           ) : (
             comments.map((c) => {
               const ctier = getSubscriptionTier(
                 c.profiles as { subscription_tier?: string | null; is_plus?: boolean | null } | null
               );
-              const glow =
+              const tierStyle =
                 ctier === "ultra_plus"
-                  ? "ring-2 ring-amber-300/50 shadow-glow"
+                  ? {
+                      borderColor: "rgba(252,211,77,0.35)",
+                      boxShadow: "0 0 20px -8px rgba(252,211,77,0.4)",
+                    }
                   : ctier === "plus"
-                    ? "ring-1 ring-brand-400/40"
-                    : "";
+                    ? { borderColor: "rgba(168,85,247,0.3)" }
+                    : undefined;
               return (
-              <div key={c.id} className={`card p-4 ${glow}`}>
+              <div key={c.id} className="card p-4" style={tierStyle}>
                 <div className="flex items-start justify-between gap-2">
                   <AuthorBadge
                     anonymous={c.is_anonymous}

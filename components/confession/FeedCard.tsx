@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import type { ConfessionRecord } from "@/types";
-import { moodEmoji } from "@/lib/moods";
+import { moodEmoji, moodAccent } from "@/lib/moods";
 import { timeAgo } from "@/lib/format";
 import { isBoosted } from "@/lib/boost";
 import { AuthorBadge } from "@/components/confession/AuthorBadge";
@@ -21,8 +21,8 @@ const CLAMP_THRESHOLD = 360;
 const CLAMP_LINES = 8;
 
 /**
- * Premium glass feed card — UI redesign Faz 1.
- * Uzun itiraflar kısaltılır (Devamını oku); boost'lu itiraflar rozetle öne çıkar.
+ * Premium glass feed card.
+ * Mood'a göre renklenen kenar şeridi + çip; uzun itiraflar "Devamını oku" ile açılır.
  */
 export function FeedCard({ confession, liked }: FeedCardProps) {
   const {
@@ -35,6 +35,7 @@ export function FeedCard({ confession, liked }: FeedCardProps) {
     profiles,
   } = confession;
   const mood_tag = confession.mood_tag ?? confession.category ?? null;
+  const accent = moodAccent(mood_tag);
   const boosted = isBoosted(confession.boosted_until);
   const isLong = content.length > CLAMP_THRESHOLD;
   const [expanded, setExpanded] = useState(false);
@@ -48,11 +49,12 @@ export function FeedCard({ confession, liked }: FeedCardProps) {
       className={`glass-card glass-card-hover relative p-5 ${boosted ? "ring-1 ring-amber-400/40" : ""}`}
       style={boosted ? { boxShadow: "0 0 24px -10px rgba(251,191,36,0.55)" } : undefined}
     >
-      {/* Sol kenar mood accent (mor neon stripe) */}
+      {/* Sol kenar mood şeridi — kategori rengini taşır */}
       {mood_tag && (
         <span
           aria-hidden
-          className="pointer-events-none absolute inset-y-4 left-0 w-1 rounded-r bg-gradient-to-b from-brand-400 via-brand-500 to-transparent opacity-70"
+          className="pointer-events-none absolute inset-y-4 left-0 w-1 rounded-r opacity-80"
+          style={{ background: `linear-gradient(to bottom, ${accent.a}, ${accent.b}, transparent)` }}
         />
       )}
 
@@ -69,7 +71,14 @@ export function FeedCard({ confession, liked }: FeedCardProps) {
             </span>
           )}
           {mood_tag && (
-            <span className="chip-neon">
+            <span
+              className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold backdrop-blur"
+              style={{
+                background: `${accent.a}1f`,
+                color: accent.a,
+                boxShadow: `inset 0 0 0 1px ${accent.a}55`,
+              }}
+            >
               <span>{moodEmoji(mood_tag)}</span>
               {mood_tag}
             </span>
@@ -80,7 +89,7 @@ export function FeedCard({ confession, liked }: FeedCardProps) {
       {isLong ? (
         <div>
           <p
-            className="whitespace-pre-wrap text-[15px] leading-relaxed text-slate-200"
+            className="whitespace-pre-wrap break-words text-[15px] leading-relaxed text-slate-200"
             style={
               expanded
                 ? undefined
@@ -97,32 +106,42 @@ export function FeedCard({ confession, liked }: FeedCardProps) {
           <button
             type="button"
             onClick={() => setExpanded((v) => !v)}
-            className="mt-1.5 text-sm font-semibold text-brand-300 transition-colors hover:text-brand-200"
+            className="mt-2 inline-flex items-center gap-1 rounded-full bg-white/5 px-3 py-1 text-xs font-bold text-brand-300 transition-colors hover:bg-white/10 hover:text-brand-200"
           >
-            {expanded ? "Daha az göster" : "Devamını oku"}
+            {expanded ? "Daha az göster ▴" : "Devamını oku ▾"}
           </button>
         </div>
       ) : (
         <Link href={`/confessions/${id}`} className="block">
-          <p className="whitespace-pre-wrap text-[15px] leading-relaxed text-slate-200">
+          <p className="whitespace-pre-wrap break-words text-[15px] leading-relaxed text-slate-200">
             {content}
           </p>
         </Link>
       )}
 
-      <div className="mt-4 flex items-center gap-5">
-        <LikeButton
-          confessionId={id}
-          initialLiked={liked}
-          initialCount={like_count}
-          moodTag={mood_tag}
-        />
+      {/* Aksiyon çubuğu */}
+      <div className="mt-4 flex items-center justify-between gap-3 border-t border-white/5 pt-3">
+        <div className="flex items-center gap-5">
+          <LikeButton
+            confessionId={id}
+            initialLiked={liked}
+            initialCount={like_count}
+            moodTag={mood_tag}
+          />
+          <Link
+            href={`/confessions/${id}`}
+            className="inline-flex items-center gap-1.5 text-sm text-slate-400 transition-colors hover:text-sky-300"
+          >
+            <ChatIcon className="h-4 w-4" />
+            {comment_count}
+          </Link>
+        </div>
         <Link
           href={`/confessions/${id}`}
-          className="inline-flex items-center gap-1.5 text-sm text-slate-400 transition-colors hover:text-brand-300"
+          className="group inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-slate-500 transition-colors hover:text-brand-300"
         >
-          <ChatIcon className="h-4 w-4" />
-          {comment_count}
+          Oku
+          <span className="transition-transform group-hover:translate-x-0.5">→</span>
         </Link>
       </div>
     </motion.article>
