@@ -57,7 +57,7 @@ export default function CompleteProfilePage() {
     if (username.trim().length < 3) return "Kullanıcı adı en az 3 karakter olmalı.";
     if (!/^[a-zA-Z0-9_]+$/.test(username))
       return "Kullanıcı adı yalnızca harf, rakam ve alt çizgi içerebilir.";
-    if (!ageConfirmed) return "Devam etmek için 17 yaşından büyük olduğunu onaylamalısın.";
+    if (!ageConfirmed) return "Devam etmek için 18 yaşından büyük olduğunu onaylamalısın.";
     return null;
   }
 
@@ -170,7 +170,7 @@ export default function CompleteProfilePage() {
             className="mt-0.5 h-4 w-4 shrink-0 accent-brand-500"
           />
           <span className="text-xs leading-relaxed text-slate-400">
-            17 yaşından büyük olduğumu, Kullanım Şartları ve Topluluk Kuralları&apos;nı kabul
+            18 yaşından büyük olduğumu, Kullanım Şartları ve Topluluk Kuralları&apos;nı kabul
             ettiğimi onaylıyorum.
           </span>
         </label>

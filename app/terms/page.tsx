@@ -25,7 +25,7 @@ export default function TermsPage() {
       <ul>
         <li>Hesap oluşturmak için geçerli bir e-posta adresi gerekir.</li>
         <li>Hesabının güvenliğinden ve şifrenden sen sorumlusun.</li>
-        <li><strong>17 yaşından küçükler platformu kullanamaz.</strong> Kayıt sırasında yaş onayı zorunludur.</li>
+        <li><strong>18 yaşından küçükler platformu kullanamaz.</strong> Kayıt sırasında yaş onayı zorunludur.</li>
         <li>Hesabını dilediğin an uygulama içinden (Profil → Hesap Ayarları → Hesabımı Sil) kalıcı silebilirsin.</li>
         <li>Rahatsız edici kullanıcıları engelleyebilir, içerikleri şikayet edebilirsin.</li>
       </ul>
