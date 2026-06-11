@@ -1,7 +1,7 @@
 import type { Gender } from "@/types";
 import { getGenderFrameClass } from "@/lib/gender";
 import { initialsOf } from "@/lib/profile";
-import { MaskIcon } from "@/components/ui/icons";
+import { AnonymousAvatar } from "@/components/AnonymousAvatar";
 
 type Size = "sm" | "md" | "lg";
 
@@ -49,7 +49,7 @@ export function ProfileFrame({
         ) : !anonymous && username ? (
           initialsOf(username)
         ) : (
-          <MaskIcon className="h-1/2 w-1/2 text-slate-300" />
+          <AnonymousAvatar />
         )}
       </div>
     </div>

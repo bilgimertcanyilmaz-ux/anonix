@@ -20,7 +20,8 @@ import { recordProfileView } from "@/lib/profileViews";
 import { getSubscriptionTier } from "@/lib/subscription";
 import { getPremiumTheme } from "@/lib/themes";
 import { FramedAvatar } from "@/components/profile/FramedAvatar";
-import { CrownIcon, MaskIcon } from "@/components/ui/icons";
+import { CrownIcon } from "@/components/ui/icons";
+import { AnonymousAvatar } from "@/components/AnonymousAvatar";
 import type { Profile, ConfessionRecord, UserBadge } from "@/types";
 
 const HEX = "polygon(50% 0, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%)";
@@ -172,8 +173,8 @@ export default function PublicProfilePage() {
       <Container>
         <div className="card my-8 flex flex-col items-center gap-3 p-8 text-center">
           <div className={`flex h-16 w-16 items-center justify-center rounded-full p-[3px] ${getGenderFrameClass(profile.gender)}`}>
-            <div className="flex h-full w-full items-center justify-center rounded-full bg-ink-900">
-              <MaskIcon className="h-7 w-7 text-slate-300" />
+            <div className="h-full w-full overflow-hidden rounded-full bg-ink-900">
+              <AnonymousAvatar />
             </div>
           </div>
           <p className="text-sm font-semibold text-white">Anonim Kullanıcı</p>

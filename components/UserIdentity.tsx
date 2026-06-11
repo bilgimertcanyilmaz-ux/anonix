@@ -3,7 +3,7 @@ import type { Gender } from "@/types";
 import { getGenderLabel, getGenderFrameClass, getGenderBadgeClass } from "@/lib/gender";
 import { getPremiumTheme } from "@/lib/themes";
 import { FramedAvatar } from "@/components/profile/FramedAvatar";
-import { MaskIcon } from "@/components/ui/icons";
+import { AnonymousAvatar } from "@/components/AnonymousAvatar";
 
 type Size = "sm" | "md" | "lg";
 
@@ -107,7 +107,7 @@ export function UserIdentity({
           ) : revealName && username ? (
             initialsOf(username)
           ) : (
-            <MaskIcon className="h-1/2 w-1/2 text-slate-300" />
+            <AnonymousAvatar />
           )}
         </div>
       </div>
