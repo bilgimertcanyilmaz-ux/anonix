@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="em-gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fef3c7"/>
+      <stop offset=".25" stop-color="#d97706"/>
+      <stop offset=".5" stop-color="#fbbf24"/>
+      <stop offset=".75" stop-color="#92400e"/>
+      <stop offset="1" stop-color="#f59e0b"/>
+    </linearGradient>
+    <linearGradient id="em-gold2" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#b45309"/>
+      <stop offset="1" stop-color="#fde68a"/>
+    </linearGradient>
+    <radialGradient id="em-ruby" cx=".35" cy=".3" r=".8">
+      <stop offset="0" stop-color="#fecaca"/>
+      <stop offset=".4" stop-color="#ef4444"/>
+      <stop offset="1" stop-color="#7f1d1d"/>
+    </radialGradient>
+    <radialGradient id="em-sapph" cx=".35" cy=".3" r=".8">
+      <stop offset="0" stop-color="#dbeafe"/>
+      <stop offset=".4" stop-color="#3b82f6"/>
+      <stop offset="1" stop-color="#1e3a8a"/>
+    </radialGradient>
+    <filter id="em-glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+
+    <!-- Sol filigran kıvrımı (sağa aynalanır) -->
+    <g id="em-fil">
+      <path d="M70 300 C36 268 38 214 72 186 C58 222 64 252 88 272 C66 240 70 206 96 186 C82 214 88 240 108 256 C96 276 84 292 70 300z"
+        fill="url(#em-gold2)" filter="url(#em-glow)"/>
+      <path d="M86 332 C66 348 64 374 80 392 C92 378 92 360 86 348 C100 360 102 380 92 396 C112 388 118 362 104 344 C98 336 92 332 86 332z"
+        fill="url(#em-gold2)" filter="url(#em-glow)"/>
+      <circle cx="62" cy="240" r="5" fill="#fde68a"/>
+      <circle cx="78" cy="368" r="4" fill="#fde68a"/>
+    </g>
+
+    <!-- İnci -->
+    <radialGradient id="em-pearl" cx=".35" cy=".3" r=".8">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#cbd5e1"/>
+    </radialGradient>
+
+    <!-- Sarkan mücevher -->
+    <g id="em-drop">
+      <circle cx="0" cy="0" r="3.5" fill="#fde68a"/>
+      <circle cx="0" cy="9" r="3" fill="#fbbf24"/>
+      <path d="M0 14 C9 24 7 40 0 50 C-7 40 -9 24 0 14z" fill="url(#em-ruby)" stroke="#fde68a" stroke-width="1.4"/>
+      <circle cx="-2" cy="24" r="2.4" fill="#fff" opacity=".55"/>
+    </g>
+  </defs>
+
+  <!-- Çift altın bant -->
+  <circle cx="256" cy="256" r="182" fill="none" stroke="url(#em-gold)" stroke-width="15" filter="url(#em-glow)"/>
+  <circle cx="256" cy="256" r="167" fill="none" stroke="url(#em-gold2)" stroke-width="4"/>
+  <!-- Bant boncukları -->
+  <g fill="#fde68a">
+    <circle cx="106" cy="106" r="5"/>
+    <circle cx="406" cy="106" r="5"/>
+    <circle cx="106" cy="406" r="5"/>
+    <circle cx="406" cy="406" r="5"/>
+    <circle cx="436" cy="256" r="6" fill="url(#em-pearl)"/>
+    <circle cx="76" cy="256" r="6" fill="url(#em-pearl)"/>
+  </g>
+
+  <!-- Yan filigranlar -->
+  <use href="#em-fil"/>
+  <use href="#em-fil" transform="translate(512 0) scale(-1 1)"/>
+
+  <!-- İmparator tacı -->
+  <g filter="url(#em-glow)">
+    <!-- Taç gövdesi -->
+    <path d="M186 96 L196 44 L226 78 L256 30 L286 78 L316 44 L326 96 C302 84 280 78 256 78 C232 78 210 84 186 96z"
+      fill="url(#em-gold)" stroke="#92400e" stroke-width="2"/>
+    <!-- Taç bandı -->
+    <path d="M184 96 C208 82 232 76 256 76 C280 76 304 82 328 96 L324 116 C300 102 278 96 256 96 C234 96 212 102 188 116z"
+      fill="url(#em-gold2)" stroke="#92400e" stroke-width="1.5"/>
+    <!-- Uç incileri -->
+    <circle cx="196" cy="42" r="6" fill="url(#em-pearl)"/>
+    <circle cx="256" cy="27" r="7" fill="url(#em-pearl)"/>
+    <circle cx="316" cy="42" r="6" fill="url(#em-pearl)"/>
+    <!-- Taşlar: merkez yakut + yan safirler -->
+    <circle cx="256" cy="103" r="11" fill="url(#em-ruby)" stroke="#fde68a" stroke-width="2">
+      <animate attributeName="r" values="11;12;11" dur="2.4s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="216" cy="106" r="6.5" fill="url(#em-sapph)" stroke="#fde68a" stroke-width="1.5"/>
+    <circle cx="296" cy="106" r="6.5" fill="url(#em-sapph)" stroke="#fde68a" stroke-width="1.5"/>
+    <!-- Yakut parıltısı -->
+    <path d="M251 96 l2.5 5 5 2.5 -5 2.5 -2.5 5 -2.5 -5 -5 -2.5 5 -2.5z" fill="#fff" opacity=".85">
+      <animate attributeName="opacity" values=".85;.25;.85" dur="1.8s" repeatCount="indefinite"/>
+    </path>
+  </g>
+
+  <!-- Alt V süsü + sarkan taşlar -->
+  <path d="M196 422 C216 440 236 448 256 448 C276 448 296 440 316 422 L308 404 C290 418 274 424 256 424 C238 424 222 418 204 404z"
+    fill="url(#em-gold2)" filter="url(#em-glow)"/>
+  <use href="#em-drop" transform="translate(256 452)"/>
+  <use href="#em-drop" transform="translate(212 440) rotate(7) scale(.78)"/>
+  <use href="#em-drop" transform="translate(300 440) rotate(-7) scale(.78)"/>
+</svg>

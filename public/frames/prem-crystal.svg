@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="cr-amet" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#581c87"/>
+      <stop offset=".45" stop-color="#a855f7"/>
+      <stop offset="1" stop-color="#f0abfc"/>
+    </linearGradient>
+    <linearGradient id="cr-amet2" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#7e22ce"/>
+      <stop offset="1" stop-color="#e879f9"/>
+    </linearGradient>
+    <linearGradient id="cr-gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fde68a"/>
+      <stop offset=".5" stop-color="#d97706"/>
+      <stop offset="1" stop-color="#fbbf24"/>
+    </linearGradient>
+    <filter id="cr-glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+
+    <!-- Fasetli kristal (merkez 256,256 etrafında döndürülür; taban y=66 dışa bakar) -->
+    <g id="cr-gem">
+      <path d="M236 84 L246 26 L256 10 L266 26 L276 84 L256 96 z" fill="url(#cr-amet)" stroke="#f5d0fe" stroke-width="1.6" stroke-opacity=".7"/>
+      <path d="M256 10 L256 96 L246 88 L246 26 z" fill="#ffffff" opacity=".25"/>
+      <path d="M266 26 L276 84 L266 90 z" fill="#3b0764" opacity=".5"/>
+    </g>
+    <!-- Küçük yan kristal -->
+    <g id="cr-gem-s">
+      <path d="M243 92 L250 48 L257 36 L264 48 L271 92 L257 100 z" fill="url(#cr-amet2)" stroke="#f5d0fe" stroke-width="1.3" stroke-opacity=".6"/>
+      <path d="M257 36 L257 100 L250 94 L250 48 z" fill="#ffffff" opacity=".22"/>
+    </g>
+  </defs>
+
+  <!-- Altın taban bantı -->
+  <circle cx="256" cy="256" r="176" fill="none" stroke="url(#cr-gold)" stroke-width="13" filter="url(#cr-glow)"/>
+  <circle cx="256" cy="256" r="165" fill="none" stroke="#f5d0fe" stroke-width="2" opacity=".55"/>
+
+  <!-- Kristal taç çemberi: büyük + küçük dönüşümlü 12 taş -->
+  <g filter="url(#cr-glow)">
+    <use href="#cr-gem" transform="rotate(0 256 256) scale(1.18) translate(-39 -39)"/>
+    <use href="#cr-gem-s" transform="rotate(30 256 256)"/>
+    <use href="#cr-gem" transform="rotate(60 256 256)"/>
+    <use href="#cr-gem-s" transform="rotate(90 256 256)"/>
+    <use href="#cr-gem" transform="rotate(120 256 256)"/>
+    <use href="#cr-gem-s" transform="rotate(150 256 256)"/>
+    <use href="#cr-gem" transform="rotate(180 256 256) scale(1.08) translate(-19 -19)"/>
+    <use href="#cr-gem-s" transform="rotate(210 256 256)"/>
+    <use href="#cr-gem" transform="rotate(240 256 256)"/>
+    <use href="#cr-gem-s" transform="rotate(270 256 256)"/>
+    <use href="#cr-gem" transform="rotate(300 256 256)"/>
+    <use href="#cr-gem-s" transform="rotate(330 256 256)"/>
+  </g>
+
+  <!-- Altın pençe tutucular (taşların dibinde, 4 yön) -->
+  <g fill="url(#cr-gold)">
+    <path d="M244 92 q12 10 24 0 l-4 12 q-8 6 -16 0z"/>
+    <path d="M244 92 q12 10 24 0 l-4 12 q-8 6 -16 0z" transform="rotate(90 256 256)"/>
+    <path d="M244 92 q12 10 24 0 l-4 12 q-8 6 -16 0z" transform="rotate(180 256 256)"/>
+    <path d="M244 92 q12 10 24 0 l-4 12 q-8 6 -16 0z" transform="rotate(270 256 256)"/>
+  </g>
+
+  <!-- Nefes alan mor aura -->
+  <circle cx="256" cy="256" r="206" fill="none" stroke="#a855f7" stroke-width="2" opacity=".35" filter="url(#cr-glow)">
+    <animate attributeName="opacity" values=".35;.12;.35" dur="3.6s" repeatCount="indefinite"/>
+    <animate attributeName="r" values="206;210;206" dur="3.6s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Parıltı yıldızları -->
+  <g fill="#f5d0fe" filter="url(#cr-glow)">
+    <path d="M150 70 l4 9 9 4 -9 4 -4 9 -4 -9 -9 -4 9 -4z">
+      <animate attributeName="opacity" values="1;.25;1" dur="2.4s" repeatCount="indefinite"/>
+    </path>
+    <path d="M398 96 l3.5 8 8 3.5 -8 3.5 -3.5 8 -3.5 -8 -8 -3.5 8 -3.5z">
+      <animate attributeName="opacity" values=".3;1;.3" dur="3s" repeatCount="indefinite"/>
+    </path>
+    <path d="M428 356 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z">
+      <animate attributeName="opacity" values="1;.2;1" dur="2.7s" repeatCount="indefinite"/>
+    </path>
+    <path d="M88 380 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z">
+      <animate attributeName="opacity" values=".4;1;.4" dur="2.1s" repeatCount="indefinite"/>
+    </path>
+  </g>
+</svg>

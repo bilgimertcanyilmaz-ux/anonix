@@ -189,6 +189,53 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
     accent: "#818cf8",
     hole: { cx: 0.5, cy: 0.5, r: 0.332 },
   },
+
+  // ── Süslü madalyon çerçeveler (SVG, katmanlı + animasyonlu) ───
+  {
+    id: "prem-obsidian",
+    name: "Kara Ejder",
+    ring: "bg-gradient-to-tr from-slate-600 via-slate-400 to-cyan-400",
+    preview: "bg-gradient-to-tr from-slate-600 via-slate-400 to-cyan-400",
+    frameSrc: "/frames/prem-obsidian.svg",
+    accent: "#22d3ee",
+    hole: { cx: 0.5, cy: 0.5, r: 0.319 },
+  },
+  {
+    id: "prem-emperor",
+    name: "İmparator Tacı",
+    ring: "bg-gradient-to-tr from-amber-600 via-amber-400 to-red-500",
+    preview: "bg-gradient-to-tr from-amber-600 via-amber-400 to-red-500",
+    frameSrc: "/frames/prem-emperor.svg",
+    accent: "#fbbf24",
+    hole: { cx: 0.5, cy: 0.5, r: 0.313 },
+  },
+  {
+    id: "prem-crystal",
+    name: "Ametist Zirve",
+    ring: "bg-gradient-to-tr from-purple-700 via-purple-400 to-fuchsia-300",
+    preview: "bg-gradient-to-tr from-purple-700 via-purple-400 to-fuchsia-300",
+    frameSrc: "/frames/prem-crystal.svg",
+    accent: "#c084fc",
+    hole: { cx: 0.5, cy: 0.5, r: 0.315 },
+  },
+  {
+    id: "prem-emerald",
+    name: "Zümrüt Asma",
+    ring: "bg-gradient-to-tr from-emerald-600 via-amber-400 to-emerald-300",
+    preview: "bg-gradient-to-tr from-emerald-600 via-amber-400 to-emerald-300",
+    frameSrc: "/frames/prem-emerald.svg",
+    accent: "#34d399",
+    hole: { cx: 0.5, cy: 0.5, r: 0.313 },
+  },
+  {
+    id: "prem-phoenix",
+    name: "Anka Kanadı",
+    ring: "bg-gradient-to-tr from-red-600 via-orange-500 to-amber-300",
+    preview: "bg-gradient-to-tr from-red-600 via-orange-500 to-amber-300",
+    frameSrc: "/frames/prem-phoenix.svg",
+    accent: "#fb923c",
+    hole: { cx: 0.5, cy: 0.5, r: 0.319 },
+  },
 ];
 
 /** Tema id'sinden tanım (yoksa null). */

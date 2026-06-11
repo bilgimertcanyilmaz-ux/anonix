@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="ez-gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fef3c7"/>
+      <stop offset=".3" stop-color="#d97706"/>
+      <stop offset=".55" stop-color="#fbbf24"/>
+      <stop offset=".8" stop-color="#92400e"/>
+      <stop offset="1" stop-color="#f59e0b"/>
+    </linearGradient>
+    <linearGradient id="ez-leafg" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#b45309"/>
+      <stop offset="1" stop-color="#fde68a"/>
+    </linearGradient>
+    <radialGradient id="ez-em" cx=".35" cy=".3" r=".85">
+      <stop offset="0" stop-color="#a7f3d0"/>
+      <stop offset=".45" stop-color="#10b981"/>
+      <stop offset="1" stop-color="#064e3b"/>
+    </radialGradient>
+    <filter id="ez-glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+
+    <!-- Asma yaprağı: (256,72) tepe noktasına oturur, döndürülerek çoğaltılır -->
+    <g id="ez-leaf">
+      <path d="M256 78 C242 60 244 38 258 24 C270 40 270 60 256 78z" fill="url(#ez-leafg)" stroke="#92400e" stroke-width="1"/>
+      <path d="M256 76 L257 28" stroke="#92400e" stroke-width="1.4" fill="none" opacity=".6"/>
+    </g>
+    <!-- Zümrüt kabaşon + altın yuva -->
+    <g id="ez-gem">
+      <circle cx="0" cy="0" r="13" fill="url(#ez-gold)"/>
+      <circle cx="0" cy="0" r="9.5" fill="url(#ez-em)" stroke="#a7f3d0" stroke-width="1"/>
+      <circle cx="-3" cy="-3.5" r="2.6" fill="#fff" opacity=".5"/>
+      <circle cx="0" cy="-14.5" r="2.2" fill="#fde68a"/>
+      <circle cx="0" cy="14.5" r="2.2" fill="#fde68a"/>
+      <circle cx="-14.5" cy="0" r="2.2" fill="#fde68a"/>
+      <circle cx="14.5" cy="0" r="2.2" fill="#fde68a"/>
+    </g>
+  </defs>
+
+  <!-- Örgü hissi: çift altın bant + aradaki dalga -->
+  <circle cx="256" cy="256" r="184" fill="none" stroke="url(#ez-gold)" stroke-width="9" filter="url(#ez-glow)"/>
+  <circle cx="256" cy="256" r="170" fill="none" stroke="url(#ez-gold)" stroke-width="6"/>
+  <circle cx="256" cy="256" r="177" fill="none" stroke="#fde68a" stroke-width="2.5"
+    stroke-dasharray="20 14" opacity=".85">
+    <animateTransform attributeName="transform" type="rotate" from="0 256 256" to="360 256 256" dur="30s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Yaprak çelengi: 16 yaprak, dönüşümlü iç/dış eğim -->
+  <g filter="url(#ez-glow)">
+    <use href="#ez-leaf" transform="rotate(11 256 256)"/>
+    <use href="#ez-leaf" transform="rotate(34 256 256) scale(1.06) translate(-15 -15)"/>
+    <use href="#ez-leaf" transform="rotate(56 256 256)"/>
+    <use href="#ez-leaf" transform="rotate(79 256 256) scale(1.06) translate(-15 -15)"/>
+    <use href="#ez-leaf" transform="rotate(101 256 256)"/>
+    <use href="#ez-leaf" transform="rotate(124 256 256) scale(1.06) translate(-15 -15)"/>
+    <use href="#ez-leaf" transform="rotate(146 256 256)"/>
+    <use href="#ez-leaf" transform="rotate(169 256 256) scale(1.06) translate(-15 -15)"/>
+    <use href="#ez-leaf" transform="rotate(191 256 256)"/>
+    <use href="#ez-leaf" transform="rotate(214 256 256) scale(1.06) translate(-15 -15)"/>
+    <use href="#ez-leaf" transform="rotate(236 256 256)"/>
+    <use href="#ez-leaf" transform="rotate(259 256 256) scale(1.06) translate(-15 -15)"/>
+    <use href="#ez-leaf" transform="rotate(281 256 256)"/>
+    <use href="#ez-leaf" transform="rotate(304 256 256) scale(1.06) translate(-15 -15)"/>
+    <use href="#ez-leaf" transform="rotate(326 256 256)"/>
+    <use href="#ez-leaf" transform="rotate(349 256 256) scale(1.06) translate(-15 -15)"/>
+  </g>
+
+  <!-- 4 ana zümrüt -->
+  <g filter="url(#ez-glow)">
+    <use href="#ez-gem" transform="translate(256 60)"/>
+    <use href="#ez-gem" transform="translate(452 256) scale(.85)"/>
+    <use href="#ez-gem" transform="translate(256 452) scale(.92)"/>
+    <use href="#ez-gem" transform="translate(60 256) scale(.85)"/>
+  </g>
+
+  <!-- Tepe zümrütünde ışıltı -->
+  <path d="M251 50 l3 6.5 6.5 3 -6.5 3 -3 6.5 -3 -6.5 -6.5 -3 6.5 -3z" fill="#fff" opacity=".8" filter="url(#ez-glow)">
+    <animate attributeName="opacity" values=".8;.2;.8" dur="2.2s" repeatCount="indefinite"/>
+  </path>
+
+  <!-- Süzülen yaprak parıltıları -->
+  <g fill="#a7f3d0" filter="url(#ez-glow)">
+    <circle cx="124" cy="118" r="3">
+      <animate attributeName="opacity" values="1;.2;1" dur="2.8s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="398" cy="130" r="3">
+      <animate attributeName="opacity" values=".3;1;.3" dur="3.3s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="120" cy="392" r="3">
+      <animate attributeName="opacity" values="1;.25;1" dur="2.4s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+</svg>
