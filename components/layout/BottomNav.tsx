@@ -40,7 +40,7 @@ const items: NavItem[] = [
 
 /**
  * Floating dock bottom navigation — premium iOS-style.
- * Pill container, neon-glow center button, glass blur, safe-area destekli.
+ * Aktif öğe: kayan gradyan pill + etiket. Orta buton: dönen ışık halkalı FAB.
  */
 export function BottomNav() {
   const { unreadCount } = useUnread();
@@ -51,58 +51,126 @@ export function BottomNav() {
       className="fixed inset-x-0 bottom-0 z-40 flex justify-center px-3 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-2 md:hidden"
       aria-label="Ana mobil navigasyon"
     >
-      <ul className="anonix-dock flex items-center gap-1 rounded-full border border-white/10 bg-ink-950/70 px-2 py-1.5 shadow-premium-md backdrop-blur-xl">
+      <ul
+        className="anonix-dock relative flex items-center gap-0.5 rounded-full border border-white/10 bg-ink-950/75 px-2 py-1.5 backdrop-blur-xl"
+        style={{
+          boxShadow:
+            "0 12px 40px -10px rgba(124,58,237,0.45), 0 4px 16px -6px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08)",
+        }}
+      >
         {items.map(({ href, label, Icon, highlight, badge }) => {
           const active = matchActive(pathname, href);
+
+          /* ── Orta FAB: İtiraf Yaz ── */
           if (highlight) {
             return (
-              <li key={href} className="px-1">
+              <li key={href} className="px-1.5">
                 <Link
                   href={href}
                   aria-label={label}
                   aria-current={active ? "page" : undefined}
-                  className="relative -my-3 flex h-14 w-14 items-center justify-center"
+                  className="relative -my-4 block"
                 >
-                  <span
-                    className={`relative flex h-14 w-14 items-center justify-center rounded-full bg-neon-purple text-white shadow-glow ${
-                      active ? "animate-pulse-glow" : ""
-                    }`}
-                  >
-                    {/* Inner ring highlight */}
-                    <span className="pointer-events-none absolute inset-0 rounded-full shadow-inset-glow" />
-                    <Icon className="relative h-7 w-7 drop-shadow-[0_2px_8px_rgba(124,58,237,0.6)]" />
-                  </span>
+                  <motion.span whileTap={{ scale: 0.9 }} className="relative flex h-14 w-14 items-center justify-center">
+                    {/* Dönen ışık halkası */}
+                    <motion.span
+                      aria-hidden
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                      className="absolute -inset-[3px] rounded-full opacity-90"
+                      style={{
+                        background:
+                          "conic-gradient(from 0deg, transparent 0%, rgba(236,72,153,0.9) 18%, transparent 40%, rgba(168,85,247,0.9) 65%, transparent 90%)",
+                        padding: "2px",
+                        WebkitMask:
+                          "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+                        WebkitMaskComposite: "xor",
+                        maskComposite: "exclude",
+                      }}
+                    />
+                    {/* Nefes alan dış halo */}
+                    <motion.span
+                      aria-hidden
+                      animate={{ opacity: [0.35, 0.7, 0.35], scale: [1, 1.12, 1] }}
+                      transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
+                      className="absolute inset-0 rounded-full blur-md"
+                      style={{ background: "rgba(168,85,247,0.5)" }}
+                    />
+                    <span
+                      className="relative flex h-14 w-14 items-center justify-center rounded-full"
+                      style={{
+                        background: "linear-gradient(135deg, #ec4899 0%, #a855f7 55%, #7c3aed 100%)",
+                        color: "#fff",
+                        boxShadow:
+                          "0 8px 24px -6px rgba(168,85,247,0.7), inset 0 1.5px 0 rgba(255,255,255,0.35)",
+                      }}
+                    >
+                      <Icon className="h-7 w-7 drop-shadow-[0_2px_8px_rgba(0,0,0,0.4)]" />
+                    </span>
+                  </motion.span>
                 </Link>
               </li>
             );
           }
+
+          /* ── Normal öğeler: aktifte gradyan pill + etiket ── */
           return (
-            <li key={href}>
+            <motion.li
+              key={href}
+              layout
+              transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            >
               <Link
                 href={href}
                 aria-label={label}
                 aria-current={active ? "page" : undefined}
-                className={`group relative flex h-12 w-12 items-center justify-center rounded-full text-[10px] transition-colors duration-200 ${
-                  active ? "text-white" : "text-slate-400 hover:text-white"
+                className={`relative flex h-11 items-center justify-center rounded-full ${
+                  active ? "gap-1.5 px-3.5" : "w-11"
                 }`}
+                style={{ color: active ? "#fff" : undefined }}
               >
-                <span className="relative">
-                  {active && (
-                    <motion.span
-                      layoutId="bottomNavActive"
-                      transition={{ type: "spring", stiffness: 360, damping: 28 }}
-                      className="absolute inset-[-10px] -z-10 rounded-full bg-brand-500/25 blur-md"
-                    />
-                  )}
-                  <Icon className="h-6 w-6" />
+                {active && (
+                  <motion.span
+                    layoutId="bottomNavActive"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    className="absolute inset-0 rounded-full"
+                    style={{
+                      background: "linear-gradient(135deg, rgba(168,85,247,0.95), rgba(124,58,237,0.95))",
+                      boxShadow: "0 4px 16px -4px rgba(168,85,247,0.6), inset 0 1px 0 rgba(255,255,255,0.25)",
+                    }}
+                  />
+                )}
+                <span
+                  className={`relative ${active ? "" : "text-slate-400 transition-colors hover:text-white"}`}
+                  style={active ? { color: "#fff" } : undefined}
+                >
+                  <Icon className="h-[22px] w-[22px]" />
                   {badge && unreadCount > 0 && (
-                    <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-gradient-to-br from-brand-400 to-brand-600 px-1 text-[9px] font-bold text-white shadow-glow-sm ring-2 ring-ink-950">
+                    <span
+                      className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[9px] font-bold ring-2 ring-ink-950"
+                      style={{
+                        background: "linear-gradient(135deg, #f472b6, #ec4899)",
+                        color: "#fff",
+                        boxShadow: "0 0 8px rgba(236,72,153,0.7)",
+                      }}
+                    >
                       {unreadCount > 99 ? "99+" : unreadCount}
                     </span>
                   )}
                 </span>
+                {active && (
+                  <motion.span
+                    initial={{ opacity: 0, x: -6 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.08 }}
+                    className="relative whitespace-nowrap text-[11px] font-bold"
+                    style={{ color: "#fff" }}
+                  >
+                    {label}
+                  </motion.span>
+                )}
               </Link>
-            </li>
+            </motion.li>
           );
         })}
       </ul>
