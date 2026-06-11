@@ -7,19 +7,21 @@ import { HeartIcon, ChatIcon } from "@/components/ui/icons";
 /**
  * Instagram keşfet tarzı kare grid hücresi.
  * Sadece görsel + (varsa) overlay yazı + mood; hover/tap'te beğeni/yorum sayısı.
- * Açıklama/kullanıcı bilgisi gridde gösterilmez (detayda görünür).
+ * `onOpen` verilirse tıklama görüntüleyiciyi açar (buton); verilmezse detay sayfasına link olur.
  */
-export function GolgeExploreTile({ post, large = false }: { post: GolgePost; large?: boolean }) {
+export function GolgeExploreTile({
+  post,
+  large = false,
+  onOpen,
+}: {
+  post: GolgePost;
+  large?: boolean;
+  onOpen?: () => void;
+}) {
   const { style, position } = unpackOverlay(post.overlay_style);
 
-  return (
-    <Link
-      href={`/golge/${post.id}`}
-      aria-label="Gölge paylaşımı"
-      className={`group relative aspect-square overflow-hidden bg-ink-800 ${
-        large ? "col-span-2 row-span-2" : ""
-      }`}
-    >
+  const inner = (
+    <>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={post.image_url}
@@ -34,7 +36,9 @@ export function GolgeExploreTile({ post, large = false }: { post: GolgePost; lar
           className={`pointer-events-none absolute inset-0 flex justify-center p-2 ${overlayPositionClass(position)}`}
         >
           <p
-            className={`gi-overlay line-clamp-3 max-w-full break-words text-center text-xs font-bold leading-tight ${overlayStyleClass(style)}`}
+            className={`gi-overlay line-clamp-3 max-w-full break-words text-center font-bold leading-tight ${
+              large ? "text-sm" : "text-xs"
+            } ${overlayStyleClass(style)}`}
           >
             {post.overlay_text}
           </p>
@@ -57,6 +61,23 @@ export function GolgeExploreTile({ post, large = false }: { post: GolgePost; lar
           <ChatIcon className="h-4 w-4" /> {post.comment_count}
         </span>
       </div>
+    </>
+  );
+
+  const cls = `group relative aspect-square overflow-hidden rounded-lg bg-ink-800 ${
+    large ? "col-span-2 row-span-2" : ""
+  }`;
+
+  if (onOpen) {
+    return (
+      <button type="button" onClick={onOpen} aria-label="Gölge paylaşımını aç" className={cls}>
+        {inner}
+      </button>
+    );
+  }
+  return (
+    <Link href={`/golge/${post.id}`} aria-label="Gölge paylaşımı" className={cls}>
+      {inner}
     </Link>
   );
 }

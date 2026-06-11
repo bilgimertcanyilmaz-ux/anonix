@@ -21,14 +21,36 @@ interface GolgeReelsProps {
   likedIds: Set<string>;
   loadMore: () => void;
   hasMore: boolean;
+  /** Görüntüleyici bu gönderiden başlar (grid'de tıklanan kare). */
+  initialIndex?: number;
+  /** Verilirse sağ üstte kapat (✕) butonu gösterilir. */
+  onClose?: () => void;
 }
 
 /**
  * Instagram Reels tarzı dikey tam-ekran Gölge akışı.
  * Her gönderi bir "slayt"; aşağı/yukarı kaydırınca snap ile diğerine geçilir.
  */
-export function GolgeReels({ posts, likedIds, loadMore, hasMore }: GolgeReelsProps) {
+export function GolgeReels({
+  posts,
+  likedIds,
+  loadMore,
+  hasMore,
+  initialIndex = 0,
+  onClose,
+}: GolgeReelsProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
+
+  // Seçilen kareden başla (anlık, animasyonsuz kaydırma)
+  useEffect(() => {
+    const el = containerRef.current;
+    if (el && initialIndex > 0) {
+      el.scrollTo({ top: initialIndex * el.clientHeight, behavior: "instant" as ScrollBehavior });
+    }
+    // yalnızca açılışta
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const el = sentinelRef.current;
@@ -45,9 +67,22 @@ export function GolgeReels({ posts, likedIds, loadMore, hasMore }: GolgeReelsPro
 
   return (
     <div
+      ref={containerRef}
       className="fixed inset-x-0 bottom-0 z-30 snap-y snap-mandatory overflow-y-auto overscroll-contain bg-black [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       style={{ top: TOP_OFFSET }}
     >
+      {/* Kapat butonu */}
+      {onClose && (
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Görüntüleyiciyi kapat"
+          className="fixed right-3 z-[45] flex h-10 w-10 items-center justify-center rounded-full bg-black/55 text-lg text-white ring-1 ring-white/25 backdrop-blur-md transition-transform hover:scale-105 active:scale-90"
+          style={{ top: `calc(${TOP_OFFSET} + 0.6rem)` }}
+        >
+          ✕
+        </button>
+      )}
       {posts.map((p) => {
         const { style, position } = unpackOverlay(p.overlay_style);
         const author = p.profiles;
