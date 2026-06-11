@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import { Container } from "@/components/layout/Container";
-import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/components/auth/AuthProvider";
@@ -16,10 +16,78 @@ import { moderateText, MODERATION_BLOCK_MESSAGE } from "@/lib/moderation";
 const MIN = 10;
 const MAX = 10000;
 
+const fadeUp = {
+  hidden: { opacity: 0, y: 14 },
+  show: (i = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring" as const, stiffness: 260, damping: 24, delay: i * 0.06 },
+  }),
+};
+
+/** Ortak ayar satırı: ikon balonu + başlık/açıklama + yaylı anahtar. */
+function ToggleRow({
+  icon,
+  iconBg,
+  title,
+  desc,
+  on,
+  onToggle,
+  accent = "#a855f7",
+  children,
+}: {
+  icon: string;
+  iconBg: string;
+  title: string;
+  desc: string;
+  on: boolean;
+  onToggle: () => void;
+  accent?: string;
+  children?: ReactNode;
+}) {
+  return (
+    <div
+      className="rounded-2xl border bg-white/[0.03] transition-colors"
+      style={{ borderColor: on ? `${accent}55` : "rgba(255,255,255,0.08)" }}
+    >
+      <button
+        type="button"
+        onClick={onToggle}
+        role="switch"
+        aria-checked={on}
+        className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left"
+      >
+        <span className="flex min-w-0 items-center gap-3">
+          <span
+            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-base ${iconBg}`}
+          >
+            {icon}
+          </span>
+          <span className="min-w-0">
+            <span className="block text-sm font-semibold text-white">{title}</span>
+            <span className="block text-xs text-slate-400">{desc}</span>
+          </span>
+        </span>
+        <span
+          className="relative h-6 w-11 shrink-0 rounded-full transition-colors"
+          style={{ background: on ? accent : "rgba(255,255,255,0.15)" }}
+        >
+          <motion.span
+            animate={{ x: on ? 22 : 2 }}
+            transition={{ type: "spring", stiffness: 500, damping: 30 }}
+            className="absolute top-0.5 h-5 w-5 rounded-full bg-white shadow"
+          />
+        </span>
+      </button>
+      {children}
+    </div>
+  );
+}
+
 export default function NewConfessionPage() {
   const router = useRouter();
   const { user, profile, loading: authLoading, refreshProfile } = useAuth();
-  const { success, error: toastError } = useToast();
+  const { success } = useToast();
 
   const [content, setContent] = useState("");
   const [category, setCategory] = useState<string | null>(null);
@@ -46,8 +114,14 @@ export default function NewConfessionPage() {
 
   if (authLoading || !user) {
     return (
-      <Container>
-        <div className="py-20 text-center text-sm text-slate-400">Yükleniyor...</div>
+      <Container className="max-w-xl">
+        <div className="space-y-4 py-6">
+          <div className="h-8 w-44 animate-pulse rounded-full bg-white/10" />
+          <div className="card h-48 animate-pulse" />
+          <div className="card h-12 animate-pulse" />
+          <div className="card h-14 animate-pulse" />
+          <div className="card h-14 animate-pulse" />
+        </div>
       </Container>
     );
   }
@@ -113,165 +187,242 @@ export default function NewConfessionPage() {
 
   const length = content.trim().length;
   const tooShort = length > 0 && length < MIN;
+  const ready = length >= MIN && length <= MAX;
+  const nearLimit = length > MAX * 0.9;
 
   return (
-    <Container>
+    <Container className="max-w-xl">
       <div className="py-4">
-        <h1 className="mb-1 text-2xl font-extrabold text-white">İtiraf Yaz</h1>
-        <p className="mb-5 text-sm text-slate-400">
-          İçini dök. Kimliğin senin kontrolünde.
-        </p>
+        {/* ── BAŞLIK ─────────────────────────────────────────────── */}
+        <motion.div variants={fadeUp} initial="hidden" animate="show" custom={0}>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h1 className="flex items-center gap-2 text-3xl font-extrabold tracking-tight">
+                <motion.span
+                  aria-hidden
+                  animate={{ rotate: [-8, 6, -8] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                  className="text-2xl"
+                >
+                  ✍️
+                </motion.span>
+                <span
+                  style={{
+                    background: "linear-gradient(135deg, #fff 0%, #e9d5ff 50%, #c084fc 100%)",
+                    WebkitBackgroundClip: "text",
+                    backgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    filter: "drop-shadow(0 0 14px rgba(168,85,247,0.35))",
+                  }}
+                  className="hero-title"
+                >
+                  İtiraf Yaz
+                </span>
+              </h1>
+              <p className="mt-1 text-sm text-slate-400">İçini dök. Kimliğin senin kontrolünde.</p>
+            </div>
+            <span className="mt-1 inline-flex shrink-0 items-center gap-1 rounded-full bg-brand-500/15 px-3 py-1.5 text-[11px] font-bold text-brand-200 ring-1 ring-inset ring-brand-400/30">
+              ⭐ +150 puan
+            </span>
+          </div>
+        </motion.div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {error && <Alert tone="error">{error}</Alert>}
+        <form onSubmit={handleSubmit} className="mt-5 space-y-4">
+          {error && (
+            <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}>
+              <Alert tone="error">{error}</Alert>
+            </motion.div>
+          )}
 
-          {/* İtiraf metni */}
-          <div>
+          {/* ── KOMPOZER ─────────────────────────────────────────── */}
+          <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            animate="show"
+            custom={1}
+            className="glass-card relative overflow-hidden p-1.5"
+          >
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
               maxLength={MAX}
-              rows={6}
-              placeholder="Bugün içinden geçeni anonim olarak paylaş..."
-              className="w-full resize-none rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-[15px] leading-relaxed text-white placeholder:text-slate-500 outline-none transition-colors focus:border-brand-500/60 focus:bg-white/[0.06]"
+              rows={7}
+              autoFocus
+              placeholder="Bugün içinden geçeni anonim olarak paylaş... Kimse kim olduğunu bilmeyecek."
+              className="w-full resize-none rounded-[1.25rem] bg-transparent px-4 py-3.5 text-[15px] leading-relaxed text-white placeholder:text-slate-500 outline-none"
             />
-            <div className="mt-1 flex justify-between text-xs">
-              <span className={tooShort ? "text-red-300" : "text-slate-500"}>
-                {tooShort ? `En az ${MIN} karakter` : " "}
+            {/* Alt bilgi çubuğu */}
+            <div className="flex items-center justify-between gap-2 border-t border-white/5 px-4 py-2">
+              <span
+                className={`text-[11px] font-semibold transition-colors ${
+                  tooShort ? "text-red-300" : ready ? "text-emerald-300" : "text-slate-500"
+                }`}
+              >
+                {tooShort
+                  ? `✏️ En az ${MIN} karakter (${MIN - length} kaldı)`
+                  : ready
+                    ? "✓ Paylaşıma hazır"
+                    : "Düşüncelerini özgürce yaz"}
               </span>
-              <span className="text-slate-500">
-                {length}/{MAX}
+              <span
+                className={`rounded-full px-2 py-0.5 text-[11px] font-bold tabular-nums ${
+                  nearLimit
+                    ? "bg-red-500/15 text-red-300"
+                    : "bg-white/5 text-slate-500"
+                }`}
+              >
+                {length.toLocaleString("tr-TR")}/{MAX.toLocaleString("tr-TR")}
               </span>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Kategori seçimi */}
-          <div>
-            <span className="mb-2 block text-sm font-medium text-slate-300">
-              Kategori (isteğe bağlı)
+          {/* ── KATEGORİ ─────────────────────────────────────────── */}
+          <motion.div variants={fadeUp} initial="hidden" animate="show" custom={2}>
+            <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-300">
+              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-white/5 text-xs">
+                🏷️
+              </span>
+              Kategori <span className="font-normal text-slate-500">(isteğe bağlı)</span>
             </span>
             <div className="flex flex-wrap gap-2">
               {CATEGORIES.map((c) => {
                 const active = category === c.value;
                 return (
-                  <button
+                  <motion.button
                     key={c.value}
                     type="button"
                     onClick={() => setCategory(active ? null : c.value)}
-                    className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
+                    whileTap={{ scale: 0.94 }}
+                    className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-all ${
                       active
-                        ? "border-brand-500/60 bg-brand-500/15 text-brand-100"
+                        ? "border-transparent text-white shadow-glow-sm"
                         : "border-white/10 bg-white/[0.03] text-slate-300 hover:bg-white/[0.06]"
                     }`}
+                    style={
+                      active
+                        ? { background: "linear-gradient(135deg, #a855f7, #7c3aed)" }
+                        : undefined
+                    }
                   >
                     <span>{c.emoji}</span>
                     {c.value}
-                  </button>
+                    {active && <span className="text-[10px]">✓</span>}
+                  </motion.button>
                 );
               })}
             </div>
-          </div>
+          </motion.div>
 
-          {/* Ultra Plus: özel odada paylaş */}
-          {canLounge && (
-            <div className="rounded-xl border border-amber-400/30 bg-amber-400/[0.06] p-3">
-              <button
-                type="button"
-                onClick={() => setPlusRoom((v) => (v ? null : LOUNGE_ROOMS[0]))}
-                className="flex w-full items-center justify-between text-left"
+          {/* ── AYARLAR ──────────────────────────────────────────── */}
+          <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            animate="show"
+            custom={3}
+            className="space-y-3"
+          >
+            {/* Ultra Plus: özel odada paylaş */}
+            {canLounge && (
+              <ToggleRow
+                icon="⚡"
+                iconBg="bg-amber-400/15"
+                title="Ultra Plus özel odada paylaş"
+                desc={plusRoom ? `Oda: ${plusRoom}` : "Yalnızca Ultra Plus üyeler görür."}
+                on={!!plusRoom}
+                onToggle={() => setPlusRoom((v) => (v ? null : LOUNGE_ROOMS[0]))}
+                accent="#f59e0b"
               >
-                <span>
-                  <span className="block text-sm font-semibold text-amber-100">
-                    ⚡ Ultra Plus özel odada paylaş
-                  </span>
-                  <span className="block text-xs text-amber-100/60">
-                    Yalnızca Ultra Plus üyeler görür.
-                  </span>
-                </span>
-                <span
-                  className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${plusRoom ? "bg-amber-500" : "bg-white/15"}`}
-                >
-                  <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${plusRoom ? "translate-x-[22px]" : "translate-x-0.5"}`} />
-                </span>
-              </button>
-              {plusRoom && (
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {LOUNGE_ROOMS.map((r) => (
-                    <button
-                      key={r}
-                      type="button"
-                      onClick={() => setPlusRoom(r)}
-                      className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
-                        plusRoom === r
-                          ? "border-amber-400/60 bg-amber-400/15 text-amber-100"
-                          : "border-white/10 bg-white/[0.03] text-slate-300"
-                      }`}
-                    >
-                      {r}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
+                {plusRoom && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    className="flex flex-wrap gap-2 px-4 pb-3"
+                  >
+                    {LOUNGE_ROOMS.map((r) => (
+                      <button
+                        key={r}
+                        type="button"
+                        onClick={() => setPlusRoom(r)}
+                        className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
+                          plusRoom === r
+                            ? "border-amber-400/60 bg-amber-400/15 text-amber-100"
+                            : "border-white/10 bg-white/[0.03] text-slate-300 hover:bg-white/[0.06]"
+                        }`}
+                      >
+                        {r}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </ToggleRow>
+            )}
 
-          {/* Anonim paylaş toggle */}
-          <button
-            type="button"
-            onClick={() => setIsAnonymous((v) => !v)}
-            className="flex w-full items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left"
-          >
-            <span>
-              <span className="block text-sm font-medium text-white">Anonim paylaş</span>
-              <span className="block text-xs text-slate-400">
-                {isAnonymous
+            {/* Anonimlik */}
+            <ToggleRow
+              icon={isAnonymous ? "🕶️" : "👤"}
+              iconBg="bg-brand-500/15"
+              title="Anonim paylaş"
+              desc={
+                isAnonymous
                   ? "Adın gizli kalacak — 'Anonim Kullanıcı' olarak görünür."
-                  : "Kullanıcı adın itirafla birlikte görünecek."}
-              </span>
-            </span>
-            <span
-              className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${
-                isAnonymous ? "bg-brand-500" : "bg-white/15"
-              }`}
-            >
-              <span
-                className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${
-                  isAnonymous ? "translate-x-[22px]" : "translate-x-0.5"
-                }`}
-              />
-            </span>
-          </button>
+                  : "Kullanıcı adın itirafla birlikte görünecek."
+              }
+              on={isAnonymous}
+              onToggle={() => setIsAnonymous((v) => !v)}
+            />
 
-          {/* Kaybolan itiraf toggle */}
-          <button
-            type="button"
-            onClick={() => setIsTemporary((v) => !v)}
-            className="flex w-full items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left"
-          >
-            <span>
-              <span className="block text-sm font-medium text-white">⏳ 24 saatte kaybol</span>
-              <span className="block text-xs text-slate-400">
-                {isTemporary
-                  ? "İtirafın 24 saat sonra otomatik silinecek."
-                  : "Kalıcı paylaşım."}
-              </span>
-            </span>
-            <span
-              className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${
-                isTemporary ? "bg-brand-500" : "bg-white/15"
-              }`}
-            >
-              <span
-                className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${
-                  isTemporary ? "translate-x-[22px]" : "translate-x-0.5"
-                }`}
-              />
-            </span>
-          </button>
+            {/* Kaybolan itiraf */}
+            <ToggleRow
+              icon="⏳"
+              iconBg="bg-indigo-500/15"
+              title="24 saatte kaybol"
+              desc={
+                isTemporary ? "İtirafın 24 saat sonra otomatik silinecek." : "Kalıcı paylaşım."
+              }
+              on={isTemporary}
+              onToggle={() => setIsTemporary((v) => !v)}
+              accent="#818cf8"
+            />
+          </motion.div>
 
-          <Button type="submit" disabled={submitting} className="w-full">
-            {submitting ? "Paylaşılıyor..." : "Paylaş"}
-          </Button>
+          {/* ── PAYLAŞ ───────────────────────────────────────────── */}
+          <motion.div variants={fadeUp} initial="hidden" animate="show" custom={4}>
+            <button
+              type="submit"
+              disabled={submitting || !ready}
+              className="group relative w-full overflow-hidden rounded-full px-6 py-3.5 text-sm font-extrabold text-white shadow-glow transition-all duration-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+              style={{ background: "linear-gradient(135deg, #ec4899 0%, #a855f7 50%, #7c3aed 100%)" }}
+            >
+              {ready && !submitting && (
+                <span aria-hidden className="pointer-events-none absolute inset-0">
+                  <motion.span
+                    animate={{ x: ["-120%", "220%"] }}
+                    transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut", repeatDelay: 1.6 }}
+                    className="absolute inset-y-0 w-1/3"
+                    style={{
+                      background:
+                        "linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent)",
+                    }}
+                  />
+                </span>
+              )}
+              <span className="relative inline-flex items-center gap-2">
+                {submitting ? (
+                  <>
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                    Paylaşılıyor...
+                  </>
+                ) : !ready && length > 0 ? (
+                  `En az ${MIN} karakter yaz`
+                ) : (
+                  <>🚀 Paylaş</>
+                )}
+              </span>
+            </button>
+            <p className="mt-2.5 text-center text-[11px] text-slate-500">
+              Paylaşımlar topluluk kurallarına göre denetlenir · Kimliğin asla ifşa edilmez
+            </p>
+          </motion.div>
         </form>
       </div>
     </Container>
