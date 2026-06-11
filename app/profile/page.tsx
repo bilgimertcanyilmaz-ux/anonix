@@ -304,12 +304,15 @@ function GradientStatCard({
   label,
   msg,
   tone,
+  href,
 }: {
   emoji: string;
   value: number | string;
   label: string;
   msg?: string;
   tone: "pink" | "blue" | "purple" | "gold";
+  /** Verilirse kart tıklanabilir olur ve ilgili sayfaya gider. */
+  href?: string;
 }) {
   const tones: Record<typeof tone, { bg: string; ring: string; glow: string; chipBg: string }> = {
     pink: {
@@ -338,11 +341,11 @@ function GradientStatCard({
     },
   };
   const t = tones[tone];
-  return (
+  const inner = (
     <motion.div
       whileHover={{ y: -3 }}
       transition={{ type: "spring", stiffness: 300, damping: 22 }}
-      className="relative overflow-hidden rounded-2xl p-3 backdrop-blur-md sm:p-4"
+      className="group relative h-full overflow-hidden rounded-2xl p-3 backdrop-blur-md sm:p-4"
       style={{
         background: t.bg,
         border: `1px solid ${t.ring}`,
@@ -361,10 +364,18 @@ function GradientStatCard({
         </span>
         <span className="text-2xl font-extrabold text-white sm:text-3xl">{value}</span>
       </div>
-      <p className="mt-2 text-xs font-bold text-white/90">{label}</p>
+      <p className="mt-2 flex items-center gap-1 text-xs font-bold text-white/90">
+        {label}
+        {href && (
+          <span className="text-[10px] text-white/40 transition-transform group-hover:translate-x-0.5">
+            →
+          </span>
+        )}
+      </p>
       {msg && <p className="mt-0.5 text-[10px] text-white/55">{msg}</p>}
     </motion.div>
   );
+  return href ? <Link href={href} className="block h-full">{inner}</Link> : inner;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -436,6 +447,7 @@ function ActivityItem({
   snippet,
   count,
   i,
+  href,
 }: {
   emoji: string;
   title: string;
@@ -443,14 +455,13 @@ function ActivityItem({
   snippet?: string;
   count?: number;
   i: number;
+  /** İtirafın detay sayfası — satır tıklanabilir olur. */
+  href?: string;
 }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: -8 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: i * 0.06 }}
-      className="flex items-start gap-3 rounded-2xl border border-white/8 bg-white/[0.03] p-3 transition-all hover:border-brand-400/30 hover:bg-white/[0.06]"
-    >
+  const rowCls =
+    "group flex items-start gap-3 rounded-2xl border border-white/8 bg-white/[0.03] p-3 transition-all hover:border-brand-400/30 hover:bg-white/[0.06]";
+  const inner = (
+    <>
       <span
         className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-base"
         style={{
@@ -472,6 +483,26 @@ function ActivityItem({
         <span className="inline-flex shrink-0 items-center gap-1 self-center rounded-full border border-pink-400/40 bg-pink-500/15 px-2 py-1 text-[10px] font-bold text-pink-200">
           ❤️ {count}
         </span>
+      )}
+      {href && (
+        <span className="self-center text-xs text-slate-500 transition-all group-hover:translate-x-0.5 group-hover:text-brand-300">
+          →
+        </span>
+      )}
+    </>
+  );
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -8 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: i * 0.06 }}
+    >
+      {href ? (
+        <Link href={href} className={rowCls}>
+          {inner}
+        </Link>
+      ) : (
+        <div className={rowCls}>{inner}</div>
       )}
     </motion.div>
   );
@@ -520,6 +551,7 @@ export default function ProfilePage() {
   const [referralCount, setReferralCount] = useState(0);
   const [followCounts, setFollowCounts] = useState<FollowCounts>({ followers: 0, following: 0 });
   const [activities, setActivities] = useState<ConfessionRecord[]>([]);
+  const [confCount, setConfCount] = useState(0);
   const [barReady, setBarReady] = useState(false);
 
   useEffect(() => {
@@ -542,16 +574,18 @@ export default function ProfilePage() {
 
   const loadData = useCallback(async () => {
     if (!user) return;
-    const [{ data: bData }, { count }, fc, { data: aData }] = await Promise.all([
+    const [{ data: bData }, { count }, fc, { data: aData }, { count: cCount }] = await Promise.all([
       supabase.from("user_badges").select("*, badges(*)").eq("user_id", user.id).order("earned_at", { ascending: false }),
       supabase.from("referrals").select("id", { count: "exact", head: true }).eq("referrer_id", user.id),
       getFollowCounts(user.id),
       supabase.from("confessions").select("id, content, created_at, like_count, comment_count").eq("user_id", user.id).order("created_at", { ascending: false }).limit(4),
+      supabase.from("confessions").select("id", { count: "exact", head: true }).eq("user_id", user.id),
     ]);
     setBadges((bData as UserBadge[]) ?? []);
     setReferralCount(count ?? 0);
     setFollowCounts(fc);
     setActivities(((aData as ConfessionRecord[]) ?? []));
+    setConfCount(cCount ?? 0);
   }, [user]);
 
   useEffect(() => { if (user) loadData(); }, [user, loadData]);
@@ -560,9 +594,15 @@ export default function ProfilePage() {
   if (loading || !user) {
     return (
       <Container>
-        <div className="py-20 text-center">
-          <div className="mx-auto h-16 w-16 animate-pulse rounded-full bg-brand-500/20" />
-          <p className="mt-4 text-sm text-slate-400">Yükleniyor...</p>
+        <div className="space-y-4 py-4">
+          <div className="card h-56 animate-pulse rounded-3xl" />
+          <div className="card h-32 animate-pulse rounded-3xl" />
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {[0, 1, 2, 3].map((i) => (
+              <div key={i} className="h-24 animate-pulse rounded-2xl bg-white/5" />
+            ))}
+          </div>
+          <div className="card h-40 animate-pulse rounded-3xl" />
         </div>
       </Container>
     );
@@ -702,14 +742,19 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Follow stats */}
-                <div className="mt-3 flex items-center gap-3 text-xs">
-                  <Link href="/profile/followers" className="group flex items-center gap-1 transition-colors">
-                    <span className="font-bold text-white group-hover:text-brand-300">{followCounts.followers}</span>
+                <div className="mt-3 flex items-center gap-2 text-xs">
+                  <Link
+                    href="/profile/followers"
+                    className="flex items-center gap-1 rounded-full bg-white/[0.06] px-2.5 py-1 transition-colors hover:bg-white/10"
+                  >
+                    <span className="font-bold text-white">{followCounts.followers}</span>
                     <span className="text-slate-400">Takipçi</span>
                   </Link>
-                  <span className="h-3 w-px bg-white/10" />
-                  <Link href="/profile/following" className="group flex items-center gap-1 transition-colors">
-                    <span className="font-bold text-white group-hover:text-brand-300">{followCounts.following}</span>
+                  <Link
+                    href="/profile/following"
+                    className="flex items-center gap-1 rounded-full bg-white/[0.06] px-2.5 py-1 transition-colors hover:bg-white/10"
+                  >
+                    <span className="font-bold text-white">{followCounts.following}</span>
                     <span className="text-slate-400">Takip</span>
                   </Link>
                 </div>
@@ -805,30 +850,38 @@ export default function ProfilePage() {
             <GradientStatCard
               emoji="🔥"
               value={profile.streak_count}
-              label="Günlük Streak"
-              msg="Tebrikler!"
+              label="Günlük Seri"
+              msg={
+                profile.streak_count > 0
+                  ? `${profile.streak_count} gündür buradasın!`
+                  : "Bugün paylaş, seri başlat"
+              }
               tone="pink"
+              href="/tasks"
             />
             <GradientStatCard
               emoji="👥"
               value={followCounts.followers}
               label="Takipçi"
-              msg="Topluluğun büyüyor"
+              msg={followCounts.followers > 0 ? "Topluluğun büyüyor" : "İlk takipçin yolda"}
               tone="blue"
+              href="/profile/followers"
             />
             <GradientStatCard
-              emoji="⚡"
-              value={profile.points.toLocaleString("tr-TR")}
-              label="Toplam XP"
-              msg="Harika gidiyorsun! ✨"
+              emoji="💬"
+              value={confCount}
+              label="İtiraf"
+              msg={confCount > 0 ? "Toplam paylaşımın" : "İlk itirafını yaz"}
               tone="purple"
+              href={confCount > 0 ? "/profile/analytics" : "/confessions/new"}
             />
             <GradientStatCard
               emoji="🏆"
               value={badges.length}
               label="Rozet"
-              msg="Koleksiyonun harika!"
+              msg={badges.length > 0 ? "Koleksiyonun büyüyor" : "İlk rozetini kazan"}
               tone="gold"
+              href="/badges"
             />
           </motion.div>
 
@@ -844,6 +897,11 @@ export default function ProfilePage() {
               <h2 className="flex items-center gap-2 text-sm font-bold text-white">
                 <CrownIcon className="h-4 w-4 text-amber-300" />
                 Rozetlerim
+                {badges.length > 0 && (
+                  <span className="rounded-full bg-amber-400/15 px-2 py-0.5 text-[10px] font-extrabold text-amber-300">
+                    {badges.length}
+                  </span>
+                )}
               </h2>
               <Link href="/badges" className="text-xs font-semibold text-brand-300 transition-colors hover:text-brand-200">
                 Tümünü gör →
@@ -889,6 +947,7 @@ export default function ProfilePage() {
                     snippet={c.content.length > 100 ? c.content.slice(0, 100) + "..." : c.content}
                     count={c.like_count ?? 0}
                     i={i}
+                    href={`/confessions/${c.id}`}
                   />
                 ))}
               </div>
