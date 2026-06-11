@@ -261,7 +261,12 @@ html.light .anonix-dark-card .text-amber-100,
 html.light .anonix-dark-card .text-amber-200,
 html.light .anonix-dark-card .text-amber-300,
 html.light .anonix-dark-card .text-amber-300\/80,
-html.light .anonix-dark-card .text-amber-300\/90 { color: #fcd34d !important; }
+html.light .anonix-dark-card .text-amber-300\/90,
+html.light .anonix-dark-card .text-gold-200,
+html.light .anonix-dark-card .text-gold-300 { color: #fcd34d !important; }
+html.light .anonix-dark-card .text-gold-100\/50,
+html.light .anonix-dark-card .text-gold-100\/60,
+html.light .anonix-dark-card .text-gold-100\/70 { color: #fde68a !important; }
 html.light .anonix-dark-card .text-brand-100,
 html.light .anonix-dark-card .text-brand-200,
 html.light .anonix-dark-card .text-brand-300 { color: #ddd6fe !important; }
