@@ -221,7 +221,7 @@ export default function ConversationPage() {
   }
 
   return (
-    <Container className="flex h-[calc(100vh-9rem)] flex-col">
+    <Container className="flex h-[calc(100vh-9rem)] flex-col [height:calc(100dvh-9rem)]">
       {/* Başlık */}
       <div className="flex items-center gap-3 border-b border-white/5 py-3">
         <Link href="/messages" className="text-slate-400 hover:text-white">

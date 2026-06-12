@@ -22,6 +22,7 @@ import { getPremiumTheme } from "@/lib/themes";
 import { FramedAvatar } from "@/components/profile/FramedAvatar";
 import { CrownIcon } from "@/components/ui/icons";
 import { AnonymousAvatar } from "@/components/AnonymousAvatar";
+import { PROFILE_SELECT } from "@/lib/profileColumns";
 import type { Profile, ConfessionRecord, UserBadge } from "@/types";
 
 const HEX = "polygon(50% 0, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%)";
@@ -100,7 +101,7 @@ export default function PublicProfilePage() {
 
     const { data: prof } = await supabase
       .from("profiles")
-      .select("*")
+      .select(PROFILE_SELECT)
       .eq("username", username)
       .maybeSingle();
 
@@ -109,7 +110,7 @@ export default function PublicProfilePage() {
       setLoading(false);
       return;
     }
-    const p = prof as Profile;
+    const p = prof as unknown as Profile;
     setProfile(p);
 
     const [fc, { data: bData }, { count: ahead }] = await Promise.all([

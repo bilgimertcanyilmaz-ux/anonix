@@ -10,6 +10,7 @@ import {
 } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabaseClient";
+import { PROFILE_SELECT } from "@/lib/profileColumns";
 import { authErrorToTr, mapSupabaseAuthError } from "@/lib/authErrors";
 import type { Profile, SignUpData } from "@/types";
 
@@ -44,7 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const fetchProfile = useCallback(async (userId: string) => {
     const { data, error } = await supabase
       .from("profiles")
-      .select("*")
+      .select(PROFILE_SELECT)
       .eq("id", userId)
       .maybeSingle();
 
@@ -53,7 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setProfile(null);
       return;
     }
-    setProfile((data as Profile) ?? null);
+    setProfile((data as unknown as Profile) ?? null);
   }, []);
 
   useEffect(() => {
@@ -173,11 +174,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .from("profiles")
         .update({ ...patch, updated_at: new Date().toISOString() })
         .eq("id", user.id)
-        .select()
+        .select(PROFILE_SELECT)
         .single();
 
       if (error) return { error: authErrorToTr(error.message) };
-      setProfile(data as Profile);
+      setProfile(data as unknown as Profile);
       return {};
     },
     [user]

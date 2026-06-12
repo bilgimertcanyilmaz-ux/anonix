@@ -13,6 +13,7 @@ import { useToast } from "@/components/ui/ToastProvider";
 import { moodTags } from "@/lib/moods";
 import { overlayPositions, overlayStyles, packOverlay } from "@/lib/golge";
 import { moderateText, MODERATION_BLOCK_MESSAGE } from "@/lib/moderation";
+import { compressImage } from "@/lib/image";
 
 const MAX_BYTES = 10 * 1024 * 1024; // 10MB
 
@@ -102,12 +103,14 @@ export default function NewGolgePage() {
 
     setUploading(true);
 
-    const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+    // Yükleme öncesi sıkıştır (uzun kenar 1440px, JPEG) — feed trafiğini %90+ azaltır.
+    const optimized = await compressImage(file);
+    const ext = (optimized.name.split(".").pop() || "jpg").toLowerCase();
     const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
 
     const { error: upErr } = await supabase.storage
       .from("golge-media")
-      .upload(path, file, { contentType: file.type, upsert: false });
+      .upload(path, optimized, { contentType: optimized.type, upsert: false });
 
     if (upErr) {
       setUploading(false);

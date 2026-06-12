@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import { PROFILE_SELECT } from "@/lib/profileColumns";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/components/ui/ToastProvider";
 import { getGenderLabel } from "@/lib/gender";
@@ -17,10 +18,10 @@ export default function AdminUsersPage() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    let q = supabase.from("profiles").select("*").order("points", { ascending: false }).limit(100);
+    let q = supabase.from("profiles").select(PROFILE_SELECT).order("points", { ascending: false }).limit(100);
     if (search.trim()) q = q.ilike("username", `%${search.trim()}%`);
     const { data } = await q;
-    setUsers((data as Profile[]) ?? []);
+    setUsers((data as unknown as Profile[]) ?? []);
     setLoading(false);
   }, [search]);
 
