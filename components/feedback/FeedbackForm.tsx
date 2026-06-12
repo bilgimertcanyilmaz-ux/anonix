@@ -186,7 +186,6 @@ export function FeedbackForm({
           onChange={(e) => setMessage(e.target.value)}
           maxLength={MAX}
           rows={5}
-          autoFocus
           placeholder={
             kind === "bug"
               ? "Ne ters gitti? Adımları yazarsan daha hızlı çözeriz..."
