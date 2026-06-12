@@ -38,6 +38,33 @@ export default function ConversationPage() {
   const canDisappear = canUseFeature(profile, "disappearing_messages");
 
   const bottomRef = useRef<HTMLDivElement>(null);
+  const shellRef = useRef<HTMLDivElement>(null);
+
+  // ── Klavye-uyumlu sohbet kabuğu ─────────────────────────────
+  // iOS Safari'de klavye açılınca sayfa "pan" edilir ve sabit elemanlar kayar;
+  // visualViewport ile kabuğun yüksekliğini görünür alana eşitleyip pan kadar
+  // aşağı kaydırarak sohbeti her zaman ekrana oturturuz. Arka plan kaydırması
+  // kilitlenir (boşluk/sıçrama oluşmaz).
+  useEffect(() => {
+    const el = shellRef.current;
+    if (!el) return;
+    document.body.style.overflow = "hidden";
+    const vv = window.visualViewport;
+    const update = () => {
+      if (!vv) return;
+      el.style.height = `${vv.height}px`;
+      el.style.transform = `translateY(${vv.offsetTop}px)`;
+    };
+    update();
+    vv?.addEventListener("resize", update);
+    vv?.addEventListener("scroll", update);
+    return () => {
+      document.body.style.overflow = "";
+      vv?.removeEventListener("resize", update);
+      vv?.removeEventListener("scroll", update);
+    };
+    // Kabuk yalnızca sohbet yüklendikten sonra DOM'da olur.
+  }, [loading, denied, conversation]);
 
   /** Süresi dolan kaybolan mesajları gizle. */
   const notExpired = (m: Message) => !m.expires_at || new Date(m.expires_at) > new Date();
@@ -221,9 +248,16 @@ export default function ConversationPage() {
   }
 
   return (
-    <Container className="flex h-[calc(100vh-9rem)] flex-col [height:calc(100dvh-9rem)]">
+    <div
+      ref={shellRef}
+      className="bg-ink-950 fixed inset-x-0 top-0 z-50 mx-auto flex w-full max-w-2xl flex-col px-4 sm:px-6"
+      style={{ height: "100dvh" }}
+    >
       {/* Başlık */}
-      <div className="flex items-center gap-3 border-b border-white/5 py-3">
+      <div
+        className="flex items-center gap-3 border-b border-white/5 py-3"
+        style={{ paddingTop: "max(env(safe-area-inset-top), 0.75rem)" }}
+      >
         <Link href="/messages" className="text-slate-400 hover:text-white">
           ←
         </Link>
@@ -292,7 +326,11 @@ export default function ConversationPage() {
       )}
 
       {/* Yazma alanı */}
-      <form onSubmit={handleSend} className={`flex items-end gap-2 py-3 ${canDisappear ? "" : "border-t border-white/5"}`}>
+      <form
+        onSubmit={handleSend}
+        className={`flex items-end gap-2 py-3 ${canDisappear ? "" : "border-t border-white/5"}`}
+        style={{ paddingBottom: "max(env(safe-area-inset-bottom), 0.75rem)" }}
+      >
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -311,6 +349,6 @@ export default function ConversationPage() {
           {sending ? "..." : "Gönder"}
         </Button>
       </form>
-    </Container>
+    </div>
   );
 }

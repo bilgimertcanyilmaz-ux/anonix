@@ -18,7 +18,10 @@ import { rankIcon } from "@/lib/ranks";
 import { badgeIcon } from "@/lib/badges";
 import { recordProfileView } from "@/lib/profileViews";
 import { getSubscriptionTier } from "@/lib/subscription";
-import { getPremiumTheme } from "@/lib/themes";
+import { getPremiumTheme, isThemeUnlocked } from "@/lib/themes";
+import { getNextRank, getRankProgress } from "@/lib/ranks";
+import { motion } from "framer-motion";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { FramedAvatar } from "@/components/profile/FramedAvatar";
 import { CrownIcon } from "@/components/ui/icons";
 import { AnonymousAvatar } from "@/components/AnonymousAvatar";
@@ -195,6 +198,13 @@ export default function PublicProfilePage() {
   const joinDate = new Date(profile.created_at).toLocaleDateString("tr-TR", { month: "long", year: "numeric" });
   const genderLabel = getGenderLabel(profile.gender);
   const genderIcon = genderLabel === "Kadın" ? "♀" : genderLabel === "Erkek" ? "♂" : "⚧";
+  // Çerçeve YALNIZCA kullanıcı gerçekten hak etmişse gösterilir (rütbe puanı
+  // ya da Ultra Plus). Eski koddaki "tema yoksa gold göster" hatası kaldırıldı.
+  const theme = getPremiumTheme(profile.premium_theme);
+  const ultraAllowed = tier === "ultra_plus" || profile.role === "admin";
+  const themeValid = !!theme && isThemeUnlocked(theme, profile.points, ultraAllowed);
+  const nextRank = getNextRank(profile.points);
+  const rankPct = getRankProgress(profile.points);
   const avatarInner = profile.avatar_url ? (
     // eslint-disable-next-line @next/next/no-img-element
     <img src={profile.avatar_url} alt={profile.username} className="h-full w-full object-cover" />
@@ -208,13 +218,31 @@ export default function PublicProfilePage() {
     <Container>
       <div className="space-y-5 py-4">
         {/* ═══════════ PREMIUM HERO ═══════════ */}
-        <div
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 240, damping: 24 }}
           className="anonix-dark-card relative overflow-hidden rounded-3xl border border-brand-500/30 p-4 sm:p-5"
           style={{
             background: "linear-gradient(160deg, rgba(40,24,80,0.97) 0%, rgba(20,14,40,0.98) 60%, rgba(12,8,28,0.99) 100%)",
             boxShadow: "0 0 60px -16px rgba(124,58,237,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
           }}
         >
+          {/* Aurora ışıkları */}
+          <motion.div
+            aria-hidden
+            animate={{ x: [0, 16, 0], opacity: [0.35, 0.6, 0.35] }}
+            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+            className="pointer-events-none absolute -right-12 -top-12 h-40 w-56 rounded-full blur-3xl"
+            style={{ background: "radial-gradient(ellipse, rgba(236,72,153,0.28), transparent 70%)" }}
+          />
+          <motion.div
+            aria-hidden
+            animate={{ x: [0, -12, 0], opacity: [0.25, 0.5, 0.25] }}
+            transition={{ duration: 16, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+            className="pointer-events-none absolute -bottom-14 left-1/4 h-36 w-64 rounded-full blur-3xl"
+            style={{ background: "radial-gradient(ellipse, rgba(96,165,250,0.2), transparent 70%)" }}
+          />
           {/* Sağ-üst köşe: tier + rütbe (küçük) */}
           <div className="absolute right-3 top-3 z-10 flex flex-col items-end gap-1">
             {(tier === "ultra_plus" || tier === "plus") && (
@@ -230,11 +258,22 @@ export default function PublicProfilePage() {
           </div>
 
           {/* Avatar + kullanıcı adı aynı hizada (isim tam genişlik) */}
-          <div className="flex items-center gap-3.5 pr-1 sm:gap-4">
+          <div className="relative flex items-center gap-3.5 pr-1 sm:gap-4">
             <div className="shrink-0">
-              <FramedAvatar themeId={getPremiumTheme(profile.premium_theme) ? profile.premium_theme : "gold"} size={104}>
-                {avatarInner}
-              </FramedAvatar>
+              {themeValid ? (
+                <FramedAvatar themeId={profile.premium_theme} size={104}>
+                  {avatarInner}
+                </FramedAvatar>
+              ) : (
+                /* Çerçeve hak edilmemişse cinsiyet halkalı sade avatar */
+                <div
+                  className={`flex h-[88px] w-[88px] items-center justify-center rounded-full p-[3px] ${getGenderFrameClass(profile.gender)}`}
+                >
+                  <div className="h-full w-full overflow-hidden rounded-full bg-ink-900">
+                    {avatarInner}
+                  </div>
+                </div>
+              )}
             </div>
             <h1 className="flex min-w-0 items-center gap-1.5 text-lg font-extrabold text-white sm:text-xl">
               <span className="truncate">@{profile.username}</span>
@@ -260,7 +299,31 @@ export default function PublicProfilePage() {
             <InfoPill icon="⭐" label="Puan" value={profile.points.toLocaleString("tr-TR")} />
             <InfoPill icon="📅" label="Katılım" value={joinDate} />
           </div>
-        </div>
+
+          {/* Rütbe ilerlemesi */}
+          {nextRank && (
+            <div className="relative mt-3">
+              <div className="mb-1 flex items-center justify-between text-[10px]">
+                <span className="font-semibold text-white/50">
+                  Sonraki rütbe: {rankIcon(nextRank.rank)} {nextRank.rank}
+                </span>
+                <span className="font-bold text-brand-200">%{rankPct}</span>
+              </div>
+              <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${rankPct}%` }}
+                  transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
+                  className="h-full rounded-full"
+                  style={{
+                    background: "linear-gradient(90deg, #a855f7, #ec4899)",
+                    boxShadow: "0 0 10px rgba(236,72,153,0.5)",
+                  }}
+                />
+              </div>
+            </div>
+          )}
+        </motion.div>
 
         {/* ═══════════ SIRALAMA / TAKİPÇİ / TAKİP ═══════════ */}
         <div
@@ -283,6 +346,13 @@ export default function PublicProfilePage() {
             className="anonix-dark-card rounded-2xl border border-white/10 p-4"
             style={{ background: "linear-gradient(135deg, rgba(34,22,62,0.96), rgba(18,12,36,0.98))" }}
           >
+            <h2 className="mb-3 flex items-center gap-2 text-sm font-bold text-white">
+              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-amber-400/15 text-xs">🏅</span>
+              Rozetleri
+              <span className="rounded-full bg-amber-400/15 px-2 py-0.5 text-[10px] font-extrabold text-amber-300">
+                {badges.length}
+              </span>
+            </h2>
             <div className="flex flex-wrap justify-around gap-y-4">
               {badges.slice(0, 5).map((ub) => (
                 <HexBadge
@@ -298,11 +368,21 @@ export default function PublicProfilePage() {
 
         {/* ═══════════ PAYLAŞIMLARI ═══════════ */}
         <div>
-          <h2 className="mb-3 text-lg font-bold text-white">Paylaşımları</h2>
+          <h2 className="mb-3 flex items-center gap-2 text-lg font-bold text-white">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/5 text-sm">📝</span>
+            Paylaşımları
+            {confessions.length > 0 && (
+              <span className="rounded-full bg-white/[0.06] px-2 py-0.5 text-[10px] font-extrabold text-slate-400">
+                {confessions.length}
+              </span>
+            )}
+          </h2>
           {confessions.length === 0 ? (
-            <div className="card p-6 text-center text-sm text-slate-400">
-              Bu kullanıcının herkese açık itirafı yok.
-            </div>
+            <EmptyState
+              icon="🤫"
+              title="Henüz açık paylaşımı yok"
+              description="Bu kullanıcının herkese açık itirafı bulunmuyor."
+            />
           ) : (
             <div className="space-y-4">
               {confessions.map((c) => (

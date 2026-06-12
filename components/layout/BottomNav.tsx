@@ -46,6 +46,10 @@ export function BottomNav() {
   const { unreadCount } = useUnread();
   const pathname = usePathname() ?? "/";
 
+  // Sohbet ekranında dock gizlenir: yazma alanı alt kenara oturur,
+  // klavye açıkken araya boşluk/çift katman girmez.
+  if (/^\/messages\/[^/]+$/.test(pathname)) return null;
+
   return (
     <nav
       className="fixed inset-x-0 bottom-0 z-40 flex justify-center px-3 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-2 md:hidden"
