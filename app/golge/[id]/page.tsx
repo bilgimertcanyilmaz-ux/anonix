@@ -163,27 +163,30 @@ export default function GolgeDetailPage() {
 
         {/* Bilgi kartı */}
         <div className="card p-5">
-          <div className="mb-3 flex items-center justify-between gap-3">
-            <AuthorBadge
-              anonymous={post.is_anonymous}
-              author={post.profiles}
-              subtitle={timeAgo(post.created_at)}
-            />
-            <div className="flex shrink-0 items-center gap-2">
-              {!post.is_anonymous && (
-                <>
-                  <FollowButton targetUserId={post.user_id} size="sm" />
-                  <BlockButton targetUserId={post.user_id} size="sm" />
-                </>
-              )}
-              {post.mood_tag && (
-                <span className="chip">
-                  <span>{moodEmoji(post.mood_tag)}</span>
-                  {post.mood_tag}
-                </span>
-              )}
+          {/* Üst satır: kimlik + mood çipi (dar ekranda taşmaz) */}
+          <div className="mb-3 flex items-start justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <AuthorBadge
+                anonymous={post.is_anonymous}
+                author={post.profiles}
+                subtitle={timeAgo(post.created_at)}
+              />
             </div>
+            {post.mood_tag && (
+              <span className="chip shrink-0">
+                <span>{moodEmoji(post.mood_tag)}</span>
+                {post.mood_tag}
+              </span>
+            )}
           </div>
+
+          {/* Aksiyonlar kendi satırında — mobilde yarım görünme sorunu yaşanmaz */}
+          {!post.is_anonymous && (
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <FollowButton targetUserId={post.user_id} size="sm" />
+              <BlockButton targetUserId={post.user_id} size="sm" />
+            </div>
+          )}
 
           {post.caption && (
             <p className="whitespace-pre-wrap break-words text-[15px] leading-relaxed text-slate-200">

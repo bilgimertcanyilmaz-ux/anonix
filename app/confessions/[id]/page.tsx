@@ -227,34 +227,37 @@ export default function ConfessionDetailPage() {
               }}
             />
           )}
-          <div className="mb-3 flex items-center justify-between gap-3">
-            <AuthorBadge
-              anonymous={confession.is_anonymous}
-              author={confession.profiles}
-              subtitle={timeAgo(confession.created_at)}
-            />
-            <div className="flex shrink-0 items-center gap-2">
-              {!confession.is_anonymous && (
-                <>
-                  <FollowButton targetUserId={confession.user_id} size="sm" />
-                  <BlockButton targetUserId={confession.user_id} size="sm" />
-                </>
-              )}
-              {confession.mood_tag && (
-                <span
-                  className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold backdrop-blur"
-                  style={{
-                    background: `${moodAccent(confession.mood_tag).a}1f`,
-                    color: moodAccent(confession.mood_tag).a,
-                    boxShadow: `inset 0 0 0 1px ${moodAccent(confession.mood_tag).a}55`,
-                  }}
-                >
-                  <span>{moodEmoji(confession.mood_tag)}</span>
-                  {confession.mood_tag}
-                </span>
-              )}
+          {/* Üst satır: kimlik + mood çipi (dar ekranda taşmaz) */}
+          <div className="mb-3 flex items-start justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <AuthorBadge
+                anonymous={confession.is_anonymous}
+                author={confession.profiles}
+                subtitle={timeAgo(confession.created_at)}
+              />
             </div>
+            {confession.mood_tag && (
+              <span
+                className="inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold backdrop-blur"
+                style={{
+                  background: `${moodAccent(confession.mood_tag).a}1f`,
+                  color: moodAccent(confession.mood_tag).a,
+                  boxShadow: `inset 0 0 0 1px ${moodAccent(confession.mood_tag).a}55`,
+                }}
+              >
+                <span>{moodEmoji(confession.mood_tag)}</span>
+                {confession.mood_tag}
+              </span>
+            )}
           </div>
+
+          {/* Aksiyonlar kendi satırında — mobilde yarım görünme sorunu yaşanmaz */}
+          {!confession.is_anonymous && (
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <FollowButton targetUserId={confession.user_id} size="sm" />
+              <BlockButton targetUserId={confession.user_id} size="sm" />
+            </div>
+          )}
 
           <p className="whitespace-pre-wrap break-words text-[15px] leading-relaxed text-slate-200">
             {confession.content}
