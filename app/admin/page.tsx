@@ -41,9 +41,11 @@ async function countOf(table: string, build?: (q: any) => any): Promise<number> 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [pay, setPay] = useState<PayStats | null>(null);
+  const [updatedAt, setUpdatedAt] = useState<number | null>(null);
 
   useEffect(() => {
-    (async () => {
+    let cancelled = false;
+    const load = async () => {
       const since = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
       const [users, confessions, golge, pendingReports, bannedUsers, conf24, golge24] =
         await Promise.all([
@@ -55,6 +57,7 @@ export default function AdminDashboard() {
           countOf("confessions", (q) => q.gte("created_at", since)),
           countOf("golge_posts", (q) => q.gte("created_at", since)),
         ]);
+      if (cancelled) return;
       setStats({ users, confessions, golge, pendingReports, bannedUsers, last24h: conf24 + golge24 });
 
       // Ödeme istatistikleri — paket bazlı (profiles.subscription_tier).
@@ -75,6 +78,7 @@ export default function AdminDashboard() {
       );
       const plusRevenue = plusSubs * PLUS_PRICE;
       const ultraRevenue = ultraSubs * ULTRA_PRICE;
+      if (cancelled) return;
       setPay({
         revenue,
         plusSubs,
@@ -86,7 +90,16 @@ export default function AdminDashboard() {
         failed,
         recent: (recent.data as PaymentLog[]) ?? [],
       });
-    })();
+      setUpdatedAt(Date.now());
+    };
+
+    load();
+    // Canlı tutmak için 30 sn'de bir sessizce tazele
+    const id = setInterval(load, 30_000);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
   }, []);
 
   const cards = [
@@ -111,6 +124,20 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-6">
+      {/* Canlı göstergesi — 30 sn'de bir otomatik tazelenir */}
+      <div className="flex items-center gap-2 text-xs text-slate-400">
+        <span className="relative flex h-2 w-2">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+        </span>
+        Canlı · otomatik güncelleniyor (30 sn)
+        {updatedAt && (
+          <span className="text-slate-500">
+            · son: {new Date(updatedAt).toLocaleTimeString("tr-TR")}
+          </span>
+        )}
+      </div>
+
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {cards.map((c) => (
           <div key={c.label} className={`card p-5 ${c.warn && (c.value ?? 0) > 0 ? "border-amber-500/30" : ""}`}>
