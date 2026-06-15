@@ -16,6 +16,7 @@ import { PwaManager } from "@/components/pwa/PwaManager";
 import { FeedbackWidget } from "@/components/feedback/FeedbackWidget";
 import { SatisfactionPopup } from "@/components/feedback/SatisfactionPopup";
 import { CinematicBackground } from "@/components/layout/CinematicBackground";
+import { Analytics } from "@vercel/analytics/next";
 import { siteConfig } from "@/lib/site";
 
 const inter = Inter({
@@ -91,6 +92,8 @@ export default function RootLayout({
                   <PwaManager />
                   <FeedbackWidget />
                   <SatisfactionPopup />
+                  {/* Vercel Web Analytics — ziyaretçi & sayfa görüntüleme */}
+                  <Analytics />
                 </NotifProvider>
               </UnreadProvider>
             </ToastProvider>
