@@ -25,10 +25,13 @@ workflows:
       # verdiğin integration adı ile BİREBİR aynı olmalı.
       app_store_connect: codemagic
     environment:
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.anonix.app
+      # NOT: ios_signing bloğu BİLEREK kaldırıldı. O blok, build makinesi
+      # hazırlanırken (scripts'ten ÖNCE) otomatik imzalamayı tetikliyor ve
+      # yeni bundle ID'de profil olmadığından build daha başlamadan patlıyordu.
+      # İmzalamayı tamamen "Set up code signing" script adımı yönetiyor:
+      # sertifikayı + profili API ile oluşturup keychain'e ekliyor.
       vars:
+        BUNDLE_ID: "com.anonix.app"
         XCODE_WORKSPACE: "ios/App/App.xcworkspace"
         XCODE_SCHEME: "App"
         APP_STORE_APPLE_ID: $APP_STORE_APPLE_ID  # App Store Connect'teki Apple ID (e-posta)
