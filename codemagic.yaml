@@ -77,33 +77,26 @@ workflows:
 
       - name: Set up code signing (fetch + create if missing)
         script: |
-          set -e
-          # 1) Keychain'i hazırla.
-          keychain initialize
+          # set -e YOK: tüm komutlar çalışsın, hangisinin patladığını görelim.
+          echo "########## ADIM 1: keychain initialize ##########"
+          keychain initialize 2>&1; echo ">>> exit: $?"
 
-          # 2) iOS dağıtım sertifikasını OLUŞTUR ve private key'i sakla.
-          #    (Yeni hesapta hiç distribution certificate yoksa profil
-          #     oluşturulamıyor — önce sertifika + private key gerekir.)
-          #    Zaten varsa hata verir, onu yok sayıp mevcudu kullanırız.
-          app-store-connect certificates create \
-            --type IOS_DISTRIBUTION \
-            --save \
-            || echo "Distribution sertifikası zaten var, mevcut olan kullanılacak."
+          echo "########## ADIM 2: API testi — mevcut distribution sertifikaları ##########"
+          app-store-connect certificates list --type IOS_DISTRIBUTION 2>&1; echo ">>> exit: $?"
 
-          # 3) Mevcut tüm dağıtım sertifikalarını indir + keychain'e ekle.
-          app-store-connect certificates list \
-            --type IOS_DISTRIBUTION \
-            --save \
-            || true
+          echo "########## ADIM 3: distribution certificate OLUŞTUR (--save) ##########"
+          app-store-connect certificates create --type IOS_DISTRIBUTION --save 2>&1; echo ">>> exit: $?"
 
-          # 4) Bundle ID için App Store provisioning profilini çek/oluştur.
-          app-store-connect fetch-signing-files "com.anonix.app" \
-            --type IOS_APP_STORE \
-            --create
+          echo "########## ADIM 4: fetch-signing-files (--create) ##########"
+          app-store-connect fetch-signing-files "com.anonix.app" --type IOS_APP_STORE --create 2>&1; echo ">>> exit: $?"
 
-          # 5) Sertifikaları keychain'e ekle ve profilleri Xcode'a uygula.
-          keychain add-certificates
-          xcode-project use-profiles
+          echo "########## ADIM 5: keychain add-certificates ##########"
+          keychain add-certificates 2>&1; echo ">>> exit: $?"
+
+          echo "########## ADIM 6: xcode-project use-profiles ##########"
+          xcode-project use-profiles 2>&1; echo ">>> exit: $?"
+
+          echo "########## SIGNING ADIMI TAMAMLANDI ##########"
 
       - name: Increment build number
         script: |
