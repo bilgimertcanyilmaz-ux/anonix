@@ -107,7 +107,8 @@ workflows:
             --create
 
           echo "########## ADIM 4: keychain add-certificates ##########"
-          keychain add-certificates --certificate-key=@file:"$CERT_KEY"
+          # İndirilen .p12 sertifikaları otomatik bulunur — ek parametre yok.
+          keychain add-certificates
 
           echo "########## ADIM 5: xcode-project use-profiles ##########"
           xcode-project use-profiles
