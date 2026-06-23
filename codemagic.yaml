@@ -1,0 +1,96 @@
+# Codemagic CI/CD — Anonix iOS build + TestFlight upload.
+#
+# KULLANICI TARAFI KURULUM:
+#   1. https://codemagic.io üye ol (GitHub ile)
+#   2. Anonix repo'yu seç → "Add application"
+#   3. Settings → Integrations:
+#       a) "Apple Developer Portal" → App Store Connect API Key bağla
+#          (App Store Connect > Users and Access > Keys > "+" → Admin role)
+#       b) "iOS code signing" → Codemagic'in otomatik signing'i seç
+#   4. Environment variables (Sensitive olarak işaretle):
+#       - APP_STORE_CONNECT_PRIVATE_KEY   (P8 dosyasının içeriği)
+#       - APP_STORE_CONNECT_KEY_IDENTIFIER
+#       - APP_STORE_CONNECT_ISSUER_ID
+#       - CERTIFICATE_PRIVATE_KEY         (P12 password — Codemagic auto-generate)
+#   5. App Store Connect'te Anonix app record'u oluştur (Bundle ID: com.anonix.app)
+#   6. Bu workflow'u trigger et: main'e push veya manuel.
+
+workflows:
+  ios-testflight:
+    name: Anonix iOS → TestFlight
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.anonix.app
+      vars:
+        XCODE_WORKSPACE: "ios/App/App.xcworkspace"
+        XCODE_SCHEME: "App"
+        APP_STORE_APPLE_ID: $APP_STORE_APPLE_ID  # App Store Connect'teki Apple ID (e-posta)
+      node: 20
+      xcode: latest
+      cocoapods: default
+
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+          source: true
+
+    scripts:
+      - name: Install npm dependencies
+        script: |
+          npm ci
+
+      - name: Capacitor sync iOS
+        script: |
+          npx cap sync ios
+
+      - name: Pod install
+        script: |
+          cd ios/App
+          pod install --repo-update
+          cd ../..
+
+      - name: Set up provisioning profiles
+        script: |
+          xcode-project use-profiles
+
+      - name: Increment build number
+        script: |
+          cd ios/App
+          LATEST_BUILD=$(app-store-connect get-latest-app-store-build-number "$APP_STORE_APPLE_ID" || echo "0")
+          NEW_BUILD=$(($LATEST_BUILD + 1))
+          agvtool new-version -all $NEW_BUILD
+          cd ../..
+
+      - name: Build .ipa
+        script: |
+          xcode-project build-ipa \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME"
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+
+    publishing:
+      app_store_connect:
+        auth: integration
+        # TestFlight'a otomatik yükle ama otomatik dağıtma — internal QA ekibi test eder
+        submit_to_testflight: true
+        beta_groups:
+          - "Anonix Internal Testers"
+        # App Store review'a otomatik göndermez (manuel tetiklemek lazım)
+        submit_to_app_store: false
+      email:
+        recipients:
+          - bilgi.mertcanyilmaz@gmail.com
+        notify:
+          success: true
+          failure: true

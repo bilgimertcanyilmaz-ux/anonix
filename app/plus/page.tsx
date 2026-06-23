@@ -82,6 +82,24 @@ export default function PlusPage() {
   async function buy(type: SubscriptionType) {
     if (!user) { router.push("/login"); return; }
     setLoadingPlan(type);
+
+    // iOS native: Apple StoreKit IAP (App Store policy zorunlu)
+    const { getPlatform } = await import("@/lib/native");
+    if ((await getPlatform()) === "ios") {
+      const { purchaseApplePlan } = await import("@/lib/payments/storekit");
+      const planId = type === "plus_monthly" ? "plus_monthly" : "ultra_plus_monthly";
+      const result = await purchaseApplePlan(planId);
+      setLoadingPlan(null);
+      if (result.success) {
+        success("Aboneliğin aktif! 👑");
+        refreshProfile();
+      } else if (result.error) {
+        toastError(result.error);
+      }
+      return;
+    }
+
+    // Web / Android: iyzico checkout
     try {
       const { data: sessionData } = await supabase.auth.getSession();
       const token = sessionData.session?.access_token;
@@ -100,6 +118,20 @@ export default function PlusPage() {
     } catch {
       toastError("Bir hata oluştu. Lütfen tekrar dene.");
       setLoadingPlan(null);
+    }
+  }
+
+  /** Apple zorunlu: "Restore Purchases" butonu — eski abonelik aktarımı. */
+  async function restoreApple() {
+    const { restoreApplePurchases } = await import("@/lib/payments/storekit");
+    const r = await restoreApplePurchases();
+    if (r.active) {
+      success("Aboneliğin geri yüklendi! 👑");
+      refreshProfile();
+    } else if (r.error) {
+      toastError(r.error);
+    } else {
+      toastError("Aktif abonelik bulunamadı.");
     }
   }
 

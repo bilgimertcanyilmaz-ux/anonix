@@ -16,6 +16,7 @@ import { PwaManager } from "@/components/pwa/PwaManager";
 import { FeedbackWidget } from "@/components/feedback/FeedbackWidget";
 import { SatisfactionPopup } from "@/components/feedback/SatisfactionPopup";
 import { CinematicBackground } from "@/components/layout/CinematicBackground";
+import { NativeShellInit } from "@/components/layout/NativeShellInit";
 import { Analytics } from "@vercel/analytics/next";
 import { siteConfig } from "@/lib/site";
 
@@ -80,6 +81,7 @@ export default function RootLayout({
               <UnreadProvider>
                 <NotifProvider>
                   <CinematicBackground />
+                  <NativeShellInit />
                   <LaunchRedirect />
                   <StreakTracker />
                   <SoundManager />

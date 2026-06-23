@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { useToast } from "@/components/ui/ToastProvider";
+import { signInWithAppleNative, getPlatform } from "@/lib/native";
+import { supabase } from "@/lib/supabaseClient";
 
 /** Google logosu (resmi renkli "G"). */
 function GoogleIcon() {
@@ -39,16 +41,38 @@ export function OAuthButtons() {
   async function go(provider: "google" | "apple") {
     setError(null);
     setBusy(provider);
+
+    // iOS native shell'de Apple için native Sign-In SDK kullan
+    // (App Store guideline 4.8 — native ortamda native SDK tercih edilmeli)
+    if (provider === "apple" && (await getPlatform()) === "ios") {
+      try {
+        const r = await signInWithAppleNative();
+        if (!r) throw new Error("Apple oturumu iptal edildi.");
+        // Identity token'ı Supabase'e ver — sunucu doğrular
+        const { error } = await supabase.auth.signInWithIdToken({
+          provider: "apple",
+          token: r.identityToken,
+          nonce: r.nonce,
+        });
+        if (error) throw error;
+        return;
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "Apple ile giriş yapılamadı.";
+        setError(msg);
+        toast.error("Apple ile giriş yapılamadı.");
+        setBusy(null);
+        return;
+      }
+    }
+
     const res = await signInWithOAuth(provider);
     if (res.error) {
-      // Ham JSON kullanıcıya GÖSTERİLMEZ — mapSupabaseAuthError çıktısı + toast.
       setError(res.error);
       toast.error(
         provider === "google" ? "Google ile giriş yapılamadı." : "Apple ile giriş yapılamadı."
       );
       setBusy(null);
     }
-    // Başarılıysa sayfa sağlayıcıya yönlenir (busy kalır).
   }
 
   return (
