@@ -110,7 +110,18 @@ workflows:
         script: |
           xcode-project build-ipa \
             --workspace "$XCODE_WORKSPACE" \
-            --scheme "$XCODE_SCHEME"
+            --scheme "$XCODE_SCHEME" 2>&1 || {
+              echo ""
+              echo "########## BUILD .IPA BAŞARISIZ — xcodebuild log (son 150 satır) ##########"
+              LOG=$(ls -t /tmp/xcodebuild_logs/*.log 2>/dev/null | head -1)
+              if [ -n "$LOG" ]; then
+                tail -150 "$LOG"
+              else
+                echo "xcodebuild log dosyası bulunamadı."
+              fi
+              echo "########## LOG SONU ##########"
+              exit 1
+            }
 
     artifacts:
       - build/ios/ipa/*.ipa
