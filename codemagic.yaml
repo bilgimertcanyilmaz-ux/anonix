@@ -84,24 +84,33 @@ workflows:
 
       - name: Set up code signing (fetch + create if missing)
         script: |
-          # set -e YOK: tüm komutlar çalışsın, hangisinin patladığını görelim.
+          # Tüm çıktıyı artifact'a giren bir log dosyasına da yaz (signing.log).
+          mkdir -p /tmp/xcodebuild_logs
+          exec > >(tee /tmp/xcodebuild_logs/signing.log) 2>&1
+
           echo "########## ADIM 1: keychain initialize ##########"
-          keychain initialize 2>&1; echo ">>> exit: $?"
+          keychain initialize; echo ">>> exit: $?"
 
-          echo "########## ADIM 2: API testi — mevcut distribution sertifikaları ##########"
-          app-store-connect certificates list --type IOS_DISTRIBUTION 2>&1; echo ">>> exit: $?"
+          echo "########## ADIM 2: distribution certificate OLUŞTUR (--save) ##########"
+          app-store-connect certificates create --type IOS_DISTRIBUTION --save || echo "(create atlandı/zaten var)"
 
-          echo "########## ADIM 3: distribution certificate OLUŞTUR (--save) ##########"
-          app-store-connect certificates create --type IOS_DISTRIBUTION --save 2>&1; echo ">>> exit: $?"
+          echo "########## ADIM 3: fetch-signing-files (--create, verbose) ##########"
+          app-store-connect fetch-signing-files "com.anonix.app" \
+            --type IOS_APP_STORE \
+            --create \
+            --verbose; echo ">>> fetch exit: $?"
 
-          echo "########## ADIM 4: fetch-signing-files (--create) ##########"
-          app-store-connect fetch-signing-files "com.anonix.app" --type IOS_APP_STORE --create 2>&1; echo ">>> exit: $?"
+          echo "########## ADIM 4: keychain add-certificates ##########"
+          keychain add-certificates; echo ">>> exit: $?"
 
-          echo "########## ADIM 5: keychain add-certificates ##########"
-          keychain add-certificates 2>&1; echo ">>> exit: $?"
+          echo "########## ADIM 5: indirilen provisioning profilleri ##########"
+          ls -la ~/Library/MobileDevice/Provisioning\ Profiles/ 2>&1 || echo "profil klasörü yok"
 
-          echo "########## ADIM 6: xcode-project use-profiles ##########"
-          xcode-project use-profiles 2>&1; echo ">>> exit: $?"
+          echo "########## ADIM 6: xcode-project use-profiles (verbose) ##########"
+          xcode-project use-profiles --verbose; echo ">>> use-profiles exit: $?"
+
+          echo "########## ADIM 7: pbxproj signing ayarları (kontrol) ##########"
+          grep -E "CODE_SIGN_STYLE|PROVISIONING_PROFILE|DEVELOPMENT_TEAM|CODE_SIGN_IDENTITY" ios/App/App.xcodeproj/project.pbxproj || echo "signing ayarı bulunamadı"
 
           echo "########## SIGNING ADIMI TAMAMLANDI ##########"
 
