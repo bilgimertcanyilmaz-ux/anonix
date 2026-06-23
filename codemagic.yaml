@@ -125,12 +125,15 @@ workflows:
 
       - name: Build .ipa
         script: |
+          # build-ipa'nın TÜM çıktısını artifact'a giren bir log dosyasına yaz.
+          mkdir -p /tmp/xcodebuild_logs
+          exec > >(tee /tmp/xcodebuild_logs/buildipa.log) 2>&1
           xcode-project build-ipa \
             --project "$XCODE_PROJECT" \
-            --scheme "$XCODE_SCHEME" 2>&1 || {
+            --scheme "$XCODE_SCHEME" || {
               echo ""
               echo "########## BUILD .IPA BAŞARISIZ — xcodebuild log (son 150 satır) ##########"
-              LOG=$(ls -t /tmp/xcodebuild_logs/*.log 2>/dev/null | head -1)
+              LOG=$(ls -t /tmp/xcodebuild_logs/*.log 2>/dev/null | grep -v buildipa | head -1)
               if [ -n "$LOG" ]; then
                 tail -150 "$LOG"
               else
