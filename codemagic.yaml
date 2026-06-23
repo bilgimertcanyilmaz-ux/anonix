@@ -100,6 +100,25 @@ workflows:
           ssh-keygen -t rsa -b 2048 -m PEM -f "$CERT_KEY" -q -N ""
           echo "private key üretildi: $CERT_KEY"
 
+          echo "########## ADIM 2.5: kullanılamayan eski distribution sertifikalarını revoke et ##########"
+          # Önceki build'ler her seferinde farklı RSA key ürettiği için Apple'da
+          # private key'i kayıp distribution sertifikaları birikti (limit: 409).
+          # Bunlar kullanılamaz; temizleyip tek temiz sertifika oluşturacağız.
+          app-store-connect certificates list --type IOS_DISTRIBUTION --json > /tmp/certs.json 2>/dev/null || echo "[]" > /tmp/certs.json
+          python3 - <<'PYEOF'
+import json, subprocess
+try:
+    data = json.load(open('/tmp/certs.json'))
+except Exception:
+    data = []
+for c in (data or []):
+    cid = c.get('id')
+    if cid:
+        print("Revoking certificate", cid)
+        subprocess.run(['app-store-connect','certificates','delete',cid], check=False)
+print("Revoke aşaması bitti, kalan:", len(data or []), "sertifika işlendi")
+PYEOF
+
           echo "########## ADIM 3: fetch-signing-files (private key ile --create) ##########"
           app-store-connect fetch-signing-files "com.anonix.app" \
             --type IOS_APP_STORE \
