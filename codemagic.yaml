@@ -61,15 +61,32 @@ workflows:
 
       - name: Set up code signing (fetch + create if missing)
         script: |
-          # Bundle ID için App Store dağıtım profilini + sertifikayı çek;
-          # yoksa --create ile App Store Connect API üzerinden otomatik oluştur.
+          set -e
+          # 1) Keychain'i hazırla.
+          keychain initialize
+
+          # 2) iOS dağıtım sertifikasını OLUŞTUR ve private key'i sakla.
+          #    (Yeni hesapta hiç distribution certificate yoksa profil
+          #     oluşturulamıyor — önce sertifika + private key gerekir.)
+          #    Zaten varsa hata verir, onu yok sayıp mevcudu kullanırız.
+          app-store-connect certificates create \
+            --type IOS_DISTRIBUTION \
+            --save \
+            || echo "Distribution sertifikası zaten var, mevcut olan kullanılacak."
+
+          # 3) Mevcut tüm dağıtım sertifikalarını indir + keychain'e ekle.
+          app-store-connect certificates list \
+            --type IOS_DISTRIBUTION \
+            --save \
+            || true
+
+          # 4) Bundle ID için App Store provisioning profilini çek/oluştur.
           app-store-connect fetch-signing-files "com.anonix.app" \
             --type IOS_APP_STORE \
             --create
-          # Keychain'i hazırla ve indirilen dağıtım sertifikasını ekle.
-          keychain initialize
+
+          # 5) Sertifikaları keychain'e ekle ve profilleri Xcode'a uygula.
           keychain add-certificates
-          # Profilleri Xcode projesine uygula.
           xcode-project use-profiles
 
       - name: Increment build number
