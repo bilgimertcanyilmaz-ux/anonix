@@ -32,7 +32,9 @@ workflows:
       # sertifikayı + profili API ile oluşturup keychain'e ekliyor.
       vars:
         BUNDLE_ID: "com.anonix.app"
-        XCODE_WORKSPACE: "ios/App/App.xcworkspace"
+        # Capacitor 8 iOS'u CocoaPods yerine Swift Package Manager (SPM) kullanıyor:
+        # .xcworkspace YOK → doğrudan .xcodeproj ile build alınır.
+        XCODE_PROJECT: "ios/App/App.xcodeproj"
         XCODE_SCHEME: "App"
         APP_STORE_APPLE_ID: $APP_STORE_APPLE_ID  # App Store Connect'teki Apple ID (e-posta)
       node: 20
@@ -69,11 +71,16 @@ workflows:
           npx cap sync ios 2>&1
           echo "=== cap sync bitti, exit kodu: $? ==="
 
-      - name: Pod install
+      - name: Pod install (yalnızca CocoaPods kullanılıyorsa)
         script: |
-          cd ios/App
-          pod install --repo-update
-          cd ../..
+          # Capacitor 8 SPM kullanıyor; Podfile yoksa bu adımı atla.
+          if [ -f ios/App/Podfile ]; then
+            cd ios/App
+            pod install --repo-update
+            cd ../..
+          else
+            echo "Podfile yok — proje Swift Package Manager (SPM) kullanıyor, pod install atlandı."
+          fi
 
       - name: Set up code signing (fetch + create if missing)
         script: |
@@ -109,7 +116,7 @@ workflows:
       - name: Build .ipa
         script: |
           xcode-project build-ipa \
-            --workspace "$XCODE_WORKSPACE" \
+            --project "$XCODE_PROJECT" \
             --scheme "$XCODE_SCHEME" 2>&1 || {
               echo ""
               echo "########## BUILD .IPA BAŞARISIZ — xcodebuild log (son 150 satır) ##########"
