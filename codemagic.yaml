@@ -54,7 +54,20 @@ workflows:
 
       - name: Capacitor sync iOS
         script: |
-          npx cap sync ios
+          set -x
+          echo "=== Ortam kontrolü ==="
+          node --version
+          npx cap --version || echo "cap CLI bulunamadı"
+          echo "=== webDir kontrolü ==="
+          ls -la mobile-shell/dist || echo "HATA: mobile-shell/dist yok"
+          echo "=== iOS platform kontrolü ==="
+          ls -la ios/App || echo "HATA: ios/App yok"
+          echo "=== cap doctor ==="
+          npx cap doctor ios || true
+          echo "=== cap sync (stderr birleşik) ==="
+          # Hatayı stdout'a yönlendir ki Codemagic loglarında görünsün.
+          npx cap sync ios 2>&1
+          echo "=== cap sync bitti, exit kodu: $? ==="
 
       - name: Pod install
         script: |
