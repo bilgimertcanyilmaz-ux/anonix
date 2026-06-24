@@ -168,11 +168,12 @@ workflows:
     publishing:
       app_store_connect:
         auth: integration
-        # TestFlight'a otomatik yükle ama otomatik dağıtma — internal QA ekibi test eder
+        # .ipa'yı App Store Connect / TestFlight'a yükle.
+        # beta_groups KALDIRILDI: o grup henüz yok ve external test review bilgisi
+        # gerektiriyordu (build'i fail ettiriyordu). Build internal testing'e yine
+        # yüklenir; tester atamasını App Store Connect panelinden yaparsın.
         submit_to_testflight: true
-        beta_groups:
-          - "Anonix Internal Testers"
-        # App Store review'a otomatik göndermez (manuel tetiklemek lazım)
+        # App Store review'a otomatik göndermez (manuel tetiklenir).
         submit_to_app_store: false
       email:
         recipients:
