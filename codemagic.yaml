@@ -105,7 +105,8 @@ workflows:
           # private key'i kayıp distribution sertifikaları birikti (limit: 409).
           # Bunlar kullanılamaz; temizleyip tek temiz sertifika oluşturacağız.
           app-store-connect certificates list --type IOS_DISTRIBUTION --json > /tmp/certs.json 2>/dev/null || echo "[]" > /tmp/certs.json
-          for CID in $(jq -r '.[].id // empty' /tmp/certs.json 2>/dev/null); do
+          echo "--- certs.json içeriği ---"; cat /tmp/certs.json; echo "--- son ---"
+          for CID in $(python3 -c "import json; d=json.load(open('/tmp/certs.json')); items=d if isinstance(d,list) else d.get('data',[]); print(' '.join((x.get('id') or x.get('_id') or '') for x in items))" 2>/dev/null); do
             echo "Revoking certificate $CID"
             app-store-connect certificates delete "$CID" || echo "revoke atlandı: $CID"
           done
