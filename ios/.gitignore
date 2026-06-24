@@ -1,13 +1,12 @@
 App/build
 App/Pods
 App/output
-App/App/public
 DerivedData
 xcuserdata
 
 # Cordova plugins for Capacitor
 capacitor-cordova-ios-plugins
 
-# Generated Config files
-App/App/capacitor.config.json
-App/App/config.xml
+# NOT: public/, capacitor.config.json ve config.xml BİLEREK izleniyor.
+# Codemagic'te cap sync bunları ios/App/App/ altına güvenilir üretmediği için
+# (archive "no such file" veriyordu) repo'ya dahil edildiler.

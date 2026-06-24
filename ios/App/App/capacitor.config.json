@@ -1,0 +1,64 @@
+{
+	"appId": "com.anonix.app",
+	"appName": "Anonix",
+	"webDir": "mobile-shell/dist",
+	"bundledWebRuntime": false,
+	"server": {
+		"url": "https://www.anonix.digital",
+		"cleartext": false,
+		"androidScheme": "https",
+		"iosScheme": "https",
+		"allowNavigation": [
+			"www.anonix.digital",
+			"anonix.digital",
+			"*.supabase.co",
+			"*.iyzipay.com",
+			"*.iyzico.com"
+		]
+	},
+	"ios": {
+		"contentInset": "always",
+		"backgroundColor": "#0f0a1f",
+		"scheme": "Anonix",
+		"overrideUserInterfaceStyle": "dark"
+	},
+	"plugins": {
+		"SplashScreen": {
+			"launchShowDuration": 1200,
+			"launchAutoHide": false,
+			"launchFadeOutDuration": 240,
+			"backgroundColor": "#0f0a1f",
+			"androidSplashResourceName": "splash",
+			"iosSpinnerStyle": "small",
+			"spinnerColor": "#a855f7",
+			"showSpinner": true,
+			"androidScaleType": "CENTER_CROP",
+			"splashFullScreen": true,
+			"splashImmersive": true
+		},
+		"StatusBar": {
+			"style": "DARK",
+			"backgroundColor": "#0f0a1f",
+			"overlaysWebView": false
+		},
+		"PushNotifications": {
+			"presentationOptions": [
+				"badge",
+				"sound",
+				"alert"
+			]
+		},
+		"Haptics": {},
+		"Browser": {}
+	},
+	"packageClassList": [
+		"AppPlugin",
+		"CAPBrowserPlugin",
+		"CAPNetworkPlugin",
+		"PreferencesPlugin",
+		"PushNotificationsPlugin",
+		"SharePlugin",
+		"SplashScreenPlugin",
+		"StatusBarPlugin"
+	]
+}

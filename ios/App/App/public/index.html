@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="theme-color" content="#0f0a1f" />
+    <title>Anonix</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+      html, body { margin: 0; padding: 0; height: 100%; }
+      body {
+        background: radial-gradient(ellipse at 30% 20%, #2e1065 0%, #0f0a1f 60%);
+        color: #f1f5f9;
+        font-family: -apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', 'SF Pro Display', system-ui, sans-serif;
+        display: flex; align-items: center; justify-content: center;
+        padding: env(safe-area-inset-top) 24px env(safe-area-inset-bottom);
+        text-align: center;
+        overflow: hidden;
+      }
+      .glow { position: absolute; pointer-events: none; filter: blur(70px); opacity: 0.45; }
+      .glow.a { top: 12%; left: -10%; width: 280px; height: 280px; background: #a855f7; border-radius: 50%; animation: float 8s ease-in-out infinite; }
+      .glow.b { bottom: 8%; right: -10%; width: 320px; height: 320px; background: #ec4899; border-radius: 50%; animation: float 11s ease-in-out infinite reverse; }
+      @keyframes float { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(20px, -16px); } }
+      .card { position: relative; z-index: 1; max-width: 360px; }
+      .logo {
+        width: 84px; height: 84px; margin: 0 auto 22px;
+        border-radius: 26px;
+        background: linear-gradient(135deg, #a855f7 0%, #6d28d9 50%, #312e81 100%);
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 0 40px -6px rgba(168,85,247,0.6), inset 0 1px 0 rgba(255,255,255,0.25);
+        animation: pulse 2.4s ease-in-out infinite;
+      }
+      @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+      .logo svg { width: 44px; height: 44px; }
+      h1 {
+        font-size: 34px; line-height: 1; margin: 0 0 8px;
+        font-weight: 800; letter-spacing: -0.02em;
+        background: linear-gradient(135deg, #fff 0%, #f5d0fe 35%, #c084fc 100%);
+        -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+        filter: drop-shadow(0 0 18px rgba(168,85,247,0.4));
+      }
+      p { margin: 0 0 24px; font-size: 14px; color: #cbd5e1; line-height: 1.55; }
+      .btn {
+        display: inline-flex; align-items: center; justify-content: center;
+        gap: 8px; padding: 14px 28px; font-size: 15px; font-weight: 700;
+        color: #fff; text-decoration: none; border-radius: 999px; border: none; cursor: pointer;
+        background: linear-gradient(135deg, #ec4899 0%, #a855f7 50%, #7c3aed 100%);
+        box-shadow: 0 0 24px -4px rgba(168,85,247,0.7), inset 0 1px 0 rgba(255,255,255,0.25);
+        transition: transform .15s ease;
+        font-family: inherit;
+      }
+      .btn:active { transform: scale(0.96); }
+      .status { margin-top: 16px; font-size: 12px; color: #94a3b8; }
+      .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #fbbf24; margin-right: 6px; vertical-align: 2px; animation: blink 1.4s ease-in-out infinite; }
+      @keyframes blink { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+    </style>
+  </head>
+  <body>
+    <div class="glow a"></div>
+    <div class="glow b"></div>
+    <div class="card">
+      <div class="logo">
+        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M32 8 L52 22 V42 L32 56 L12 42 V22 Z" fill="rgba(15,10,31,0.45)" stroke="#fff" stroke-width="2"/>
+          <path d="M32 20 L42 28 L32 36 L22 28 Z" fill="#fff" opacity="0.95"/>
+        </svg>
+      </div>
+      <h1>Anonix</h1>
+      <p>Bağlantı kuruluyor… İnternet bağlantını kontrol ediyoruz.</p>
+      <button class="btn" onclick="window.location.reload()">Yeniden dene</button>
+      <p class="status"><span class="dot"></span>Yüklenemezse Wi-Fi veya mobil veriyi kontrol et</p>
+    </div>
+    <script>
+      // Network gelir gelmez ana siteyi yükle
+      function tryLoad() {
+        if (navigator.onLine) {
+          // Capacitor server.url devreye girer; emin olmak için manuel redirect:
+          window.location.href = 'https://www.anonix.digital';
+        }
+      }
+      window.addEventListener('online', tryLoad);
+      // İlk yüklemede de dene (server.url başarısız olduysa)
+      setTimeout(tryLoad, 800);
+    </script>
+  </body>
+</html>
