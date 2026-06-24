@@ -104,11 +104,15 @@ workflows:
           # Önceki build'ler her seferinde farklı RSA key ürettiği için Apple'da
           # private key'i kayıp distribution sertifikaları birikti (limit: 409).
           # Bunlar kullanılamaz; temizleyip tek temiz sertifika oluşturacağız.
-          app-store-connect certificates list --type IOS_DISTRIBUTION --json > /tmp/certs.json 2>/dev/null || echo "[]" > /tmp/certs.json
-          echo "--- certs.json içeriği ---"; cat /tmp/certs.json; echo "--- son ---"
-          for CID in $(python3 -c "import json; d=json.load(open('/tmp/certs.json')); items=d if isinstance(d,list) else d.get('data',[]); print(' '.join((x.get('id') or x.get('_id') or '') for x in items))" 2>/dev/null); do
-            echo "Revoking certificate $CID"
-            app-store-connect certificates delete "$CID" || echo "revoke atlandı: $CID"
+          # Sertifikalar modern "Apple Distribution" (DISTRIBUTION) tipinde olabilir,
+          # eski IOS_DISTRIBUTION değil. Her iki tipi de listeleyip revoke et.
+          for CTYPE in DISTRIBUTION IOS_DISTRIBUTION; do
+            app-store-connect certificates list --type "$CTYPE" --json > /tmp/certs.json 2>/dev/null || echo "[]" > /tmp/certs.json
+            echo "--- $CTYPE certs.json ---"; cat /tmp/certs.json; echo "--- son ---"
+            for CID in $(python3 -c "import json; d=json.load(open('/tmp/certs.json')); items=d if isinstance(d,list) else d.get('data',[]); print(' '.join((x.get('id') or x.get('_id') or '') for x in items))" 2>/dev/null); do
+              echo "Revoking certificate $CID ($CTYPE)"
+              app-store-connect certificates delete "$CID" || echo "revoke atlandı: $CID"
+            done
           done
           echo "Revoke aşaması bitti."
 
