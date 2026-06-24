@@ -105,19 +105,11 @@ workflows:
           # private key'i kayıp distribution sertifikaları birikti (limit: 409).
           # Bunlar kullanılamaz; temizleyip tek temiz sertifika oluşturacağız.
           app-store-connect certificates list --type IOS_DISTRIBUTION --json > /tmp/certs.json 2>/dev/null || echo "[]" > /tmp/certs.json
-          python3 - <<'PYEOF'
-import json, subprocess
-try:
-    data = json.load(open('/tmp/certs.json'))
-except Exception:
-    data = []
-for c in (data or []):
-    cid = c.get('id')
-    if cid:
-        print("Revoking certificate", cid)
-        subprocess.run(['app-store-connect','certificates','delete',cid], check=False)
-print("Revoke aşaması bitti, kalan:", len(data or []), "sertifika işlendi")
-PYEOF
+          for CID in $(jq -r '.[].id // empty' /tmp/certs.json 2>/dev/null); do
+            echo "Revoking certificate $CID"
+            app-store-connect certificates delete "$CID" || echo "revoke atlandı: $CID"
+          done
+          echo "Revoke aşaması bitti."
 
           echo "########## ADIM 3: fetch-signing-files (private key ile --create) ##########"
           app-store-connect fetch-signing-files "com.anonix.app" \
