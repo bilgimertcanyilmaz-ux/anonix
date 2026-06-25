@@ -41,6 +41,28 @@ export default function GolgeDetailPage() {
   const [commentText, setCommentText] = useState("");
   const [commentError, setCommentError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  /** Kullanıcının kendi Gölge gönderisini anında ve kalıcı silmesi (App Store 1.2 gereği). */
+  async function handleDelete() {
+    if (!post || !user || post.user_id !== user.id) return;
+    if (!window.confirm("Bu gönderiyi kalıcı olarak silmek istediğine emin misin? Bu işlem geri alınamaz.")) {
+      return;
+    }
+    setDeleting(true);
+    const { error } = await supabase
+      .from("golge_posts")
+      .delete()
+      .eq("id", post.id)
+      .eq("user_id", user.id);
+    setDeleting(false);
+    if (error) {
+      toastError("Gönderi silinemedi. Lütfen tekrar dene.");
+      return;
+    }
+    success("Gönderin silindi.");
+    router.push("/golge");
+  }
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -209,6 +231,21 @@ export default function GolgeDetailPage() {
             <ShareButton type="golge" id={post.id} text={post.overlay_text || post.caption || "Gölge"} mood={post.mood_tag} />
             <ReportButton entityType="golge" entityId={post.id} reportedUserId={post.user_id} />
           </div>
+
+          {/* Kendi gönderini sil (App Store 1.2 — kullanıcı içeriğini anında kaldırabilir) */}
+          {user && post.user_id === user.id && (
+            <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-red-500/20 bg-red-500/[0.04] px-4 py-2.5">
+              <span className="text-xs text-slate-400">Bu gönderiyi feed&apos;den kaldır</span>
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={deleting}
+                className="shrink-0 rounded-full border border-red-500/40 bg-red-500/10 px-4 py-1.5 text-xs font-bold text-red-300 transition-colors hover:bg-red-500/20 disabled:opacity-50"
+              >
+                {deleting ? "Siliniyor..." : "🗑️ Gönderiyi Sil"}
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Yorum ekleme */}

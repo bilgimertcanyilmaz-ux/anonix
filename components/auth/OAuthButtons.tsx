@@ -58,9 +58,27 @@ export function OAuthButtons() {
         return;
       } catch (e) {
         const msg = e instanceof Error ? e.message : "Apple ile giriş yapılamadı.";
-        setError(msg);
-        toast.error("Apple ile giriş yapılamadı.");
-        setBusy(null);
+        // Native plugin yüklü/derlenmemişse ("not implemented on ios") veya
+        // SDK çağrısı başarısızsa: web tabanlı Apple OAuth akışına düş.
+        // (App webview içinde çalıştığından Google ile aynı redirect akışı geçerli.)
+        const isPluginMissing = /not implemented|unimplemented|not available/i.test(msg);
+        const isCancelled = /cancel|iptal|1001/i.test(msg);
+        if (isCancelled) {
+          setBusy(null);
+          return;
+        }
+        if (!isPluginMissing) {
+          // Bilinmeyen hata: yine de web akışına düşmeyi dene (en kötü ihtimalle
+          // kendi hatasını gösterir), böylece kullanıcı tamamen kilitlenmez.
+          console.warn("Native Apple sign-in başarısız, web OAuth'a düşülüyor:", msg);
+        }
+        // — web OAuth fallback —
+        const res = await signInWithOAuth("apple");
+        if (res.error) {
+          setError(res.error);
+          toast.error("Apple ile giriş yapılamadı.");
+          setBusy(null);
+        }
         return;
       }
     }

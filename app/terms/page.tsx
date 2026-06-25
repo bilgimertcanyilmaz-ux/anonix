@@ -14,6 +14,23 @@ export default function TermsPage() {
       subtitle="Anonix'i kullanarak aşağıdaki şartları kabul etmiş olursun."
       updated="2026"
     >
+      <h2>0. Sıfır tolerans politikası (EULA)</h2>
+      <p>
+        <strong>
+          Anonix'te uygunsuz içeriğe ve rahatsız edici (abuse) kullanıcılara karşı sıfır
+          tolerans uygulanır.
+        </strong>{" "}
+        Uygulamayı kullanarak; müstehcen, cinsel açıdan açık (pornografik), tehdit edici,
+        taciz, nefret söylemi, şiddet içeren veya yasa dışı hiçbir içerik üretmeyeceğini ve
+        başka kullanıcıları taciz etmeyeceğini kabul edersin.
+      </p>
+      <p>
+        Bildirilen uygunsuz içerikler veya rahatsız edici kullanıcılar{" "}
+        <strong>24 saat içinde</strong> incelenir; ihlal eden içerik kaldırılır ve içeriği
+        üreten kullanıcının hesabı askıya alınır veya kalıcı olarak yasaklanır. Bu şartları
+        kabul etmeyen kullanıcılar uygulamayı kullanamaz.
+      </p>
+
       <h2>1. Kullanım şartları</h2>
       <p>
         Anonix'i kullanarak bu şartları ve Topluluk Kuralları'nı okuduğunu, anladığını ve

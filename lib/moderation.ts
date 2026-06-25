@@ -11,7 +11,7 @@ export interface ModerationResult {
 
 /** Engellenen içerik için kullanıcıya gösterilecek standart mesaj. */
 export const MODERATION_BLOCK_MESSAGE =
-  "Paylaşımınız topluluk kurallarına aykırı ifadeler içeriyor. Lütfen kişisel bilgi, tehdit, hakaret veya yasa dışı içerik paylaşmayın.";
+  "Paylaşımınız topluluk kurallarına aykırı ifadeler içeriyor. Lütfen kişisel bilgi, tehdit, hakaret, müstehcen/cinsel içerik veya yasa dışı içerik paylaşmayın.";
 
 // Yerleşik yasaklı kelime listesi (admin DB'den ayrıca genişletilir).
 const BANNED_WORDS = [
@@ -85,6 +85,53 @@ const EXPOSURE_KEYWORDS = [
   "frikik",
 ];
 
+// Müstehcen / pornografik cinsel içerik — grafik cinsel eylem ve anlatımlar.
+// (App Store Guideline 1.2 uyumu: explicit/pornografik UGC engellenmeli.)
+// NOT: "sevmek", "öpüşmek", "aşk" gibi masum/duygusal ifadeler BİLEREK listede
+// değil — yalnızca açıkça pornografik niyet taşıyan eylem/argo terimler.
+const EXPLICIT_SEXUAL_WORDS = [
+  "sikiş",
+  "sikiştik",
+  "sikişmek",
+  "sikiştim",
+  "sikti",
+  "siktim",
+  "düzüştük",
+  "düzüşmek",
+  "boşaldım",
+  "boşaldı",
+  "boşal",
+  "orgazm",
+  "mastürbasyon",
+  "otuzbir",
+  "31 çekmek",
+  "azdım",
+  "azdırdı",
+  "tahrik oldum",
+  "içime boşal",
+  "içine boşal",
+  "amıma",
+  "amını",
+  "amına sok",
+  "götten",
+  "göt deliği",
+  "anal seks",
+  "oral seks",
+  "sakso",
+  "klitoris",
+  "penisimi",
+  "vajinama",
+  "döl",
+  "meni",
+  "porno",
+  "pornografik",
+  "seks yaptık",
+  "seks yaptım",
+  "sevişirken",
+  "memelerini",
+  "göğüslerini emdim",
+];
+
 function normalize(text: string): string {
   return text.toLocaleLowerCase("tr-TR");
 }
@@ -156,6 +203,18 @@ export function detectExposure(text: string): boolean {
   return EXPOSURE_KEYWORDS.some((k) => t.includes(k));
 }
 
+/** Müstehcen / pornografik cinsel içerik. */
+export function detectExplicitSexual(text: string): boolean {
+  const t = normalize(text);
+  return EXPLICIT_SEXUAL_WORDS.some((w) => {
+    // Çok kelimeli kalıplar (boşluk içerenler) doğrudan alt-dizi olarak aranır.
+    if (w.includes(" ")) return t.includes(w);
+    // Tek kelimeler tam kelime sınırıyla aranır (yanlış eşleşmeyi azaltır).
+    const re = new RegExp(`(^|[^a-zçğıöşü])${w}([^a-zçğıöşü]|$)`, "i");
+    return re.test(t);
+  });
+}
+
 /** Tüm kontrolleri birleştirir. */
 export function moderateText(text: string): ModerationResult {
   const reasons: string[] = [];
@@ -171,6 +230,10 @@ export function moderateText(text: string): ModerationResult {
   }
   if (detectExposure(text)) {
     reasons.push("Kişisel ifşa / rıza dışı içerik");
+    severity = "high";
+  }
+  if (detectExplicitSexual(text)) {
+    reasons.push("Müstehcen / cinsel içerik");
     severity = "high";
   }
   if (detectThreatText(text)) {

@@ -50,6 +50,8 @@ export default function ConfessionDetailPage() {
   const [likersOpen, setLikersOpen] = useState(false);
   const [boosting, setBoosting] = useState(false);
 
+  const [deleting, setDeleting] = useState(false);
+
   async function handleBoost() {
     if (!confession) return;
     setBoosting(true);
@@ -61,6 +63,27 @@ export default function ConfessionDetailPage() {
     }
     success(`🚀 Paylaşımın boostlandı! Kalan hak: ${res.remaining ?? 0}`);
     await load();
+  }
+
+  /** Kullanıcının kendi itirafını anında ve kalıcı silmesi (App Store 1.2 gereği). */
+  async function handleDelete() {
+    if (!confession || !user || confession.user_id !== user.id) return;
+    if (!window.confirm("Bu itirafı kalıcı olarak silmek istediğine emin misin? Bu işlem geri alınamaz.")) {
+      return;
+    }
+    setDeleting(true);
+    const { error } = await supabase
+      .from("confessions")
+      .delete()
+      .eq("id", confession.id)
+      .eq("user_id", user.id);
+    setDeleting(false);
+    if (error) {
+      toastError("İtiraf silinemedi. Lütfen tekrar dene.");
+      return;
+    }
+    success("İtirafın silindi.");
+    router.push("/confessions");
   }
 
   const load = useCallback(async () => {
@@ -314,6 +337,21 @@ export default function ConfessionDetailPage() {
                     : canUseFeature(profile, "boost")
                       ? "🚀 Boostla"
                       : "🔒 Boost (Plus)"}
+              </button>
+            </div>
+          )}
+
+          {/* Kendi itirafını sil (App Store 1.2 — kullanıcı içeriğini anında kaldırabilir) */}
+          {user && confession.user_id === user.id && (
+            <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-red-500/20 bg-red-500/[0.04] px-4 py-2.5">
+              <span className="text-xs text-slate-400">Bu itirafı feed&apos;den kaldır</span>
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={deleting}
+                className="shrink-0 rounded-full border border-red-500/40 bg-red-500/10 px-4 py-1.5 text-xs font-bold text-red-300 transition-colors hover:bg-red-500/20 disabled:opacity-50"
+              >
+                {deleting ? "Siliniyor..." : "🗑️ Gönderiyi Sil"}
               </button>
             </div>
           )}
