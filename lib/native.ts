@@ -143,39 +143,11 @@ export async function registerPushNotifications(onToken: (token: string) => void
 }
 
 /* ─────────────────────────────────────────────────────────
-   SIGN IN WITH APPLE — native (iOS) → identity token alır
-   Web'de null döner; çağıran taraf Supabase OAuth redirect'e fallback eder.
+   NOT: Native "Sign in with Apple" eklentisi kaldırıldı.
+   @capacitor-community/apple-sign-in (Capacitor 7) RevenueCat'in
+   gerektirdiği capacitor-swift-pm 8.x ile çakışıyordu. Apple girişi artık
+   Supabase web OAuth ile yapılıyor (Google ile aynı akış; webview uyumlu).
    ───────────────────────────────────────────────────────── */
-export interface AppleSignInResult {
-  identityToken: string;
-  nonce: string;
-  email?: string | null;
-  givenName?: string | null;
-  familyName?: string | null;
-}
-
-export async function signInWithAppleNative(): Promise<AppleSignInResult | null> {
-  if ((await getPlatform()) !== "ios") return null;
-  const mod = await import("@capacitor-community/apple-sign-in");
-  const SignInWithApple = mod.SignInWithApple;
-  // Supabase'in beklediği nonce: base64-url SHA256 + raw value
-  const rawNonce = crypto.randomUUID() + crypto.randomUUID();
-  const res = await SignInWithApple.authorize({
-    clientId: "com.anonix.app",
-    redirectURI: "https://www.anonix.digital/auth/callback",
-    scopes: "email name",
-    nonce: rawNonce,
-  });
-  const r = res.response;
-  if (!r?.identityToken) return null;
-  return {
-    identityToken: r.identityToken,
-    nonce: rawNonce,
-    email: r.email,
-    givenName: r.givenName,
-    familyName: r.familyName,
-  };
-}
 
 /* ─────────────────────────────────────────────────────────
    NETWORK — connectivity status

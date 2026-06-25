@@ -4,8 +4,6 @@ import { useState } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { useToast } from "@/components/ui/ToastProvider";
-import { signInWithAppleNative, getPlatform } from "@/lib/native";
-import { supabase } from "@/lib/supabaseClient";
 
 /** Google logosu (resmi renkli "G"). */
 function GoogleIcon() {
@@ -42,47 +40,9 @@ export function OAuthButtons() {
     setError(null);
     setBusy(provider);
 
-    // iOS native shell'de Apple için native Sign-In SDK kullan
-    // (App Store guideline 4.8 — native ortamda native SDK tercih edilmeli)
-    if (provider === "apple" && (await getPlatform()) === "ios") {
-      try {
-        const r = await signInWithAppleNative();
-        if (!r) throw new Error("Apple oturumu iptal edildi.");
-        // Identity token'ı Supabase'e ver — sunucu doğrular
-        const { error } = await supabase.auth.signInWithIdToken({
-          provider: "apple",
-          token: r.identityToken,
-          nonce: r.nonce,
-        });
-        if (error) throw error;
-        return;
-      } catch (e) {
-        const msg = e instanceof Error ? e.message : "Apple ile giriş yapılamadı.";
-        // Native plugin yüklü/derlenmemişse ("not implemented on ios") veya
-        // SDK çağrısı başarısızsa: web tabanlı Apple OAuth akışına düş.
-        // (App webview içinde çalıştığından Google ile aynı redirect akışı geçerli.)
-        const isPluginMissing = /not implemented|unimplemented|not available/i.test(msg);
-        const isCancelled = /cancel|iptal|1001/i.test(msg);
-        if (isCancelled) {
-          setBusy(null);
-          return;
-        }
-        if (!isPluginMissing) {
-          // Bilinmeyen hata: yine de web akışına düşmeyi dene (en kötü ihtimalle
-          // kendi hatasını gösterir), böylece kullanıcı tamamen kilitlenmez.
-          console.warn("Native Apple sign-in başarısız, web OAuth'a düşülüyor:", msg);
-        }
-        // — web OAuth fallback —
-        const res = await signInWithOAuth("apple");
-        if (res.error) {
-          setError(res.error);
-          toast.error("Apple ile giriş yapılamadı.");
-          setBusy(null);
-        }
-        return;
-      }
-    }
-
+    // Hem Google hem Apple, Supabase web OAuth ile çalışır.
+    // (Uygulama anonix.digital'i webview içinde açtığından redirect akışı geçerli;
+    //  native Apple eklentisi RevenueCat/Capacitor 8 ile çakıştığı için kaldırıldı.)
     const res = await signInWithOAuth(provider);
     if (res.error) {
       setError(res.error);
