@@ -62,6 +62,15 @@ export default function PlusPage() {
   const isUltra = tier === "ultra_plus";
   const isPlus = tier === "plus";
 
+  // iOS native shell tespiti — Apple IAP uyumlu metin/butonlar için.
+  const [isIOS, setIsIOS] = useState(false);
+  const [restoring, setRestoring] = useState(false);
+  useEffect(() => {
+    import("@/lib/native").then(({ getPlatform }) =>
+      getPlatform().then((p) => setIsIOS(p === "ios"))
+    );
+  }, []);
+
   useEffect(() => {
     if (user) bumpMyTask("visit_plus");
   }, [user]);
@@ -123,8 +132,10 @@ export default function PlusPage() {
 
   /** Apple zorunlu: "Restore Purchases" butonu — eski abonelik aktarımı. */
   async function restoreApple() {
+    setRestoring(true);
     const { restoreApplePurchases } = await import("@/lib/payments/storekit");
     const r = await restoreApplePurchases();
+    setRestoring(false);
     if (r.active) {
       success("Aboneliğin geri yüklendi! 👑");
       refreshProfile();
@@ -421,11 +432,18 @@ export default function PlusPage() {
           custom={3}
           className="mt-6 grid grid-cols-3 gap-3"
         >
-          {[
-            { icon: "🔒", title: "iyzico güvencesi", desc: "Kart bilgilerin bizde saklanmaz" },
-            { icon: "⚡", title: "Anında aktivasyon", desc: "Ödeme biter bitmez aktif" },
-            { icon: "🔁", title: "İstediğin an iptal", desc: "Taahhüt yok, tek tıkla" },
-          ].map((t) => (
+          {(isIOS
+            ? [
+                { icon: "🍎", title: "App Store güvencesi", desc: "Ödeme Apple üzerinden güvenle" },
+                { icon: "⚡", title: "Anında aktivasyon", desc: "Satın alır almaz aktif" },
+                { icon: "🔁", title: "İstediğin an iptal", desc: "Apple Kimliği → Abonelikler" },
+              ]
+            : [
+                { icon: "🔒", title: "iyzico güvencesi", desc: "Kart bilgilerin bizde saklanmaz" },
+                { icon: "⚡", title: "Anında aktivasyon", desc: "Ödeme biter bitmez aktif" },
+                { icon: "🔁", title: "İstediğin an iptal", desc: "Taahhüt yok, tek tıkla" },
+              ]
+          ).map((t) => (
             <div key={t.title} className="card flex flex-col items-center gap-1 p-3 text-center sm:p-4">
               <span className="text-xl">{t.icon}</span>
               <p className="text-xs font-bold text-slate-200">{t.title}</p>
@@ -494,9 +512,37 @@ export default function PlusPage() {
           </div>
         </motion.div>
 
-        <p className="mt-6 text-center text-xs text-slate-500">
-          Ödemeler iyzico güvencesiyle alınır. Kart bilgilerin Anonix sunucularında saklanmaz.
-        </p>
+        {/* ── iOS: Apple IAP uyumlu açıklama + Restore butonu ────── */}
+        {isIOS ? (
+          <div className="mt-6 space-y-3">
+            <button
+              type="button"
+              onClick={restoreApple}
+              disabled={restoring}
+              className="mx-auto block rounded-full border border-white/15 bg-white/[0.04] px-5 py-2.5 text-xs font-semibold text-slate-200 transition-colors hover:bg-white/[0.08] disabled:opacity-60"
+            >
+              {restoring ? "Geri yükleniyor..." : "🔄 Satın Alımları Geri Yükle"}
+            </button>
+            <p className="mx-auto max-w-md text-center text-[11px] leading-relaxed text-slate-500">
+              Abonelikler <strong>otomatik yenilenir</strong>. Ödeme, satın alma onayında Apple
+              kimliği hesabından tahsil edilir. Abonelik, mevcut dönem bitiminden en az 24 saat
+              önce iptal edilmezse aynı ücretle kendiliğinden yenilenir. Aboneliğini{" "}
+              <strong>Ayarlar → Apple Kimliği → Abonelikler</strong> üzerinden yönetebilir veya
+              iptal edebilirsin.{" "}
+              <Link href="/terms" className="text-brand-300 underline-offset-2 hover:underline">
+                Kullanım Şartları
+              </Link>{" "}
+              ·{" "}
+              <Link href="/privacy-policy" className="text-brand-300 underline-offset-2 hover:underline">
+                Gizlilik Politikası
+              </Link>
+            </p>
+          </div>
+        ) : (
+          <p className="mt-6 text-center text-xs text-slate-500">
+            Ödemeler iyzico güvencesiyle alınır. Kart bilgilerin Anonix sunucularında saklanmaz.
+          </p>
+        )}
 
       </div>
     </Container>
