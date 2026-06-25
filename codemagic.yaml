@@ -134,8 +134,15 @@ workflows:
       - name: Increment build number
         script: |
           cd ios/App
-          LATEST_BUILD=$(app-store-connect get-latest-app-store-build-number "$APP_STORE_APPLE_ID" || echo "0")
+          # get-latest-build-number TÜM yüklenen build'lerin (TestFlight dahil) en
+          # yüksek numarasını verir. (get-latest-app-store-build-number ise yalnızca
+          # YAYINDAKI sürüme bakar; uygulama henüz yayında olmadığı için 0 dönüp
+          # build numarasını 1'de bırakıyordu → "bundle version already used" hatası.)
+          LATEST_BUILD=$(app-store-connect get-latest-build-number "$APP_STORE_APPLE_ID" 2>/dev/null || echo "1")
+          # Güvenlik: boş/sıfır gelirse en az 1 kabul et, sonra +1.
+          if [ -z "$LATEST_BUILD" ] || [ "$LATEST_BUILD" -lt 1 ]; then LATEST_BUILD=1; fi
           NEW_BUILD=$(($LATEST_BUILD + 1))
+          echo "En son build numarası: $LATEST_BUILD → yeni: $NEW_BUILD"
           agvtool new-version -all $NEW_BUILD
           cd ../..
 
