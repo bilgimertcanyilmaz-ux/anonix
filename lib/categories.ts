@@ -21,8 +21,6 @@ export const CATEGORIES: Category[] = [
   { value: "İş Hayatı", emoji: "💼", filterLabel: "İş" },
   { value: "Okul", emoji: "🎓" },
   { value: "Aile", emoji: "👨‍👩‍👧" },
-  { value: "Aldatma", emoji: "💔" },
-  { value: "Fantezi", emoji: "🔥" },
   { value: "Diğer", emoji: "✨" },
 ];
 

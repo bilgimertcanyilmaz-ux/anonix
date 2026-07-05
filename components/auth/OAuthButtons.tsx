@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { useToast } from "@/components/ui/ToastProvider";
+import { isNative } from "@/lib/native";
 
 /** Google logosu (resmi renkli "G"). */
 function GoogleIcon() {
@@ -35,6 +36,22 @@ export function OAuthButtons() {
   const toast = useToast();
   const [busy, setBusy] = useState<"google" | "apple" | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // Native (iOS/Android) uygulamada sosyal giriş GİZLENİR.
+  // Sebep: Supabase web OAuth redirect'i, native webview içinden harici Safari'yi
+  // açıyor ("default web browser"), bu da App Store Guideline 4.0'a takılıyordu
+  // (submission 2026-07-04 reddi). Native'de yalnızca uygulama-içi e-posta/şifre
+  // akışı gösterilir (login/register sayfalarındaki form). Ayrıca başka üçüncü-taraf
+  // sosyal giriş kalmadığı için "Sign in with Apple zorunluluğu" (4.8) da devre dışı.
+  // Web tarayıcıda sosyal giriş normal şekilde açık kalır.
+  const [nativeApp, setNativeApp] = useState<boolean | null>(null);
+  useEffect(() => {
+    isNative().then(setNativeApp);
+  }, []);
+
+  // Platform belirlenene kadar (ve native'de her zaman) sosyal butonları render etme.
+  // Bu, native'de butonların bir an görünüp kaybolmasını (flash) engeller.
+  if (nativeApp !== false) return null;
 
   async function go(provider: "google" | "apple") {
     setError(null);

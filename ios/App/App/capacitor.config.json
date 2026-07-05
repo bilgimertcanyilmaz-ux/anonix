@@ -2,7 +2,6 @@
 	"appId": "com.anonix.app",
 	"appName": "Anonix",
 	"webDir": "mobile-shell/dist",
-	"bundledWebRuntime": false,
 	"server": {
 		"url": "https://www.anonix.digital",
 		"cleartext": false,
@@ -19,8 +18,7 @@
 	"ios": {
 		"contentInset": "always",
 		"backgroundColor": "#0f0a1f",
-		"scheme": "Anonix",
-		"overrideUserInterfaceStyle": "dark"
+		"scheme": "Anonix"
 	},
 	"plugins": {
 		"SplashScreen": {
@@ -59,6 +57,7 @@
 		"PushNotificationsPlugin",
 		"SharePlugin",
 		"SplashScreenPlugin",
-		"StatusBarPlugin"
+		"StatusBarPlugin",
+		"PurchasesPlugin"
 	]
 }

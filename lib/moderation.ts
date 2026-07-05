@@ -132,6 +132,28 @@ const EXPLICIT_SEXUAL_WORDS = [
   "göğüslerini emdim",
 ];
 
+// Buluşma / eskort / uygunsuz teklif çağrıları (App Store Guideline 1.1 — objectionable).
+// Anonim itiraf platformunu buluşma/seks-satış aracına çeviren ifadeler engellenir.
+const SOLICITATION_PATTERNS = [
+  "escort",
+  "eskort",
+  "sponsor arıyorum",
+  "sponsor aranıyor",
+  "sugar daddy",
+  "sugar baby",
+  "görüntülerimi para",
+  "görüntü karşılığı",
+  "video karşılığı para",
+  "para karşılığı görüş",
+  "ücretli görüş",
+  "seks partneri",
+  "cinsel partner",
+  "yatak arkadaşı arıyorum",
+  "kaçamak arıyorum",
+  "kaçamak isteyen",
+  "gizli buluşalım",
+];
+
 function normalize(text: string): string {
   return text.toLocaleLowerCase("tr-TR");
 }
@@ -215,6 +237,12 @@ export function detectExplicitSexual(text: string): boolean {
   });
 }
 
+/** Buluşma / eskort / uygunsuz teklif çağrısı. */
+export function detectSolicitation(text: string): boolean {
+  const t = normalize(text);
+  return SOLICITATION_PATTERNS.some((p) => t.includes(p));
+}
+
 /** Tüm kontrolleri birleştirir. */
 export function moderateText(text: string): ModerationResult {
   const reasons: string[] = [];
@@ -234,6 +262,10 @@ export function moderateText(text: string): ModerationResult {
   }
   if (detectExplicitSexual(text)) {
     reasons.push("Müstehcen / cinsel içerik");
+    severity = "high";
+  }
+  if (detectSolicitation(text)) {
+    reasons.push("Buluşma / uygunsuz teklif");
     severity = "high";
   }
   if (detectThreatText(text)) {

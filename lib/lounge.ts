@@ -4,5 +4,4 @@ export const LOUNGE_ROOMS = [
   "İlişki Sırları",
   "Gizli Hikayeler",
   "Sadece Plus",
-  "Fantezi",
 ];

@@ -32,7 +32,6 @@ export interface MoodAccent {
    (açık temada beyaz kart üzerinde, koyu temada cam kart üzerinde). */
 const MOOD_ACCENTS: Record<string, MoodAccent> = {
   "Aşk": { a: "#ec4899", b: "#db2777" },
-  "Fantezi": { a: "#fb7185", b: "#f97316" },
   "Pişmanlık": { a: "#f59e0b", b: "#d97706" },
   "Komik": { a: "#eab308", b: "#ca8a04" },
   "Korku": { a: "#6366f1", b: "#4f46e5" },
@@ -41,7 +40,6 @@ const MOOD_ACCENTS: Record<string, MoodAccent> = {
   "İş Hayatı": { a: "#0ea5e9", b: "#0284c7" },
   "Okul": { a: "#14b8a6", b: "#0d9488" },
   "Aile": { a: "#10b981", b: "#059669" },
-  "Aldatma": { a: "#ef4444", b: "#dc2626" },
 };
 
 /** Mood etiketi için accent renkleri (bilinmiyorsa marka moru). */
